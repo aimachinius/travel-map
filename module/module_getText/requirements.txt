@@ -1,0 +1,28 @@
+# ============================================================
+# Requirements for module_getText
+# ============================================================
+
+# TikTok crawler & video scraping (tiktok_v2.py)
+requests>=2.31.0
+playwright>=1.40.0
+yt-dlp>=2024.1.0
+
+# Comment location filter API (filter_comment/location_filter.py)
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+sentence-transformers>=2.2.0
+torch>=2.0.0
+numpy>=1.24.0
+
+# ------------------------------------------------------------
+# Lưu ý sau khi cài đặt requirements:
+# Để Playwright có thể điều khiển trình duyệt, cần chạy thêm lệnh:
+#     playwright install chromium
+# ------------------------------------------------------------
+
+# # 1. Cài đặt các thư viện Python
+# pip install -r module/module_getText/requirements.txt
+
+# # 2. Cài đặt browser binary cho Playwright (bắt buộc để chạy được tiktok_v2.py)
+# playwright install chromium
