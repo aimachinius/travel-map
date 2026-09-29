@@ -1,0 +1,1 @@
+cut frame from video, and use orc model to detect text
