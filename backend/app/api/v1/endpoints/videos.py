@@ -1,4 +1,5 @@
 
+from app.models.saved_video import SavedVideo
 from app.models.video import Video
 from sqlalchemy import select
 from uuid import UUID
@@ -119,6 +120,25 @@ def get_my_videos(
 
     return videos
 @router.get(
+    "/saved",
+    response_model=list[VideoResponse],
+)
+def get_saved_videos(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    videos = db.scalars(
+        select(Video)
+        .join(
+            SavedVideo,
+            SavedVideo.video_id == Video.id,
+        )
+        .where(SavedVideo.user_id == current_user.id)
+        .order_by(SavedVideo.created_at.desc())
+    ).all()
+
+    return videos
+@router.get(
     "/{video_id}",
     response_model=VideoResponse,
 )
@@ -149,4 +169,85 @@ def get_video_detail(
         )
 
     return video
+@router.post(
+    "/{video_id}/save",
+    response_model=VideoResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def save_video(
+    video_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    video = db.get(Video, video_id)
+
+    if video is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Không tìm thấy video",
+        )
+
+    has_access = db.scalar(
+        select(AnalysisRun.id).where(
+            AnalysisRun.video_id == video_id,
+            AnalysisRun.user_id == current_user.id,
+        ).limit(1)
+    )
+
+    if has_access is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Không tìm thấy video",
+        )
+
+    existing = db.scalar(
+        select(SavedVideo).where(
+            SavedVideo.user_id == current_user.id,
+            SavedVideo.video_id == video_id,
+        )
+    )
+
+    if existing is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Video đã được lưu trước đó",
+        )
+
+    saved_video = SavedVideo(
+        user_id=current_user.id,
+        video_id=video_id,
+    )
+
+    db.add(saved_video)
+    db.commit()
+
+    return video
+
+
+@router.delete(
+    "/{video_id}/save",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def unsave_video(
+    video_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    saved_video = db.scalar(
+        select(SavedVideo).where(
+            SavedVideo.user_id == current_user.id,
+            SavedVideo.video_id == video_id,
+        )
+    )
+
+    if saved_video is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Video chưa được lưu",
+        )
+
+    db.delete(saved_video)
+    db.commit()
+
+    return None
 
