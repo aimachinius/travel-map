@@ -1,0 +1,62 @@
+@import './tokens.css';
+
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-background);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+a { color: var(--color-primary); text-underline-offset: 4px; }
+:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+img, svg { max-width: 100%; }
+h1, h2, p { margin: 0; }
+::selection { background: var(--color-primary-soft); }
+.setup-page {
+  max-width: 1120px;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 40px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.brand { display: flex; align-items: center; gap: 12px; font-size: 26px; font-weight: 750; letter-spacing: -1px; }
+.brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 14px; background: var(--color-primary); color: white; }
+.brand-dot { color: var(--color-accent); }
+.setup-card {
+  width: 100%;
+  margin: auto 0;
+  padding: clamp(28px, 6vw, 72px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+.eyebrow { font-size: 12px; font-weight: 750; letter-spacing: 2px; color: var(--color-primary); }
+h1 { margin-top: 20px; font-size: clamp(32px, 4.8vw, 58px); line-height: 1.2; letter-spacing: -1.8px; font-weight: 700; }
+h1 em { color: var(--color-primary); font-style: normal; }
+.intro { margin-top: 22px; color: var(--color-muted); font-size: 17px; }
+.setup-status { margin-top: 36px; padding: 20px 24px; background: var(--color-primary-soft); border-radius: var(--radius-control); display: flex; align-items: flex-start; gap: 14px; }
+.status-dot { flex-shrink: 0; width: 9px; height: 9px; margin-top: 9px; border-radius: 50%; background: var(--color-primary); }
+.setup-status h2 { font-size: 16px; font-weight: 650; }
+.setup-status p, .setup-note { font-size: 14px; color: var(--color-muted); }
+.setup-note { margin-top: 20px; max-width: 650px; }
+footer { padding-top: 24px; color: var(--color-muted); font-size: 12px; }
+@media (max-width: 600px) {
+  .setup-page { padding: 24px 16px; gap: 32px; }
+  .setup-card { margin: 0; }
+  h1 { letter-spacing: -1px; }
+  .setup-status { padding: 16px; }
+  footer { margin-top: auto; padding-top: 0; }
+}
+@media (max-height: 800px) and (min-width: 601px) {
+  .setup-card { margin-top: 40px; margin-bottom: 32px; }
+}

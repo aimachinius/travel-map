@@ -1,0 +1,25 @@
+/* Shared design tokens. System fonts support Vietnamese without a network request. */
+:root {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-background: #f7f8f2;
+  --color-surface: #ffffff;
+  --color-primary: #235c42;
+  --color-primary-hover: #17452f;
+  --color-primary-soft: #eaf2e9;
+  --color-accent: #c15a26;
+  --color-text: #20312a;
+  --color-muted: #59675f;
+  --color-border: #dce4da;
+  --color-error: #b42318;
+  --color-focus: #27784d;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-control: 10px;
+  --radius-card: 24px;
+  --shadow-card: 0 20px 64px rgb(35 65 42 / 5%);
+}

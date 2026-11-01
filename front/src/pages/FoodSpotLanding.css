@@ -1,0 +1,707 @@
+/* ==========================================
+   FOOD SPOT LANDING PAGE CSS (Final Version)
+   ========================================== */
+
+.fs-page {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: #2c3e2e;
+  background-color: #fafbfc;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+.fs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fs-skip {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #3b5335;
+  color: white;
+  padding: 8px;
+  z-index: 1000;
+  transition: top 0.2s;
+}
+.fs-skip:focus {
+  top: 0;
+}
+
+.fs-top {
+  background-color: #eef3e8;
+  font-size: 13px;
+  padding: 8px 0;
+  text-align: center;
+  color: #4a5c44;
+  border-bottom: 1px solid #e2e8db;
+}
+.fs-top .fs-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.fs-top a {
+  color: #3b5335;
+  font-weight: 600;
+  text-decoration: none;
+}
+.fs-top a:hover {
+  text-decoration: underline;
+}
+
+.fs-header {
+  background: #ffffff;
+  border-bottom: 1px solid #eaeef0;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.fs-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+}
+
+.fs-logo {
+  height: 36px;
+  width: auto;
+}
+
+.fs-menu {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.fs-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.fs-links a {
+  text-decoration: none;
+  color: #4a5c44;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.15s ease;
+}
+
+.fs-links a:hover, .fs-current {
+  color: #2c3e2e;
+}
+
+.fs-auth {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 16px;
+  padding-left: 16px;
+  border-left: 1px solid #eaeef0;
+}
+
+.fs-button {
+  background-color: #3b5335;
+  color: #ffffff !important;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.fs-button:hover {
+  background-color: #2c3e2e;
+  transform: translateY(-1px);
+}
+
+.fs-text-link {
+  color: #3b5335;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.fs-text-link:hover {
+  text-decoration: underline;
+}
+
+.fs-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: #5c7254;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* Hero Section */
+.fs-hero {
+  padding: 80px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.fs-hero-copy h1 {
+  font-size: 48px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #1a2619;
+  margin: 0 0 20px 0;
+}
+
+.fs-hero-copy h1 em {
+  font-style: normal;
+  color: #3b5335;
+}
+
+.fs-hero-copy p {
+  font-size: 16px;
+  color: #5c6659;
+  margin-bottom: 32px;
+  max-width: 480px;
+}
+
+.fs-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.fs-hero-note {
+  font-size: 13px;
+  color: #727e6e;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fs-hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.fs-photo {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.fs-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.fs-photo-tag {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e2e;
+}
+
+.fs-orbit {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  background: #d8e5c8;
+  color: #2c3e2e;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.fs-floating {
+  position: absolute;
+  bottom: -24px;
+  left: -20px;
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 280px;
+}
+
+.fs-floating-icon {
+  background: #eef3e8;
+  color: #3b5335;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fs-floating small {
+  font-size: 10px;
+  color: #727e6e;
+  font-weight: 700;
+  display: block;
+}
+
+.fs-floating strong {
+  font-size: 13px;
+  color: #2c3e2e;
+  display: block;
+}
+
+.fs-spark {
+  position: absolute;
+  top: 40%;
+  left: -30px;
+  font-size: 24px;
+  color: #5c7254;
+}
+
+/* Discover / Map Section */
+.fs-discover {
+  padding: 60px 0 100px 0;
+  background-color: #f4f7f0;
+}
+
+.fs-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.fs-section-head h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1a2619;
+  margin: 0;
+}
+
+.fs-section-head p {
+  color: #5c6659;
+  margin: 0;
+  font-size: 15px;
+}
+
+.fs-demo {
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.04);
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  overflow: hidden;
+  border: 1px solid #e5ede0;
+}
+
+.fs-results {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fs-demo-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.fs-demo-title h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: #2c3e2e;
+}
+
+.fs-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.fs-filters button {
+  background: #f0f4ec;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5c44;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fs-filters button[aria-pressed="true"], .fs-filters button:hover {
+  background: #3b5335;
+  color: white;
+}
+
+.fs-spot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+/* Hiệu ứng phình ra (scale) khi hover vào quán ăn */
+.fs-spot {
+  background: #f9fbf7;
+  border: 1px solid #e5ede0;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.fs-spot:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  background-color: #ffffff;
+}
+
+.fs-spot.selected {
+  border-color: #3b5335;
+  background: #f1f5ec;
+}
+
+.fs-spot img {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.fs-spot-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.fs-spot small {
+  font-size: 11px;
+  color: #687962;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: block;
+}
+
+.fs-spot strong {
+  font-size: 14px;
+  color: #2c3e2e;
+  display: block;
+  margin: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fs-spot-info span {
+  font-size: 12px;
+  color: #727e6e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.fs-spot-arrow {
+  color: #3b5335;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.fs-demo-note {
+  font-size: 12px;
+  color: #8a9885;
+  text-align: center;
+  margin: 0;
+}
+
+/* KHUNG BẢN ĐỒ ĐƯỜNG PHỐ */
+.fs-map {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  overflow: hidden;
+  background-color: #e5e8e0;
+}
+
+/* Thẻ ghim định vị trên bản đồ */
+
+/* BẢN ĐỒ ĐƯỜNG PHỐ OPENSTREETMAP + LEAFLET */
+.fs-map {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  height: 520px;
+  min-height: 420px;
+  overflow: hidden;
+  background: #edf0e8;
+  isolation: isolate;
+}
+
+.fs-leaflet-map {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  z-index: 1;
+}
+
+/* Popup thông tin quán */
+.fs-map .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+}
+
+.fs-map .leaflet-popup-content {
+  margin: 12px 16px;
+  line-height: 1.6;
+  color: #2c3e2e;
+  font-family: system-ui, sans-serif;
+}
+
+.fs-map .leaflet-container {
+  font-family: system-ui, sans-serif;
+}
+
+/* Điện thoại */
+@media (max-width: 768px) {
+  .fs-map {
+    height: 380px;
+    min-height: 380px;
+  }
+
+  .fs-leaflet-map {
+    min-height: 380px;
+  }
+}
+
+
+/* Features Section */
+.fs-features {
+  padding: 80px 0;
+  background-color: #ffffff;
+}
+
+.fs-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.fs-feature-card {
+  background: #f9fbf7;
+  border: 1px solid #eef3e8;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fs-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.fs-feature-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.fs-feature-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e2e;
+  margin-bottom: 8px;
+}
+
+.fs-feature-card p {
+  font-size: 14px;
+  color: #667068;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Contact Section */
+.fs-contact {
+  padding: 20px 0 80px 0;
+  background-color: #ffffff;
+}
+
+.fs-contact-box {
+  background: #eef3e8;
+  border-radius: 24px;
+  padding: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.fs-contact-box h2 {
+  font-size: 24px;
+  color: #2c3e2e;
+  margin: 8px 0;
+}
+
+.fs-contact-box p {
+  color: #667068;
+  font-size: 15px;
+  max-width: 500px;
+  margin: 0;
+}
+
+/* Footer */
+.fs-footer {
+  border-top: 1px solid #eaeef0;
+  padding: 40px 0;
+  background: #fafbfc;
+}
+
+.fs-footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #727e6e;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.fs-footer-content img {
+  height: 28px;
+}
+
+.fs-footer-content p {
+  margin: 0;
+}
+
+.fs-footer-content a {
+  color: #3b5335;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.fs-footer-content a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .fs-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 40px 0;
+  }
+  .fs-hero-copy p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .fs-hero-actions {
+    justify-content: center;
+  }
+  .fs-hero-note {
+    justify-content: center;
+  }
+  .fs-demo {
+    grid-template-columns: 1fr;
+  }
+  .fs-contact-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .fs-links {
+    display: none;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    padding: 24px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border-bottom: 1px solid #eaeef0;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .fs-links.open {
+    display: flex;
+  }
+  .fs-auth {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .fs-auth .fs-button {
+    width: 100%;
+    justify-content: center;
+  }
+  .fs-menu {
+    display: block;
+  }
+  .fs-hero-copy h1 {
+    font-size: 36px;
+  }
+  .fs-footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}

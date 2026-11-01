@@ -1,0 +1,297 @@
+/* ================================
+   FOOD SPOT - REGISTER PAGE
+   Đồng bộ style với Login
+================================ */
+
+/* Khung form đăng ký */
+
+.register-form-panel {
+  overflow-y: auto;
+  align-items: center;
+  justify-content: center;
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.register-form-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  transform: translateY(-12px);
+}
+
+
+/* Tiêu đề đăng ký + logo */
+.register-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 14px;
+  color: #152d23;
+  font-size: clamp(30px, 3vw, 38px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+  text-align: center;
+}
+
+.register-title .login-title-logo {
+  display: block;
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Mô tả ngắn bên dưới tiêu đề */
+.register-description {
+  margin: 0 0 26px;
+  color: #718078;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+/* Form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.register-form .login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+}
+
+.register-form .login-field > label {
+  color: #35483e;
+  font-size: 14px;
+  font-weight: 550;
+}
+
+/* Ô nhập liệu kế thừa login */
+.register-form .login-input-wrap {
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  gap: 12px;
+  border: 1px solid #d5dcd3;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.register-form .login-input-wrap:focus-within {
+  border-color: #315d43;
+  background: #fffdf8;
+  box-shadow: 0 0 0 3px rgba(49, 93, 67, 0.09);
+}
+
+.register-form .login-input-wrap input {
+  min-width: 0;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Điều khoản sử dụng */
+.register-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 1px;
+  color: #647168;
+  font-size: 12px;
+  line-height: 1.65;
+  cursor: pointer;
+}
+
+.register-terms input {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin: 2px 0 0;
+  accent-color: #315d43;
+  cursor: pointer;
+}
+
+.register-terms a {
+  color: #315d43;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.register-terms a:hover {
+  color: #d9825b;
+}
+
+/* Thông báo lỗi */
+.register-form .login-error {
+  margin: -3px 0 0;
+  color: #b54735;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Nút tạo tài khoản */
+.register-form .login-submit {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 1px;
+  border-radius: 16px;
+  background: linear-gradient(105deg, #315d43, #376b4b);
+  box-shadow: 0 8px 18px rgba(49, 93, 67, 0.12);
+  color: #fffdf8;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.register-form .login-submit:hover:not(:disabled) {
+  background: #254a35;
+  box-shadow: 0 11px 24px rgba(49, 93, 67, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Link quay lại đăng nhập */
+.register-form-wrap .login-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 25px;
+  color: #647168;
+  font-size: 13px;
+  text-align: center;
+}
+
+.register-form-wrap .login-register a {
+  color: #315d43;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.register-form-wrap .login-register a:hover {
+  color: #d9825b;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1050px) {
+  .register-form-wrap {
+    max-width: 440px;
+  }
+
+  .register-title .login-title-logo {
+    width: 68px;
+    height: 68px;
+  }
+
+  .register-form {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 760px) {
+  .register-form-panel {
+    min-height: auto;
+    overflow-y: visible;
+    padding: 30px 24px 48px;
+  }
+
+  .register-form-wrap {
+    max-width: 440px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+  }
+
+  .register-title {
+    gap: 9px;
+    margin-bottom: 12px;
+    font-size: 31px;
+  }
+
+  .register-title .login-title-logo {
+    width: 58px;
+    height: 58px;
+  }
+
+  .register-description {
+    margin-bottom: 22px;
+    font-size: 13px;
+  }
+
+  .register-form {
+    gap: 16px;
+  }
+
+  .register-form .login-input-wrap {
+    height: 54px;
+  }
+
+  .register-form-wrap .login-register {
+    margin-top: 23px;
+  }
+}
+
+@media (max-width: 380px) {
+  .register-form-panel {
+    padding-right: 19px;
+    padding-left: 19px;
+  }
+
+  .register-title {
+    gap: 7px;
+    font-size: 28px;
+  }
+
+  .register-title .login-title-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .register-form {
+    gap: 14px;
+  }
+
+  .register-form .login-input-wrap {
+    padding: 0 12px;
+    gap: 9px;
+  }
+
+  .register-terms {
+    font-size: 11px;
+  }
+
+  .register-form-wrap .login-register {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register-form .login-input-wrap,
+  .register-form .login-submit {
+    transition: none;
+  }
+}
+
+@media (min-width: 761px) and (min-height: 700px) {
+  .register-form-panel {
+    overflow-y: hidden;
+  }
+
+  .register-form-wrap {
+    transform: translateY(-18px);
+  }
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 140" role="img" aria-label="Food Spot">
+<path fill="#1c6027" d="M15 65Q10 55 35 58Q83 58 84 98Q83 131 47 133Q11 132 13 95Z"/>
+<path stroke="#205d29" stroke-width="6" d="M48 99 107 9M52 103 119 17"/>
+<path stroke="#fff" stroke-width="3" d="m47 108 28-40"/>
+<path stroke="#91c846" stroke-width="4" stroke-linecap="round" d="m35 87 3 5m7-7 3 5"/>
+<text x="123" y="53" font-family="Arial,sans-serif" font-size="45" font-weight="700" fill="#8cbd44">FOOD</text>
+<path fill="#1c6027" d="M93 91Q95 58 128 61Q151 55 172 65Q194 56 217 65Q237 56 260 65Q285 54 306 69Q330 86 316 113Q307 134 281 130Q259 135 238 127Q216 137 195 128Q170 139 150 128Q129 137 109 125Q92 114 93 91"/>
+<text x="106" y="120" font-family="Arial,sans-serif" font-size="77" letter-spacing="2" fill="#fff">sp<tspan fill="#92c547">o</tspan>t</text></svg>
