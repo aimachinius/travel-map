@@ -1,4 +1,4 @@
-﻿
+
 fastapi
 uvicorn[standard]
 pydantic-settings
@@ -8,3 +8,7 @@ sqlalchemy
 alembic
 psycopg[binary]
 pytest
+pyjwt
+pwdlib[argon2]
+email-validator
+

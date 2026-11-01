@@ -47,16 +47,24 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     return
   }
 
-  const result = registerUser(fullName, email, password)
+  setLoading(true)
 
-  if (!result.success) {
-    setError(result.message)
-    return
+  try {
+    const result = registerUser(fullName, email, password)
+
+    if (!result.success) {
+      setError(result.message)
+      return
+    }
+
+    setError('')
+    alert('Đăng ký thành công! Bạn có thể đăng nhập.')
+    navigate('/login')
+  } catch {
+    setError('Đã xảy ra lỗi. Vui lòng thử lại.')
+  } finally {
+    setLoading(false)
   }
-
-  setError('')
-  alert('Đăng ký thành công! Bạn có thể đăng nhập.')
-  navigate('/login')
 }
 
 
