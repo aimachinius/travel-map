@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "target": "antigravity",
+  "profile": "minimal",
+  "include": [
+    "lang:python",
+    "capability:database"
+  ],
+  "modules": [
+    "skill-fastapi-patterns"
+  ]
+}
