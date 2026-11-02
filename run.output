@@ -1,0 +1,306 @@
+[2026-10-27 04:20:40] [INFO] [ONNXTextDetector]: Đang nạp mô hình DBNet ONNX từ: /content/drive/MyDrive/colab/pbl/main/tham_khao/onnx/det.onnx (force_cpu=True)
+[2026-10-27 04:20:40] [INFO] [ONNXTextDetector]: Đã nạp DBNet ONNX thành công trên CPU (CPUExecutionProvider)
+[2026-10-27 04:20:40] [INFO] [ONNXTextDetector]: Khởi tạo ONNXTextDetector thành công (Hoàn toàn độc lập trong src/)!
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: =================================================================
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: BẮT ĐẦU QUY TRÌNH XỬ LÝ HÀNG LOẠT (BATCH PROCESSING)
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: File CSV:        video_speech_to_text.csv
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: Thư mục videos:  /content/drive/MyDrive/colab/PBL_Build_Data/videos
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: Thư mục output:  /content/drive/MyDrive/colab/pbl/main/output_results
+[2026-10-27 04:20:40] [INFO] [BatchProcessor]: =================================================================
+[2026-10-27 04:20:44] [INFO] [BatchProcessor]: [1/10] Đang xử lý video 6867816539274431746...
+[2026-10-27 04:20:44] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 6867816539274431746] ===
+[2026-10-27 04:20:56] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 12.83s
+[2026-10-27 04:20:57] [INFO] [RestaurantPipeline]: Đang khởi tạo Vintern1BExtractor cho pipeline...
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793074860.152972    6085 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX512F FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1793074864.191955    6085 cudart_stub.cc:31] Could not find cuda drivers on your machine, GPU will not be used.
+[2026-10-27 04:21:06] [INFO] [Vintern1BExtractor]: [*] Đang chuẩn bị nạp mô hình VLM: 5CD-AI/Vintern-1B-v3_5...
+[2026-10-27 04:21:06] [INFO] [Vintern1BExtractor]: [*] Thiết bị: cuda | Kiểu dữ liệu: torch.bfloat16
+config.json: 5.30kB [00:00, 18.9MB/s]
+configuration_internvl_chat.py: 3.88kB [00:00, 20.7MB/s]
+configuration_intern_vit.py: 5.55kB [00:00, 20.6MB/s]
+A new version of the following files was downloaded from https://huggingface.co/5CD-AI/Vintern-1B-v3_5:
+- configuration_intern_vit.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/5CD-AI/Vintern-1B-v3_5:
+- configuration_internvl_chat.py
+- configuration_intern_vit.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+`torch_dtype` is deprecated! Use `dtype` instead!
+modeling_internvl_chat.py: 15.6kB [00:00, 62.3MB/s]
+modeling_intern_vit.py: 18.1kB [00:00, 69.4MB/s]
+A new version of the following files was downloaded from https://huggingface.co/5CD-AI/Vintern-1B-v3_5:
+- modeling_intern_vit.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+conversation.py: 16.4kB [00:00, 59.9MB/s]
+A new version of the following files was downloaded from https://huggingface.co/5CD-AI/Vintern-1B-v3_5:
+- conversation.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+A new version of the following files was downloaded from https://huggingface.co/5CD-AI/Vintern-1B-v3_5:
+- modeling_internvl_chat.py
+- modeling_intern_vit.py
+- conversation.py
+. Make sure to double-check they do not contain any added malicious code. To avoid downloading new versions of the code file, you can pin a revision.
+WARNING:py.warnings:/usr/local/lib/python3.13/dist-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+
+FlashAttention2 is not installed.
+model.safetensors: 100% 3.75G/3.75G [00:40<00:00, 92.0MB/s]
+generation_config.json: 100% 129/129 [00:00<00:00, 576kB/s]
+tokenizer_config.json: 9.02kB [00:00, 36.5MB/s]
+vocab.json: 3.38MB [00:00, 153MB/s]
+merges.txt: 1.67MB [00:00, 153MB/s]
+added_tokens.json: 100% 790/790 [00:00<00:00, 8.04MB/s]
+special_tokens_map.json: 100% 744/744 [00:00<00:00, 5.33MB/s]
+[2026-10-27 04:22:11] [INFO] [Vintern1BExtractor]: [✓] Nạp mô hình Vintern-1B và Tokenizer thành công!
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:13] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:22:13] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:22:13] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : 2 giờ chiều là hết
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:16] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:19] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Bún Ốc - Bún Riêu - Bánh | Địa chỉ OCR: None | Chữ khác: Bún ốc - bún riêu - bánh
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:21] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:24] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]:   • Tên quán   : Bún ốc Bún Riêu
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 2 giờ chiều là hết
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:22:26] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:22:26] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 15.22s
+[2026-10-27 04:22:26] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 6867816539274431746]: Tên: 'Bún ốc Bún Riêu' | Địa chỉ: '2 giờ chiều là hết'
+[2026-10-27 04:22:26] [INFO] [BatchProcessor]: [2/10] Đang xử lý video 7109032785003695387...
+[2026-10-27 04:22:26] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7109032785003695387] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:22:47] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 21.08s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:48] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:22:48] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:22:48] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : 2 giờ chiều nha
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:51] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: Ốc Riêu U | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:54] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Cô Thủy | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:56] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:22:59] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: Thủy Nón | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]:   • Tên quán   : Ốc Riêu U
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 2 giờ chiều nha
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:23:00] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:23:01] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:23:01] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 13.57s
+[2026-10-27 04:23:01] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7109032785003695387]: Tên: 'Ốc Riêu U' | Địa chỉ: '2 giờ chiều nha'
+[2026-10-27 04:23:01] [INFO] [BatchProcessor]: [3/10] Đang xử lý video 7126014523596672282...
+[2026-10-27 04:23:01] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7126014523596672282] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:23:22] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 21.45s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:24] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:23:24] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : cô mi séc hôm một
+[2026-10-27 04:23:24] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:26] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: HOME | Địa chỉ OCR: 34 Ngọc Khánh, Ba Đình | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:30] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Phong Vị Việt | Địa chỉ OCR: Nhánh - Ba Đình - Hà Nội | Chữ khác: Phong Vị Việt
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:32] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: GIEF HO | Địa chỉ OCR: 34 Ngọc Khánh - Ba Đình - Hà Nội | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:35] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]:   • Tên quán   : GIEF HO
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 34 Ngọc Khánh - Ba Đình - Hà Nội
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:23:37] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:23:37] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 14.85s
+[2026-10-27 04:23:37] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7126014523596672282]: Tên: 'GIEF HO' | Địa chỉ: '34 Ngọc Khánh - Ba Đình - Hà Nội'
+[2026-10-27 04:23:37] [INFO] [BatchProcessor]: [4/10] Đang xử lý video 7129451774242606337...
+[2026-10-27 04:23:37] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7129451774242606337] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:23:49] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 12.09s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:51] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:23:51] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:23:51] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:53] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:23:57] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Phở Cuốn - Nộm | Địa chỉ OCR: Chợ Gia Lâm, Ngõ 336 Ngọc Lâm, Long Biên | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:00] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: Bánh bột lọc chan | Địa chỉ OCR: Hương Mai - 243 Ngọc Lâm, Long Biên | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:03] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: Thịt Xiên Khổng Lồ | Địa chỉ OCR: 152 Ái Mộ, Long Biên, Hà Nội | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]:   • Tên quán   : Phở Cuốn - Nộm
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : Chợ Gia Lâm, Ngõ 336 Ngọc Lâm, Long Biên
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:24:05] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:24:06] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:24:06] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 16.17s
+[2026-10-27 04:24:06] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7129451774242606337]: Tên: 'Phở Cuốn - Nộm' | Địa chỉ: 'Chợ Gia Lâm, Ngõ 336 Ngọc Lâm, Long Biên'
+[2026-10-27 04:24:06] [INFO] [BatchProcessor]: [5/10] Đang xử lý video 7136809431160917274...
+[2026-10-27 04:24:06] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7136809431160917274] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:24:28] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 21.95s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:29] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:24:29] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:24:29] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : 586 trường sa phú nhận nha
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:32] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: Thịt Xiên Nướng Mà-Nhét | Địa chỉ OCR: 586 Trường Sa | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:35] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Thịt Xiên Nướng Mà Nhé | Địa chỉ OCR: None | Chữ khác: Mà Nhé
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:38] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:40] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: Mà-Nhê | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]:   • Tên quán   : Thịt Xiên Nướng Mà Nhét
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 586 Trường Sa
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:24:42] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:24:43] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:24:43] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 15.01s
+[2026-10-27 04:24:43] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7136809431160917274]: Tên: 'Thịt Xiên Nướng Mà Nhét' | Địa chỉ: '586 Trường Sa'
+[2026-10-27 04:24:43] [INFO] [BatchProcessor]: [6/10] Đang xử lý video 7142093601609223451...
+[2026-10-27 04:24:43] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7142093601609223451] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:24:54] [INFO] [RestaurantPipeline]: Đã chọn 3 keyframes trong 11.52s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:55] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:24:55] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:24:55] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:24:59] [INFO] [Vintern1BExtractor]:   [Frame 1/3] -> Tên OCR: Cô Nhung | Địa chỉ OCR: Số 5 Âu Cơ, Khu 1, Tiền An, Bắc Ninh | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:02] [INFO] [Vintern1BExtractor]:   [Frame 2/3] -> Tên OCR: Bò Nhung | Địa chỉ OCR: Số 5 Âu Cơ, Khu 1, Tiệm | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:05] [INFO] [Vintern1BExtractor]:   [Frame 3/3] -> Tên OCR: Phòng mây | Địa chỉ OCR: Tiền An - TP. Bắc Ninh | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]:   • Tên quán   : Cô Nhung
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : Số 5 Âu Cơ, Khu 1, Tiền An, Bắc Ninh
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:25:07] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:25:08] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:25:08] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 13.54s
+[2026-10-27 04:25:08] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7142093601609223451]: Tên: 'Cô Nhung' | Địa chỉ: 'Số 5 Âu Cơ, Khu 1, Tiền An, Bắc Ninh'
+[2026-10-27 04:25:08] [INFO] [BatchProcessor]: [7/10] Đang xử lý video 7154239414439349510...
+[2026-10-27 04:25:08] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7154239414439349510] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:25:29] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 20.78s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:30] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:25:30] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : ốc nóng hài trang
+[2026-10-27 04:25:30] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : số 1 a đinh liền mình đọc review ở trên tíc tóc cũng n
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:33] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: Hà Trang | Địa chỉ OCR: 1A Đinh Liệt | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:36] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: Ốc Nóng Hồ Trang | Địa chỉ OCR: 1A Đinh Liệt | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:38] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: Ốc Nóng Hà Trang | Địa chỉ OCR: 1A Đinh Liệt | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:41] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: Em Bùi | Địa chỉ OCR: None | Chữ khác: Em Bùi
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]:   • Tên quán   : Ốc Nóng Hà Trang
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 1A Đinh Liệt
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:25:43] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:25:43] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 14.48s
+[2026-10-27 04:25:43] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7154239414439349510]: Tên: 'Ốc Nóng Hà Trang' | Địa chỉ: '1A Đinh Liệt'
+[2026-10-27 04:25:43] [INFO] [BatchProcessor]: [8/10] Đang xử lý video 7168667105418562818...
+[2026-10-27 04:25:43] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7168667105418562818] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:26:04] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 20.33s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:05] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:26:05] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : None
+[2026-10-27 04:26:05] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : lẩu nướng 1987
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:09] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: 1987 Nướng & Cầu | Địa chỉ OCR: 278 - TT Thăng Hiệp - Hòa Sĩ | Chữ khác: ĐC: U0G 675 - TT Thăng Hiệp - Hòa Sĩ
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:12] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: RIP
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:15] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:17] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]:   • Tên quán   : 1987 Nướng & Cầu
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 278 - TT Thăng Hiệp - Hòa Sĩ
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:26:19] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:26:19] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 15.82s
+[2026-10-27 04:26:19] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7168667105418562818]: Tên: '1987 Nướng & Cầu' | Địa chỉ: '278 - TT Thăng Hiệp - Hòa Sĩ'
+[2026-10-27 04:26:19] [INFO] [BatchProcessor]: [9/10] Đang xử lý video 7173604513511673115...
+[2026-10-27 04:26:19] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7173604513511673115] ===
+INFO:pyscenedetect:Detecting scenes...
+[2026-10-27 04:27:29] [INFO] [RestaurantPipeline]: Đã chọn 4 keyframes trong 70.05s
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:31] [INFO] [Vintern1BExtractor]: [1. KHỞI TẠO NGỮ CẢNH] Video ID: Unknown
+[2026-10-27 04:27:31] [INFO] [Vintern1BExtractor]:   • Tên quán tiềm năng (Text) : tùng nằm
+[2026-10-27 04:27:31] [INFO] [Vintern1BExtractor]:   • Địa chỉ tiềm năng (Text)  : None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:34] [INFO] [Vintern1BExtractor]:   [Frame 1/4] -> Tên OCR: Quán Tùng | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:36] [INFO] [Vintern1BExtractor]:   [Frame 2/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:39] [INFO] [Vintern1BExtractor]:   [Frame 3/4] -> Tên OCR: None | Địa chỉ OCR: None | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:42] [INFO] [Vintern1BExtractor]:   [Frame 4/4] -> Tên OCR: QUÁN TÙNG | Địa chỉ OCR: 178 Nguyễn Văn Tuyết, Đống Đa, Hà Nội | Chữ khác: None
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]: 🎯 KẾT LUẬN CUỐI CÙNG:
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]:   • Tên quán   : Quán Tùng
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]:   • Địa chỉ    : 178 Nguyễn Văn Tuyết, Đống Đa, Hà Nội
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]:   • Độ tin cậy : Trung bình
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]:   • Dẫn chứng  : {'nguồn_tên_quán': 'Lời thoại (Script)', 'nguồn_địa_chỉ': 'Lời thoại (Script)'}
+[2026-10-27 04:27:44] [INFO] [Vintern1BExtractor]: ==================================================
+[2026-10-27 04:27:45] [INFO] [Vintern1BExtractor]: [✓] Đã xóa sạch ngữ cảnh & dọn dẹp bộ nhớ GPU.
+
+[2026-10-27 04:27:45] [INFO] [RestaurantPipeline]: Suy luận Vintern-1B hoàn tất trong 14.93s
+[2026-10-27 04:27:45] [INFO] [RestaurantPipeline]: ===> [KẾT QUẢ 7173604513511673115]: Tên: 'Quán Tùng' | Địa chỉ: '178 Nguyễn Văn Tuyết, Đống Đa, Hà Nội'
+[2026-10-27 04:27:45] [INFO] [BatchProcessor]: [10/10] Đang xử lý video 7180339417612078363...
+[2026-10-27 04:27:45] [INFO] [RestaurantPipeline]: === [BẮT ĐẦU XỬ LÝ VIDEO: 7180339417612078363] ===
+INFO:pyscenedetect:Detecting scenes...
