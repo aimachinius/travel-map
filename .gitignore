@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 .venv/
 venv/
 __pycache__/
@@ -34,6 +34,10 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# AI / Agents
+.agent/
+.agents/
 
 # Temporary files
 *.tmp
