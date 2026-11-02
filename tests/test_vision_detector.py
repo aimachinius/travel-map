@@ -11,7 +11,14 @@ Kiểm tra các thuật toán:
 """
 
 import os
+import sys
 import time
+
+try:
+    import torch
+except Exception:
+    pass
+
 import unittest
 import numpy as np
 import cv2

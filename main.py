@@ -8,6 +8,21 @@ Hỗ trợ 3 chế độ:
 
 import os
 import sys
+
+# QUAN TRỌNG CHO GOOGLE COLAB / GPU:
+# Nạp PyTorch trước khi import các module khác (đặc biệt là onnxruntime) để nạp sẵn các thư viện
+# CUDA/cuDNN (.so / DLL) chuẩn vào namespace bộ nhớ toàn cục (RTLD_GLOBAL), triệt tiêu lỗi
+# 'OP Conv(...) running in Fallback mode' của CUDAExecutionProvider.
+try:
+    import torch
+    torch_lib = os.path.join(os.path.dirname(torch.__file__), "lib")
+    if os.path.exists(torch_lib):
+        curr_ld = os.environ.get("LD_LIBRARY_PATH", "")
+        if torch_lib not in curr_ld:
+            os.environ["LD_LIBRARY_PATH"] = f"{torch_lib}:{curr_ld}" if curr_ld else torch_lib
+except Exception:
+    pass
+
 import argparse
 import json
 

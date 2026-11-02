@@ -8,6 +8,19 @@ Hỗ trợ cờ dòng lệnh linh hoạt cho Google Colab và Local:
 
 import os
 import sys
+
+# QUAN TRỌNG CHO GOOGLE COLAB / GPU:
+# Nạp torch trước để đồng bộ các thư viện CUDA/cuDNN (.so / DLL) cho ONNX Runtime
+try:
+    import torch
+    torch_lib = os.path.join(os.path.dirname(torch.__file__), "lib")
+    if os.path.exists(torch_lib):
+        curr_ld = os.environ.get("LD_LIBRARY_PATH", "")
+        if torch_lib not in curr_ld:
+            os.environ["LD_LIBRARY_PATH"] = f"{torch_lib}:{curr_ld}" if curr_ld else torch_lib
+except Exception:
+    pass
+
 import argparse
 import uvicorn
 

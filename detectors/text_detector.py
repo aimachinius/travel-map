@@ -11,9 +11,31 @@ import os
 import sys
 import time
 from typing import Dict, Any, Optional, Tuple, List, Union
+
+# QUAN TRỌNG CHO GOOGLE COLAB / LINUX / WINDOWS GPU:
+# Nạp PyTorch trước ONNX Runtime để PyTorch đưa sẵn các thư viện CUDA/cuDNN (.so / DLL) chuẩn vào bộ nhớ.
+# Đồng thời đồng bộ LD_LIBRARY_PATH với torch/lib để ONNX Runtime CUDAExecutionProvider tìm thấy cuDNN 9.x.
+try:
+    import torch
+    torch_lib = os.path.join(os.path.dirname(torch.__file__), "lib")
+    if os.path.exists(torch_lib):
+        curr_ld = os.environ.get("LD_LIBRARY_PATH", "")
+        if torch_lib not in curr_ld:
+            os.environ["LD_LIBRARY_PATH"] = f"{torch_lib}:{curr_ld}" if curr_ld else torch_lib
+except Exception:
+    pass
+
 import cv2
 import numpy as np
 import onnxruntime as ort
+
+# Kích hoạt preload_dlls cho các phiên bản ONNX Runtime hiện đại (>= 1.20) nếu môi trường có CUDA
+if hasattr(ort, "preload_dlls"):
+    try:
+        if "CUDAExecutionProvider" in ort.get_available_providers():
+            ort.preload_dlls(cuda=True, cudnn=True)
+    except Exception:
+        pass
 
 from ..utils.logger import get_logger
 
@@ -80,8 +102,6 @@ class GPUDBNetDetector:
         sess_options.log_severity_level = 3  # 3: Error/Fatal - Ngăn chặn log Warning/Verbose spam từ cuDNN frontend
 
         available_providers = ort.get_available_providers()
-        providers = []
-
         cuda_available = False
         try:
             import torch
@@ -90,23 +110,47 @@ class GPUDBNetDetector:
         except Exception:
             pass
 
+        # Cấu hình tìm kiếm thuật toán cuDNN:
+        # Trong ONNX Runtime >= 1.20, 'DEFAULT' ánh xạ tới FALLBACK gây ra cảnh báo
+        # 'OP Conv(...) running in Fallback mode. May be extremely slow.'
+        # Sử dụng 'EXHAUSTIVE' (hoặc 'HEURISTIC') để kích hoạt thuật toán cuDNN tối ưu phần cứng.
+        algo_search = kwargs.get("cudnn_conv_algo_search", "EXHAUSTIVE")
+        cuda_options = {
+            "device_id": self.device_id,
+            "arena_extend_strategy": "kNextPowerOfTwo",
+            "gpu_mem_limit": 2 * 1024 * 1024 * 1024,  # Giới hạn 2GB VRAM cho ONNX
+            "cudnn_conv_algo_search": algo_search,
+            "do_copy_in_default_stream": True,
+        }
+
+        self.session = None
+        self.active_provider = "CPUExecutionProvider"
+
         if cuda_available:
-            cuda_options = {
-                "device_id": self.device_id,
-                "arena_extend_strategy": "kNextPowerOfTwo",
-                "gpu_mem_limit": 2 * 1024 * 1024 * 1024,  # Giới hạn 2GB VRAM cho ONNX
-                "cudnn_conv_algo_search": "DEFAULT",  # 'DEFAULT' dùng thuật toán Implicit GEMM ổn định, tránh lỗi No valid engine configs trên cuDNN 9 / Tesla T4
-                "do_copy_in_default_stream": True,
-            }
-            providers.append(("CUDAExecutionProvider", cuda_options))
+            # Thử nạp CUDA với algo_search chỉ định (mặc định EXHAUSTIVE)
+            try:
+                providers = [("CUDAExecutionProvider", cuda_options), "CPUExecutionProvider"]
+                self.session = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
+                self.active_provider = self.session.get_providers()[0]
+            except Exception as e:
+                logger.warning(f"Lỗi khi nạp DBNet ONNX với algo={algo_search}: {e}.")
+                # Thử lại với HEURISTIC nếu EXHAUSTIVE gặp lỗi cấu hình driver
+                if algo_search != "HEURISTIC":
+                    try:
+                        logger.info("Thử khởi tạo lại CUDAExecutionProvider với cudnn_conv_algo_search='HEURISTIC'...")
+                        alt_cuda_options = dict(cuda_options)
+                        alt_cuda_options["cudnn_conv_algo_search"] = "HEURISTIC"
+                        self.session = ort.InferenceSession(
+                            model_path,
+                            sess_options=sess_options,
+                            providers=[("CUDAExecutionProvider", alt_cuda_options), "CPUExecutionProvider"]
+                        )
+                        self.active_provider = self.session.get_providers()[0]
+                    except Exception as e2:
+                        logger.warning(f"Không thể khởi tạo CUDA với HEURISTIC: {e2}")
 
-        providers.append("CPUExecutionProvider")
-
-        try:
-            self.session = ort.InferenceSession(model_path, sess_options=sess_options, providers=providers)
-            self.active_provider = self.session.get_providers()[0]
-        except Exception as e:
-            logger.warning(f"Lỗi khi nạp DBNet ONNX với providers={providers}: {e}. Fallback về CPUExecutionProvider.")
+        if self.session is None:
+            logger.warning("DBNet ONNX chuyển về chạy an toàn trên CPU (CPUExecutionProvider).")
             self.session = ort.InferenceSession(model_path, sess_options=sess_options, providers=["CPUExecutionProvider"])
             self.active_provider = "CPUExecutionProvider"
 
@@ -124,12 +168,15 @@ class GPUDBNetDetector:
         self._warmup()
 
     def _warmup(self):
-        """Khởi động GPU Warm-up để cuDNN biên dịch sẵn kernel, tránh độ trễ ở request đầu."""
-        dummy = np.zeros((1, 3, 640, 352), dtype=np.float32)
+        """Khởi động GPU Warm-up để cuDNN benchmark và khóa sẵn kernel tối ưu, triệt tiêu hoàn toàn Fallback mode."""
         try:
-            self.session.run(None, {self.input_name: dummy})
-        except Exception:
-            pass
+            dummy_single = np.zeros((1, 3, 640, 352), dtype=np.float32)
+            self.session.run(None, {self.input_name: dummy_single})
+            if self.supports_dynamic_batch and self.active_provider == "CUDAExecutionProvider":
+                dummy_batch = np.zeros((8, 3, 640, 352), dtype=np.float32)
+                self.session.run(None, {self.input_name: dummy_batch})
+        except Exception as e:
+            logger.debug(f"DBNet warm-up notice: {e}")
 
     def _preprocess_single(self, img_bgr: np.ndarray, target_h: int, target_w: int) -> np.ndarray:
         resized = cv2.resize(img_bgr, (target_w, target_h), interpolation=cv2.INTER_LINEAR)
