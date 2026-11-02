@@ -49,8 +49,8 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       APP_NAME: Food Spot API
       APP_ENV: development
-      # AI_SERVER_EXTRACT_URL: http://mock-ai:8001/api/v1/extract
-      AI_SERVER_EXTRACT_URL: https://officially-sea-cooler-mistress.trycloudflare.com/api/v1/extract
+      AI_SERVER_EXTRACT_URL: http://mock-ai:8001/api/v1/extract
+      # AI_SERVER_EXTRACT_URL: https://officially-sea-cooler-mistress.trycloudflare.com/api/v1/extract
     depends_on:
       db:
         condition: service_healthy
