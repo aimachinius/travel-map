@@ -18,3 +18,19 @@
   docker compose down
   ```
 
+- **Build lại backend**:
+  ```bash
+  docker compose build backend
+  docker compose up -d backend
+  ```
+- **Build lại frontend**:
+  ```bash
+  docker compose build front
+  docker compose up -d front  
+  ```
+
+- **Build lại mock-ai**:
+  ```bash
+  docker compose build mock-ai
+  docker compose up -d mock-ai
+  ```

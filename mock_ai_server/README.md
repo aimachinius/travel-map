@@ -69,25 +69,50 @@ Invoke-RestMethod -Uri "http://localhost:8001/api/v1/extract" -Method Post -Cont
 Output trả về:
 ```json
 {
+  "success": true,
   "status": "SUCCESS",
-  "message": "AI extracted restaurant information successfully",
   "data": {
-    "video": {
-      "title": "Review ẩm thực: Bánh Xèo Bà Dưỡng cực ngon tại Đà Nẵng",
-      "duration_seconds": 45.2,
-      "file_size_mb": 21.4
-    },
-    "transcript": {
-      "text": "Quán bánh xèo Bà Dưỡng nằm trong kiệt 280 Hoàng Diệu...",
-      "language": "vi"
-    },
     "restaurant": {
-      "name": "Bánh Xèo Bà Dưỡng",
-      "address": "K280/23 Hoàng Diệu, Bình Hiên, Hải Châu, Đà Nẵng",
-      "category": "Quán ăn",
-      "confidence_status": "HIGH",
-      "evidence_sources": ["OCR_SIGNBOARD", "TRANSCRIPT", "CAPTION"]
-    }
-  }
+      "name": "HongKong Style",
+      "address": "181 Nguyễn Văn Thoại, Đà Nẵng",
+      "confidence_status": "Cao",
+      "evidence": {
+        "name_source": "Frame 3, Frame 5 (OCR)",
+        "address_source": "Frame 1, Frame 4 (OCR)"
+      },
+      "evidence_sources": [
+        "Frame 3, Frame 5 (OCR)",
+        "Frame 1, Frame 4 (OCR)"
+      ]
+    },
+    "frames_ocr_details": [
+      {
+        "frame_idx": 110,
+        "temporal_zone": "intro",
+        "timestamp_sec": 3.67,
+        "final_score": 1.7654,
+        "image_url": "/api/v1/keyframes/7699467006587751688/frame_00.jpg",
+        "ocr_name": "Dim Sum Ký",
+        "ocr_address": "181 Nguyễn Văn Thoại, Đà Nẵng",
+        "ocr_other": null
+      }
+    ],
+    "video": {
+      "video_id": "7699467006587751688",
+      "platform": "tiktok",
+      "source_url": "https://www.tiktok.com/@46_nhinguyen/video/7699467006587751688",
+      "duration_seconds": 0.0,
+      "file_size_mb": 9.26,
+      "download_url": null
+    },
+    "execution_metrics": {
+      "download_time_sec": 4.87,
+      "keyframe_total_time_sec": 13.69,
+      "total_time_sec": 60.62
+    },
+    "transcript": null,
+    "keyframes": []
+  },
+  "error_message": null
 }
 ```

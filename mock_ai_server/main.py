@@ -33,6 +33,12 @@ app.add_middleware(
 # Danh sách các địa điểm ẩm thực nổi tiếng tại Đà Nẵng với địa chỉ chính xác
 DANANG_FOOD_SPOTS = [
     {
+        "name": "HongKong Style",
+        "address": "181 Nguyễn Văn Thoại, Đà Nẵng",
+        "category": "Quán ăn",
+        "transcript": None,
+    },
+    {
         "name": "Bún Chả Cá Bà Lữ",
         "address": "319 Hùng Vương, Vĩnh Trung, Thanh Khê, Đà Nẵng",
         "category": "Quán ăn",
@@ -143,70 +149,126 @@ async def extract_restaurant_info(req: ExtractRequest) -> dict[str, Any]:
     else:
         spot = random.choice(DANANG_FOOD_SPOTS)
 
+    # Trích xuất video_id và platform từ url
+    import re
+    match = re.search(r"/video/(\d+)", req.url)
+    video_id = match.group(1) if match else "7699467006587751688"
+    platform = "tiktok" if "tiktok" in req.url.lower() else ("youtube" if "youtu" in req.url.lower() else "tiktok")
+
     # Tạo các thông số video ngẫu nhiên thực tế
     duration = round(random.uniform(25.0, 85.0), 1)
-    file_size = round(random.uniform(12.0, 48.0), 2)
+    file_size = round(random.uniform(9.0, 25.0), 2)
+
+    frames_ocr_details = [
+        {
+            "frame_idx": 110,
+            "temporal_zone": "intro",
+            "timestamp_sec": 3.67,
+            "final_score": 1.7654,
+            "image_url": f"/api/v1/keyframes/{video_id}/frame_00.jpg",
+            "ocr_name": "Dim Sum Ký" if spot["name"] == "HongKong Style" else spot["name"],
+            "ocr_address": spot["address"],
+            "ocr_other": None,
+        },
+        {
+            "frame_idx": 1166,
+            "temporal_zone": "body",
+            "timestamp_sec": 38.87,
+            "final_score": 0.8404,
+            "image_url": f"/api/v1/keyframes/{video_id}/frame_01.jpg",
+            "ocr_name": "Tàu Hũ Ký Dầu Hào 65KA",
+            "ocr_address": None,
+            "ocr_other": "Nhân đầy uy nên ăn khi còn nóng nhà các dạ",
+        },
+        {
+            "frame_idx": 2360,
+            "temporal_zone": "outro",
+            "timestamp_sec": 78.67,
+            "final_score": 5.5863,
+            "image_url": f"/api/v1/keyframes/{video_id}/frame_02.jpg",
+            "ocr_name": spot["name"],
+            "ocr_address": spot["address"],
+            "ocr_other": None,
+        },
+        {
+            "frame_idx": 2400,
+            "temporal_zone": "outro",
+            "timestamp_sec": 80.0,
+            "final_score": 4.381,
+            "image_url": f"/api/v1/keyframes/{video_id}/frame_03.jpg",
+            "ocr_name": spot["name"].upper(),
+            "ocr_address": spot["address"],
+            "ocr_other": None,
+        },
+        {
+            "frame_idx": 2420,
+            "temporal_zone": "outro",
+            "timestamp_sec": 80.67,
+            "final_score": 4.676,
+            "image_url": f"/api/v1/keyframes/{video_id}/frame_04.jpg",
+            "ocr_name": spot["name"],
+            "ocr_address": spot["address"],
+            "ocr_other": None,
+        },
+    ]
 
     response_payload = {
+        "success": True,
         "status": "SUCCESS",
-        "message": "AI extracted restaurant information successfully",
         "data": {
-            "video": {
-                "title": f"Review ẩm thực: {spot['name']} cực ngon tại Đà Nẵng",
-                "duration_seconds": duration,
-                "file_size_mb": file_size,
-            },
-            "transcript": {
-                "text": spot["transcript"],
-                "language": "vi",
-            },
             "restaurant": {
                 "name": spot["name"],
                 "address": spot["address"],
-                "category": spot["category"],
-                "confidence_status": "HIGH",
-                "evidence_sources": ["OCR_SIGNBOARD", "TRANSCRIPT", "CAPTION"],
+                "confidence_status": "Cao",
+                "evidence": {
+                    "name_source": "Frame 3, Frame 5 (OCR)",
+                    "address_source": "Frame 1, Frame 4 (OCR)",
+                },
+                "evidence_sources": [
+                    "Frame 3, Frame 5 (OCR)",
+                    "Frame 1, Frame 4 (OCR)",
+                ],
             },
-            "keyframes": [
-                {
-                    "timestamp": 2.5,
-                    "description": f"Biển hiệu {spot['name']}",
-                    "confidence": 0.95,
-                },
-                {
-                    "timestamp": round(duration * 0.4, 1),
-                    "description": "Không gian quán và chế biến món ăn",
-                    "confidence": 0.88,
-                },
-                {
-                    "timestamp": round(duration * 0.8, 1),
-                    "description": "Món ăn hoàn chỉnh dọn lên bàn",
-                    "confidence": 0.92,
-                },
-            ],
-            "frames_ocr_details": [
-                {
-                    "text": spot["name"],
-                    "confidence": 0.96,
-                    "box": [120, 85, 340, 150],
-                },
-                {
-                    "text": spot["address"],
-                    "confidence": 0.91,
-                    "box": [115, 160, 480, 210],
-                },
-            ],
+            "frames_ocr_details": frames_ocr_details,
+            "video": {
+                "video_id": video_id,
+                "platform": platform,
+                "source_url": req.url,
+                "duration_seconds": 0.0,
+                "file_size_mb": file_size,
+                "download_url": None,
+            },
             "execution_metrics": {
-                "total_frames_sampled": 140,
-                "ocr_latency_ms": 380,
-                "asr_latency_ms": 620,
-                "total_duration_ms": int(delay * 1000),
+                "download_time_sec": 4.87,
+                "keyframe_total_time_sec": 13.69,
+                "video_decode_sampling_time_sec": 0.0,
+                "dbnet_gpu_inference_time_sec": 0.0,
+                "scoring_and_nms_time_sec": 0.0,
+                "vlm_sequential_inference_time_sec": 21.02,
+                "total_time_sec": round(delay + 58.5, 2),
+                "sampled_frames_count": 5,
+                "dbnet_evaluated_frames_count": 5,
+                "selected_top_k_count": 5,
+                "stt_time_sec": 0.0,
+                "keyframe_selection_time_sec": 13.69,
+                "parallel_stt_and_keyframe_time_sec": 13.69,
+                "stt_branch_time_sec": 0.0,
+                "keyframe_branch_time_sec": 13.69,
+                "vlm_inference_time_sec": 21.02,
             },
+            "transcript": None,
+            "keyframes": [],
         },
+        "error_message": None,
     }
 
     logger.info("Trích xuất hoàn tất! Trả về quán: %s - %s", spot["name"], spot["address"])
     return response_payload
+
+
+@app.get("/api/v1/keyframes/{video_id}/{frame_name}")
+def get_mock_keyframe(video_id: str, frame_name: str):
+    return {"status": "ok", "video_id": video_id, "frame": frame_name}
 
 
 if __name__ == "__main__":

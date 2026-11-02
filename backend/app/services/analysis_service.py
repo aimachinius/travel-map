@@ -219,8 +219,15 @@ async def process_analysis_run(
             return analysis
 
         resp_json = ai_resp.json()
-        if resp_json.get("status") != "SUCCESS":
-            err_msg = resp_json.get("message") or resp_json.get("error") or "AI extraction did not return SUCCESS"
+        status_val = str(resp_json.get("status") or "").upper()
+        is_success = resp_json.get("success") is True or status_val == "SUCCESS"
+        if not is_success:
+            err_msg = (
+                resp_json.get("error_message")
+                or resp_json.get("message")
+                or resp_json.get("error")
+                or "AI extraction did not return SUCCESS"
+            )
             fail_analysis(db, analysis.id, err_msg)
             if analysis.trigger_source == "USER_SUBMIT" and analysis.user_id:
                 await websocket_manager.broadcast_analysis_update(
@@ -232,30 +239,52 @@ async def process_analysis_run(
                 )
             return analysis
 
-        data = resp_json.get("data", {})
+        data = resp_json.get("data")
+        if not isinstance(data, dict):
+            data = {}
 
         # 3. Ánh xạ response vào Database
         video = db.get(Video, analysis.video_id) if analysis.video_id else None
-        if video and "video" in data:
-            v_info = data["video"]
-            video.duration_seconds = v_info.get("duration_seconds")
-            video.file_size_mb = v_info.get("file_size_mb")
-            if "title" in v_info and not video.title:
+        v_info = data.get("video")
+        if video and isinstance(v_info, dict):
+            if v_info.get("duration_seconds") is not None:
+                video.duration_seconds = v_info.get("duration_seconds")
+            if v_info.get("file_size_mb") is not None:
+                video.file_size_mb = v_info.get("file_size_mb")
+            if v_info.get("title") and not video.title:
                 video.title = v_info.get("title")
 
         if video and "transcript" in data:
-            t_info = data["transcript"]
-            transcript_text = t_info.get("text")
+            t_info = data.get("transcript")
+            transcript_text = None
+            if isinstance(t_info, dict):
+                transcript_text = t_info.get("text")
+            elif isinstance(t_info, str):
+                transcript_text = t_info
             video.transcript = transcript_text
             video.transcript_text = transcript_text
 
         result_place = None
         restaurant_data = data.get("restaurant")
-        if restaurant_data and restaurant_data.get("name"):
+        if restaurant_data and isinstance(restaurant_data, dict) and restaurant_data.get("name"):
             rest_name = restaurant_data.get("name")
             rest_addr = restaurant_data.get("address") or ""
-            confidence_status = restaurant_data.get("confidence_status", "MEDIUM")
+            raw_conf = str(restaurant_data.get("confidence_status") or "MEDIUM").strip().upper()
+            conf_map = {
+                "CAO": "HIGH",
+                "HIGH": "HIGH",
+                "TRUNG BÌNH": "MEDIUM",
+                "TRUNG BINH": "MEDIUM",
+                "VỪA": "MEDIUM",
+                "VUA": "MEDIUM",
+                "MEDIUM": "MEDIUM",
+                "THẤP": "LOW",
+                "THAP": "LOW",
+                "LOW": "LOW",
+            }
+            confidence_status = conf_map.get(raw_conf, "MEDIUM")
             evidence_sources = restaurant_data.get("evidence_sources") or []
+            evidence = restaurant_data.get("evidence")
 
             # Geocode địa chỉ qua ArcGIS
             lat, lon, norm_addr = await ArcGISGeocoder.geocode_address(rest_addr, client=http_client)
@@ -283,12 +312,12 @@ async def process_analysis_run(
                     location=loc_wkt,
                     latitude=lat,
                     longitude=lon,
-                    category=restaurant_data.get("category"),
+                    category=restaurant_data.get("category") or "Quán ăn",
                 )
                 db.add(result_place)
                 db.flush()
 
-            # Tạo video_place_matches
+            # Tạo hoặc cập nhật video_place_matches
             if video and result_place:
                 match_existing = db.scalar(
                     select(VideoPlaceMatch).where(
@@ -302,8 +331,15 @@ async def process_analysis_run(
                         place_id=result_place.id,
                         confidence_status=confidence_status,
                         evidence_sources=evidence_sources,
+                        evidence=evidence,
                     )
                     db.add(match)
+                else:
+                    match_existing.confidence_status = confidence_status
+                    if evidence_sources:
+                        match_existing.evidence_sources = evidence_sources
+                    if evidence:
+                        match_existing.evidence = evidence
 
         # 4. complete_analysis
         analysis = complete_analysis(
@@ -311,7 +347,7 @@ async def process_analysis_run(
             analysis_run_id=analysis.id,
             result_place_id=result_place.id if result_place else None,
             keyframes_data=data.get("keyframes"),
-            ocr_data=data.get("frames_ocr_details"),
+            ocr_data=data.get("frames_ocr_details") or data.get("ocr_data"),
             execution_metrics=data.get("execution_metrics"),
         )
 
