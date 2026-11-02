@@ -38,6 +38,8 @@ Thumbs.db
 # AI / Agents
 .agent/
 .agents/
+AGENTS.md
+ecc-install.json
 
 # Temporary files
 *.tmp
