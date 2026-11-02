@@ -10,9 +10,14 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.models.user import User
 
-
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="/api/v1/auth/login"
+    tokenUrl="/api/v1/auth/login",
+    auto_error=True,
+)
+
+oauth2_scheme_optional = OAuth2PasswordBearer(
+    tokenUrl="/api/v1/auth/login",
+    auto_error=False,
 )
 
 
@@ -34,7 +39,6 @@ def get_current_user(
         )
 
         user_id = payload.get("sub")
-
         if not user_id:
             raise credentials_exception
 
@@ -44,8 +48,32 @@ def get_current_user(
         raise credentials_exception
 
     user = db.get(User, user_uuid)
-
     if user is None or not user.is_active:
         raise credentials_exception
 
     return user
+
+
+def get_optional_current_user(
+    token: str | None = Depends(oauth2_scheme_optional),
+    db: Session = Depends(get_db),
+) -> User | None:
+    if not token:
+        return None
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM],
+        )
+        user_id = payload.get("sub")
+        if not user_id:
+            return None
+        user_uuid = UUID(user_id)
+        user = db.get(User, user_uuid)
+        if user and user.is_active:
+            return user
+        return None
+    except Exception:
+        return None

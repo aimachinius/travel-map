@@ -3,10 +3,11 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
 import './Register.css'
-import { registerUser } from '../mocks/mockAuth'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Register() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+  const { register } = useAuth()
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -17,55 +18,56 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  
-const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-  setError('')
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError('')
 
-  if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
-    setError('Vui lòng điền đầy đủ thông tin.')
-    return
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    setError('Email không hợp lệ.')
-    return
-  }
-
-  if (password.length < 8) {
-    setError('Mật khẩu phải có ít nhất 8 ký tự.')
-    return
-  }
-
-  if (password !== confirmPassword) {
-    setError('Mật khẩu xác nhận không khớp.')
-    return
-  }
-
-  if (!agreed) {
-    setError('Vui lòng đồng ý với điều khoản sử dụng.')
-    return
-  }
-
-  setLoading(true)
-
-  try {
-    const result = registerUser(fullName, email, password)
-
-    if (!result.success) {
-      setError(result.message)
+    if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
+      setError('Vui lòng điền đầy đủ thông tin.')
       return
     }
 
-    setError('')
-    alert('Đăng ký thành công! Bạn có thể đăng nhập.')
-    navigate('/login')
-  } catch {
-    setError('Đã xảy ra lỗi. Vui lòng thử lại.')
-  } finally {
-    setLoading(false)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Email không hợp lệ.')
+      return
+    }
+
+    if (password.length < 8) {
+      setError('Mật khẩu phải có ít nhất 8 ký tự.')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp.')
+      return
+    }
+
+    if (!agreed) {
+      setError('Vui lòng đồng ý với điều khoản sử dụng.')
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const generatedUsername =
+        email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '') +
+        Math.floor(100 + Math.random() * 900)
+
+      await register({
+        username: generatedUsername,
+        email: email.trim().toLowerCase(),
+        password,
+        full_name: fullName.trim(),
+      })
+
+      navigate('/explore')
+    } catch (err: any) {
+      setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
 
   return (

@@ -2,7 +2,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
-import { loginUser } from '../mocks/mockAuth'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -13,48 +13,31 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-  setError('')
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError('')
 
-  if (!email.trim() || !password) {
-    setError('Vui lòng nhập đầy đủ email và mật khẩu.')
-    return
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    setError('Email không đúng định dạng.')
-    return
-  }
-
-  setLoading(true)
-
-  try {
-    const result = loginUser(email, password)
-
-    if (!result.success) {
-      setError(result.message)
+    if (!email.trim() || !password) {
+      setError('Vui lòng nhập đầy đủ email và mật khẩu.')
       return
     }
 
-    // Nếu đã chọn ghi nhớ đăng nhập, giữ phiên đăng nhập.
-    // Nếu không, vẫn giữ phiên hiện tại trong phiên làm việc này.
-    if (!rememberMe) {
-      sessionStorage.setItem(
-        'foodspot_mock_session',
-        JSON.stringify(result.user)
-      )
-      localStorage.removeItem('foodspot_mock_session')
-    }
+    setLoading(true)
 
-    navigate('/home')
-  } catch {
-    setError('Đã xảy ra lỗi. Vui lòng thử lại.')
-  } finally {
-    setLoading(false)
+    try {
+      await login({
+        username_or_email: email.trim(),
+        password,
+      })
+      navigate('/explore')
+    } catch (err: any) {
+      setError(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
 
   return (

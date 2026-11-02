@@ -1,8 +1,16 @@
-
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    JSON,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.session import Base
@@ -11,13 +19,22 @@ from app.db.session import Base
 class AnalysisRun(Base):
     __tablename__ = "analysis_runs"
 
+    __table_args__ = (
+        Index(
+            "ix_analysis_runs_status_priority_created",
+            "status",
+            "priority",
+            "created_at",
+        ),
+    )
+
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True,
         default=uuid.uuid4,
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"),
-        nullable=False,
+        nullable=True,
         index=True,
     )
     video_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -34,6 +51,28 @@ class AnalysisRun(Base):
         default="PENDING",
         nullable=False,
         index=True,
+    )
+    trigger_source: Mapped[str] = mapped_column(
+        String(50),
+        default="USER_SUBMIT",
+        nullable=False,
+    )
+    priority: Mapped[int] = mapped_column(
+        Integer,
+        default=1,
+        nullable=False,
+    )
+    keyframes_data: Mapped[dict | list | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+    ocr_data: Mapped[dict | list | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+    execution_metrics: Mapped[dict | None] = mapped_column(
+        JSON,
+        nullable=True,
     )
     result_place_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("places.id", ondelete="SET NULL"),

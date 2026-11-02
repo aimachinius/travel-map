@@ -185,9 +185,17 @@ export default function FoodSpotLanding() {
     className="fs-leaflet-map"
   >
     <TileLayer
-  attribution='&copy; OpenStreetMap contributors &copy; CARTO'
-  url={`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`}
-/>
+      attribution={
+        import.meta.env.VITE_CARTO_API_KEY
+          ? '&copy; OpenStreetMap contributors &copy; CARTO'
+          : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }
+      url={
+        import.meta.env.VITE_CARTO_API_KEY
+          ? `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`
+          : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      }
+    />
 
     <MapFocus
       lat={spots[selected].lat}

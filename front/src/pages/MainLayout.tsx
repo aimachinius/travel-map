@@ -1,6 +1,7 @@
 
 import { useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import './MainLayout.css'
 
 const menuItems = [
@@ -22,6 +23,7 @@ export default function MainLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
 
   return (
     <div className="explore-page">
@@ -74,15 +76,44 @@ export default function MainLayout({
             {sidebarOpen && <span>Settings</span>}
           </button>
 
-          <div className="sidebar-profile">
-            <div className="profile-avatar">U</div>
-            {sidebarOpen && (
-              <div className="profile-info">
-                <strong>Your account</strong>
-                <span>Food Spot member</span>
+          {user ? (
+            <div
+              className="sidebar-profile"
+              onClick={() => {
+                if (window.confirm('Bạn có muốn đăng xuất không?')) {
+                  logout()
+                  navigate('/login')
+                }
+              }}
+              style={{ cursor: 'pointer' }}
+              title="Nhấn để đăng xuất"
+            >
+              <div className="profile-avatar">
+                {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase()}
               </div>
-            )}
-          </div>
+              {sidebarOpen && (
+                <div className="profile-info">
+                  <strong>{user.full_name || user.username}</strong>
+                  <span>Đăng xuất</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              className="sidebar-profile"
+              onClick={() => navigate('/login')}
+              style={{ cursor: 'pointer' }}
+              title="Đăng nhập"
+            >
+              <div className="profile-avatar">?</div>
+              {sidebarOpen && (
+                <div className="profile-info">
+                  <strong>Khách</strong>
+                  <span style={{ color: '#10b981' }}>Đăng nhập</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </aside>
 
