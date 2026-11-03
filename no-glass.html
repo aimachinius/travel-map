@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Player - Phiên Bản Tối Giản Hiệu Năng Cao (No Liquid Glass)</title>
+  <meta name="description" content="Phiên bản không sử dụng Liquid Glass, tối ưu 100% hiệu năng phần cứng, 60-144 FPS mượt mà tuyệt đối để so sánh hiệu năng.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       HIỆU NĂNG TỐI CAO - KHÔNG SỬ DỤNG LIQUID GLASS
+       - 0% Backdrop-filter
+       - 0% CSS Blur
+       - 100% Màu Solid OLED & Hardware Composited
+       ========================================================================== */
+    :root {
+      --bg-primary: #0a0c14;
+      --bg-surface: #141724;
+      --bg-surface-elevated: #1e2235;
+      --border-color: #272d42;
+      --border-focus: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-color: #fe2c55;
+      --accent-hover: #e02449;
+      --success-color: #10b981;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    /* Header & Navigation */
+    .app-header {
+      position: fixed;
+      top: 28px;
+      left: 48px;
+      right: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      pointer-events: auto;
+    }
+
+    .brand-badge svg {
+      color: var(--accent-color);
+    }
+
+    /* Live FPS Monitor & Switcher Bar */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .fps-monitor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .fps-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success-color);
+      box-shadow: 0 0 8px var(--success-color);
+    }
+
+    .fps-value {
+      color: var(--success-color);
+    }
+
+    .switch-mode-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .switch-mode-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    /* Layout Viewport */
+    .main-viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px 72px;
+      position: relative;
+      z-index: 5;
+    }
+
+    /* Controls Area (Bottom-Left) */
+    .controls-area {
+      position: fixed;
+      left: 56px;
+      bottom: 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 50;
+    }
+
+    /* Preset Chips */
+    .preset-chips-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chips-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .chips-list {
+      display: flex;
+      gap: 8px;
+    }
+
+    .preset-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .preset-chip:hover {
+      background: var(--bg-surface-elevated);
+      color: #ffffff;
+      border-color: #3b82f6;
+      transform: translateY(-2px);
+    }
+
+    .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #3b82f6;
+    }
+
+    /* Input & Search Group */
+    .input-action-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .input-pill-wrapper {
+      width: 440px;
+      height: 56px;
+      border-radius: 9999px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      padding: 0 16px 0 20px;
+      gap: 12px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input-pill-wrapper:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .input-icon-slot {
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .video-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .video-input::placeholder {
+      color: rgba(148, 163, 184, 0.6);
+    }
+
+    .clear-btn, .paste-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .clear-btn:hover, .paste-btn:hover {
+      color: #ffffff;
+      background: #334155;
+    }
+
+    .search-btn-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 4px 12px rgba(254, 44, 85, 0.35);
+    }
+
+    .search-btn-circle:hover {
+      background: var(--accent-hover);
+      transform: scale(1.06);
+    }
+
+    .search-btn-circle:active {
+      transform: scale(0.96);
+    }
+
+    .helper-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-left: 12px;
+    }
+
+    .status-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success-color);
+    }
+
+    /* Video Frame (Right-Side 9:16 Minimal Frame) */
+    .video-display-area {
+      margin-left: auto;
+      margin-right: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .minimal-phone-frame {
+      height: min(675px, 85vh);
+      width: calc(min(675px, 85vh) * 9 / 16);
+      min-width: 320px;
+      background: #111420;
+      border: 2px solid var(--border-color);
+      border-radius: 40px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .device-notch {
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .speaker-grill {
+      width: 44px;
+      height: 4px;
+      background: #272d42;
+      border-radius: 9999px;
+    }
+
+    .lens-dot {
+      width: 6px;
+      height: 6px;
+      background: #000000;
+      border: 1px solid #334155;
+      border-radius: 50%;
+    }
+
+    .inner-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #000000;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Native Video Player */
+    .tiktok-player-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #000000;
+      display: none;
+    }
+
+    /* Empty & Loading States */
+    .screen-state {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .screen-state.active {
+      display: flex;
+    }
+
+    .empty-state svg {
+      color: var(--accent-color);
+      margin-bottom: 16px;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 240px;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: var(--accent-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Floating Controls */
+    .frame-floating-controls {
+      position: absolute;
+      right: -52px;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .frame-action-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .frame-action-btn:hover {
+      background: var(--bg-surface-elevated);
+      color: #ffffff;
+      border-color: #3b82f6;
+    }
+
+    /* Toast Notification */
+    .toast-notification {
+      position: fixed;
+      top: 32px;
+      right: 48px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 200;
+      transform: translateY(-80px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast-notification.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .toast-msg {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Shake Error */
+    .shake-error {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      border-color: #ef4444 !important;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-badge">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+        <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-2.891 2.892 2.896 2.896 0 0 1-2.892-2.892 2.896 2.896 0 0 1 2.892-2.892c.32 0 .627.054.912.152V9.45a6.34 6.34 0 0 0-.912-.066 6.341 6.341 0 0 0-6.335 6.34 6.341 6.341 0 0 0 6.335 6.341 6.341 6.341 0 0 0 6.336-6.341V8.653a8.17 8.17 0 0 0 4.887 1.602V6.81a4.832 4.832 0 0 1-1.117-.124z"/>
+      </svg>
+      <span>TikTok Native Player (No Glass)</span>
+    </div>
+
+    <!-- Live Performance Benchmark -->
+    <div class="header-actions">
+      <div class="fps-monitor-badge" title="Đo FPS và thời gian render thực tế của trình duyệt">
+        <span class="fps-dot" id="fpsDot"></span>
+        <span>FPS: <strong class="fps-value" id="fpsVal">60</strong></span>
+        <span style="color: var(--text-muted); font-weight: normal;" id="frameTimeVal">16.6ms</span>
+      </div>
+
+      <a href="./index.html" class="switch-mode-btn" title="Chuyển sang bản có hiệu ứng Liquid Glass">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>✨ Liquid Glass Tối Giản</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Viewport -->
+  <main class="main-viewport">
+    
+    <!-- Controls Area: Bottom-Left -->
+    <section class="controls-area">
+      
+      <!-- Preset Chips -->
+      <div class="preset-chips-container">
+        <span class="chips-label">Thử nhanh:</span>
+        <div class="chips-list">
+          <button type="button" class="preset-chip" data-url="https://www.tiktok.com/@khaby.lame/video/7217349141872119045">
+            <span class="chip-dot"></span>Khaby Lame
+          </button>
+          <button type="button" class="preset-chip" data-url="https://www.tiktok.com/@scout2015/video/6718335390845095173">
+            <span class="chip-dot"></span>Scout Puppy
+          </button>
+          <button type="button" class="preset-chip" data-url="https://www.tiktok.com/@tiktok/video/7106594312292453678">
+            <span class="chip-dot"></span>Trending 1
+          </button>
+        </div>
+      </div>
+
+      <!-- Input & Search -->
+      <form class="input-action-group" id="searchForm" onsubmit="return false;">
+        <div class="input-pill-wrapper" id="inputWrapper">
+          <div class="input-icon-slot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          <input type="text" id="videoUrlInput" class="video-input" placeholder="Dán link video TikTok vào đây..." autocomplete="off">
+          <button type="button" class="clear-btn" id="clearBtn" style="display: none;" title="Xóa">✕</button>
+          <button type="button" class="paste-btn" id="pasteBtn" title="Dán liên kết">📋</button>
+        </div>
+
+        <button type="submit" class="search-btn-circle" id="searchBtn" title="Tìm kiếm & Phát ngay">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </form>
+
+      <div class="helper-status">
+        <span class="status-pulse-dot"></span>
+        <span>Giải mã phần cứng 100% Native Video • Không tốn GPU Composite</span>
+      </div>
+    </section>
+
+    <!-- Right Side 9:16 Minimal Frame -->
+    <section class="video-display-area">
+      <div class="minimal-phone-frame" id="phoneFrame">
+        
+        <div class="device-notch">
+          <div class="speaker-grill"></div>
+          <div class="lens-dot"></div>
+        </div>
+
+        <div class="inner-screen" id="innerScreen">
+          
+          <!-- State 1: Empty -->
+          <div class="screen-state empty-state active" id="emptyState">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+              <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-2.891 2.892 2.896 2.896 0 0 1-2.892-2.892 2.896 2.896 0 0 1 2.892-2.892c.32 0 .627.054.912.152V9.45a6.34 6.34 0 0 0-.912-.066 6.341 6.341 0 0 0-6.335 6.34 6.341 6.341 0 0 0 6.335 6.341 6.341 6.341 0 0 0 6.336-6.341V8.653a8.17 8.17 0 0 0 4.887 1.602V6.81a4.832 4.832 0 0 1-1.117-.124z"/>
+            </svg>
+            <h2 class="empty-title">Trình phát Tối giản</h2>
+            <p class="empty-desc">Chọn video mẫu bên dưới hoặc dán liên kết để phát mượt mà ở 60-144 FPS.</p>
+          </div>
+
+          <!-- State 2: Loading -->
+          <div class="screen-state loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p style="font-size: 14px; color: var(--text-muted);">Đang kết nối luồng .MP4...</p>
+          </div>
+
+          <!-- State 3: Native Video -->
+          <video 
+            id="nativePlayer" 
+            class="tiktok-player-video" 
+            autoplay 
+            controls 
+            playsinline 
+            loop 
+            preload="auto"
+          ></video>
+
+        </div>
+      </div>
+
+      <!-- Floating Controls -->
+      <div class="frame-floating-controls">
+        <button type="button" class="frame-action-btn" id="refreshBtn" title="Tải lại">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"></path>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="frame-action-btn" id="openExternalBtn" title="Mở TikTok">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast-notification" id="toastNotification" role="alert">
+    <div>
+      <div class="toast-title" id="toastTitle">Thông báo</div>
+      <div class="toast-msg" id="toastMsg">Tin nhắn thông báo</div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. REAL-TIME FPS & PERFORMANCE MONITOR (60-144 FPS)
+    // =========================================================================
+    const fpsVal = document.getElementById('fpsVal');
+    const frameTimeVal = document.getElementById('frameTimeVal');
+    const fpsDot = document.getElementById('fpsDot');
+
+    let lastFrameTime = performance.now();
+    let frameCount = 0;
+    let fpsHistory = [];
+
+    function updateFps(now) {
+      const delta = now - lastFrameTime;
+      lastFrameTime = now;
+      const currentFps = Math.min(240, Math.round(1000 / (delta || 16.6)));
+
+      fpsHistory.push(currentFps);
+      if (fpsHistory.length > 20) fpsHistory.shift();
+
+      const avgFps = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+
+      frameCount++;
+      if (frameCount % 10 === 0) {
+        fpsVal.textContent = avgFps;
+        frameTimeVal.textContent = `${delta.toFixed(1)}ms`;
+
+        if (avgFps >= 55) {
+          fpsVal.style.color = '#10b981';
+          fpsDot.style.background = '#10b981';
+          fpsDot.style.boxShadow = '0 0 8px #10b981';
+        } else if (avgFps >= 35) {
+          fpsVal.style.color = '#f59e0b';
+          fpsDot.style.background = '#f59e0b';
+          fpsDot.style.boxShadow = '0 0 8px #f59e0b';
+        } else {
+          fpsVal.style.color = '#ef4444';
+          fpsDot.style.background = '#ef4444';
+          fpsDot.style.boxShadow = '0 0 8px #ef4444';
+        }
+      }
+
+      requestAnimationFrame(updateFps);
+    }
+    requestAnimationFrame(updateFps);
+
+    // =========================================================================
+    // 2. VIDEO STREAMING & APP LOGIC
+    // =========================================================================
+    const videoUrlInput = document.getElementById('videoUrlInput');
+    const inputWrapper = document.getElementById('inputWrapper');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchForm = document.getElementById('searchForm');
+    const clearBtn = document.getElementById('clearBtn');
+    const pasteBtn = document.getElementById('pasteBtn');
+    const nativePlayer = document.getElementById('nativePlayer');
+    const emptyState = document.getElementById('emptyState');
+    const loadingState = document.getElementById('loadingState');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const openExternalBtn = document.getElementById('openExternalBtn');
+    const toastNotification = document.getElementById('toastNotification');
+    const toastTitle = document.getElementById('toastTitle');
+    const toastMsg = document.getElementById('toastMsg');
+    const presetChips = document.querySelectorAll('.preset-chip');
+
+    let currentUrl = '';
+    let toastTimer = null;
+
+    videoUrlInput.addEventListener('input', () => {
+      clearBtn.style.display = videoUrlInput.value.trim() ? 'block' : 'none';
+      inputWrapper.classList.remove('shake-error');
+    });
+
+    clearBtn.addEventListener('click', () => {
+      videoUrlInput.value = '';
+      clearBtn.style.display = 'none';
+      videoUrlInput.focus();
+    });
+
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          videoUrlInput.value = text.trim();
+          clearBtn.style.display = 'block';
+          handleSearch();
+        }
+      } catch (err) {
+        showToast('Lỗi dán', 'Hãy dùng Ctrl+V để dán liên kết.');
+      }
+    });
+
+    presetChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        videoUrlInput.value = chip.dataset.url;
+        clearBtn.style.display = 'block';
+        handleSearch();
+      });
+    });
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleSearch();
+    });
+
+    searchBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleSearch();
+    });
+
+    async function handleSearch() {
+      const url = videoUrlInput.value.trim();
+      if (!url) {
+        triggerError('Vui lòng nhập liên kết video TikTok.');
+        return;
+      }
+
+      currentUrl = url;
+      openExternalBtn.href = url.startsWith('http') ? url : `https://www.tiktok.com/@tiktok/video/${url}`;
+
+      // Switch to loading
+      emptyState.classList.remove('active');
+      loadingState.classList.add('active');
+      nativePlayer.style.display = 'none';
+      nativePlayer.pause();
+      nativePlayer.src = '';
+
+      showToast('Đang kết nối', 'Đang trích xuất luồng .MP4 trực tiếp...');
+
+      try {
+        let streamUrl = null;
+
+        // Direct .mp4
+        if (url.toLowerCase().includes('.mp4')) {
+          streamUrl = url;
+        } else {
+          // TikWM API
+          const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`;
+          const res = await fetch(apiUrl, { mode: 'cors' });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.code === 0 && data.data && data.data.play) {
+              streamUrl = data.data.play;
+            }
+          }
+        }
+
+        if (streamUrl) {
+          loadingState.classList.remove('active');
+          nativePlayer.style.display = 'block';
+          nativePlayer.src = streamUrl;
+
+          nativePlayer.play().then(() => {
+            showToast('Đang phát', 'Video chạy mượt ở 60-144 FPS phần cứng (0% overhead).');
+          }).catch(() => {
+            nativePlayer.muted = true;
+            nativePlayer.play();
+            showToast('Đang phát', 'Đã tắt tiếng để tự động phát, bật loa trên video để nghe.');
+          });
+        } else {
+          throw new Error('Không thể lấy luồng video');
+        }
+      } catch (err) {
+        loadingState.classList.remove('active');
+        emptyState.classList.add('active');
+        triggerError('Không thể trích xuất luồng MP4 từ liên kết này.');
+      }
+    }
+
+    refreshBtn.addEventListener('click', () => {
+      if (currentUrl) handleSearch();
+    });
+
+    function triggerError(msg) {
+      inputWrapper.classList.remove('shake-error');
+      void inputWrapper.offsetWidth;
+      inputWrapper.classList.add('shake-error');
+      showToast('Lỗi', msg);
+    }
+
+    function showToast(title, msg) {
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTitle.textContent = title;
+      toastMsg.textContent = msg;
+      toastNotification.classList.add('show');
+      toastTimer = setTimeout(() => {
+        toastNotification.classList.remove('show');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Liquid Glass Player</title>
+  <meta name="description" content="Trải nghiệm trình phát video TikTok với phong cách giao diện Liquid Glass (kính thể lỏng) hiện đại và sang trọng.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script type="module" crossorigin src="/assets/index-C9ohVVDE.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CgpM0fSi.css">
+</head>
+<body>
+  <!-- Leaflet.js + OpenStreetMap (OSM) Live Interactive Background -->
+  <div class="map-background-container" id="mapBackground" aria-label="Bản đồ tương tác OpenStreetMap"></div>
+  <div class="map-dark-overlay"></div>
+
+  <!-- Header / Brand Accent & Performance Switcher -->
+  <header class="app-header">
+    <div class="brand-badge liquid-glass">
+      <svg class="tiktok-mark" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+        <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-2.891 2.892 2.896 2.896 0 0 1-2.892-2.892 2.896 2.896 0 0 1 2.892-2.892c.32 0 .627.054.912.152V9.45a6.34 6.34 0 0 0-.912-.066 6.341 6.341 0 0 0-6.335 6.34 6.341 6.341 0 0 0 6.335 6.341 6.341 6.341 0 0 0 6.336-6.341V8.653a8.17 8.17 0 0 0 4.887 1.602V6.81a4.832 4.832 0 0 1-1.117-.124z"/>
+      </svg>
+      <span>TikTok Liquid Glass</span>
+    </div>
+
+    <!-- Live Performance Benchmark & Mode Switcher -->
+    <div class="header-actions">
+      <!-- Leaflet OSM Controls -->
+      <button type="button" class="map-action-badge liquid-glass" id="mapCityBtn" title="Bấm để bay đến thành phố khác trên bản đồ OpenStreetMap">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
+          <line x1="9" y1="3" x2="9" y2="18"></line>
+          <line x1="15" y1="6" x2="15" y2="21"></line>
+        </svg>
+        <span id="mapCityLabel">Tokyo 🇯🇵</span>
+      </button>
+
+      <button type="button" class="map-action-badge liquid-glass" id="mapStyleBtn" title="Chuyển đổi giao diện bản đồ: OSM Dark / OSM Standard">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <span id="mapStyleLabel">OSM Dark</span>
+      </button>
+
+      <div class="fps-monitor-badge liquid-glass" title="Đo FPS và thời gian render thực tế">
+        <span class="fps-dot" id="fpsDot"></span>
+        <span>FPS: <strong class="fps-value" id="fpsVal">60</strong></span>
+        <span style="color: rgba(255, 255, 255, 0.5); font-size: 11px;" id="frameTimeVal">16.6ms</span>
+      </div>
+
+      <a href="./no-glass.html" class="switch-mode-btn liquid-glass" title="Chuyển sang bản tối giản không dùng Liquid Glass để so sánh hiệu năng">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>⚡ Thử Bản Không Kính (So sánh)</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Left Floating Dock (Z:30) as per Spec v2.1.0 -->
+  <aside class="left-floating-dock" aria-label="Cụm phím tác vụ nhanh">
+    <!-- 1. Liked Videos -->
+    <button type="button" class="glass-circle-btn liquid-glass" id="likedVideosBtn" title="Các video đã thích" aria-label="Video yêu thích">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span class="dock-tooltip">Video đã thích</span>
+    </button>
+    
+    <!-- 2. Liked Places -->
+    <button type="button" class="glass-circle-btn liquid-glass" id="likedPlacesBtn" title="Các địa điểm đã thích" aria-label="Địa điểm yêu thích">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+      <span class="dock-tooltip">Địa điểm đã lưu</span>
+    </button>
+    
+    <!-- 3. Analysis History -->
+    <button type="button" class="glass-circle-btn liquid-glass" id="analysisHistoryBtn" title="Lịch sử phân tích" aria-label="Lịch sử phân tích">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="1 4 1 10 7 10"></polyline>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span class="dock-tooltip">Lịch sử phân tích</span>
+    </button>
+  </aside>
+
+  <!-- Main Viewport Layout -->
+  <main class="main-viewport">
+    
+    <!-- Controls Area: Fixed Bottom-Left as per Spec -->
+    <section class="controls-area" aria-label="Khu vực điều khiển và nhập liệu">
+      
+      <!-- Preset Quick-Select Chips -->
+      <div class="preset-chips-container">
+        <span class="chips-label">Thử nhanh:</span>
+        <div class="chips-list">
+          <button type="button" class="preset-chip liquid-glass" data-url="https://www.tiktok.com/@ohmwts/video/7339739506692984070">
+            <span class="chip-dot" style="background: #ff007f; box-shadow: 0 0 6px #ff007f;"></span>🍜 Hokkaido
+          </button>
+          <button type="button" class="preset-chip liquid-glass" data-url="https://www.tiktok.com/@tiktok/video/7106594312292453678">
+            <span class="chip-dot"></span>Trending 1
+          </button>
+          <button type="button" class="preset-chip liquid-glass" data-url="https://www.tiktok.com/@khaby.lame/video/7217349141872119045">
+            <span class="chip-dot"></span>Trending 2
+          </button>
+          <button type="button" class="preset-chip liquid-glass" data-url="https://www.tiktok.com/@zachking/video/6768504823336881414">
+            <span class="chip-dot"></span>Zach King
+          </button>
+        </div>
+      </div>
+
+      <!-- Pill Input & Circular Search Button Row -->
+      <form class="input-action-group" id="searchForm" onsubmit="return false;">
+        
+        <!-- Liquid Glass Pill Input -->
+        <div class="input-pill-wrapper liquid-glass" id="inputWrapper">
+          <div class="input-icon-slot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="link-svg">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </div>
+          
+          <input 
+            type="text" 
+            id="videoUrlInput" 
+            class="video-input" 
+            placeholder="link video" 
+            autocomplete="off" 
+            spellcheck="false" 
+            aria-label="Đường dẫn video TikTok"
+          />
+          
+          <button type="button" class="clear-btn" id="clearBtn" title="Xóa nội dung" aria-label="Xóa nội dung" style="display: none;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
+          <button type="button" class="paste-btn" id="pasteBtn" title="Dán từ bộ nhớ tạm" aria-label="Dán liên kết">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Liquid Glass Circular Search Button -->
+        <button type="submit" class="search-btn-circle liquid-glass" id="searchBtn" title="Tìm kiếm & Tải Video" aria-label="Tìm kiếm">
+          <div class="search-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="search-svg">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <span class="sr-only">search</span>
+        </button>
+
+      </form>
+
+      <!-- Status Indicator / Instruction text -->
+      <div class="helper-status" id="helperStatus">
+        <span class="status-pulse-dot"></span>
+        <span class="status-message">Hỗ trợ link tiktok.com/@user/video/... hoặc nhập Video ID</span>
+      </div>
+    </section>
+
+    <!-- Video Display Area: Right Side 9:16 Frame as per Spec -->
+    <section class="video-display-area" aria-label="Khung hiển thị Video TikTok">
+      
+      <!-- Khung viền Liquid Glass (is-empty: Kính mỏng trong suốt | is-playing: Khung phát sáng) -->
+      <div class="liquid-glass-bezel is-empty" id="phoneFrame">
+        
+        <!-- Lớp 1: Nguồn ánh xạ màu từ video (Chỉ hiển thị viền ngoài khi phát video, 0% màu khi chờ) -->
+        <div class="ambient-glow-wrapper" id="ambientWrapper" style="opacity: 0;">
+          <div class="ambient-glow-gradient" id="ambientGradient"></div>
+          <canvas id="ambient-glass" class="ambient-canvas" width="72" height="128"></canvas>
+        </div>
+
+        <!-- Lớp 2: Bề mặt khúc xạ & Phản quang của kính (Liquid Glass Texture) -->
+        <div class="glass-surface-overlay">
+          <!-- Subtle Realistic Glass Device Accents -->
+          <div class="device-notch">
+            <div class="speaker-grill"></div>
+            <div class="lens-dot"></div>
+          </div>
+        </div>
+
+        <!-- Lớp 3: Khung phát Video TikTok (is-empty: Kính trong suốt xuyên thấu | is-playing: Nền #000) -->
+        <div class="video-screen is-empty" id="innerScreen">
+          
+          <!-- State 1: Empty / Standby State (Lớp kính mỏng trong suốt xuyên thấu 100% nhìn xuống map) -->
+          <div class="screen-state empty-state active" id="emptyState"></div>
+
+          <!-- State 2: Loading / Shimmer State -->
+          <div class="screen-state loading-state" id="loadingState">
+            <div class="shimmer-scanner"></div>
+            <div class="liquid-spinner">
+              <div class="spinner-ring ring-outer"></div>
+              <div class="spinner-ring ring-inner"></div>
+            </div>
+            <p class="loading-label">Đang nạp video TikTok...</p>
+          </div>
+
+          <!-- State 3: Active Video State (Direct Hardware .MP4 + Iframe Fallback) -->
+          <div class="screen-state video-state" id="videoState">
+            <video 
+              id="tiktokVideoPlayer" 
+              class="tiktok-player-video" 
+              autoplay 
+              controls 
+              playsinline 
+              loop
+              crossorigin="anonymous"
+              style="width: 100%; height: 100%; object-fit: cover; border-radius: 30px; display: none;">
+            </video>
+            <iframe 
+              id="tiktokIframe" 
+              class="tiktok-player-iframe" 
+              src="" 
+              title="TikTok Video Player" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen
+              style="display: none;"
+            ></iframe>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Right Action Dock: Group 1 (Utilities) & Group 2 (Stream Up/Down) -->
+      <div class="frame-floating-controls" id="frameControls">
+        <!-- Group 1: Utilities -->
+        <button type="button" class="frame-action-btn liquid-glass" id="toggleEngineBtn" title="Chuyển đổi Player MP4 / v1 / v2" aria-label="Đổi Engine">
+          <span class="engine-tag" id="engineTag">MP4</span>
+        </button>
+        <button type="button" class="frame-action-btn liquid-glass" id="refreshVideoBtn" title="Tải lại video" aria-label="Tải lại">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"></path>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="frame-action-btn liquid-glass" id="openExternalBtn" title="Mở trên TikTok" aria-label="Mở trên TikTok">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+        <!-- Vị trí bổ sung 1: Điều hướng Google Maps theo spec v2.1.0 -->
+        <a href="#" target="_blank" rel="noopener noreferrer" class="frame-action-btn liquid-glass" id="googleMapNavBtn" title="Chỉ đường tới địa điểm này trên Google Maps" aria-label="Google Maps">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+          </svg>
+        </a>
+
+        <!-- Group 2: Playlist Stream Controls (Lướt video Lên / Xuống) -->
+        <div class="stream-nav-divider"></div>
+        <button type="button" class="frame-action-btn liquid-glass" id="prevVideoBtn" title="Lướt video lên trên (Mũi tên Lên)" aria-label="Video trước">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="frame-action-btn liquid-glass" id="nextVideoBtn" title="Lướt video xuống dưới (Mũi tên Xuống)" aria-label="Video tiếp">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Liquid Glass Slide-in Drawer (Z:200) for Liked Videos, Places & History -->
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="liquid-glass-drawer liquid-glass" id="liquidDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <div class="drawer-icon-badge" id="drawerIconBadge">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="drawer-title" id="drawerTitle">Danh sách yêu thích</h3>
+          <p class="drawer-subtitle" id="drawerSubtitle">Khám phá nội dung đã lưu</p>
+        </div>
+      </div>
+      <button type="button" class="drawer-close-btn liquid-glass" id="closeDrawerBtn" aria-label="Đóng">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Drawer Content Body -->
+    <div class="drawer-body" id="drawerBody">
+      <!-- Injected cards -->
+    </div>
+  </aside>
+
+  <!-- Liquid Glass Toast Notification -->
+  <div class="toast-notification liquid-glass" id="toastNotification" role="alert">
+    <div class="toast-icon" id="toastIcon"></div>
+    <div class="toast-body">
+      <div class="toast-title" id="toastTitle">Thông báo</div>
+      <div class="toast-msg" id="toastMsg">Tin nhắn thông báo</div>
+    </div>
+  </div>
+
+</body>
+</html>
