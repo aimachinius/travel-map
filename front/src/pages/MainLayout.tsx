@@ -1,3 +1,9 @@
+/**
+ * @deprecated LEGACY LAYOUT - ĐÃ NGƯNG SỬ DỤNG TRONG GIAO DIỆN CHÍNH
+ * Bố cục Sidebar cũ (dùng cho các trang tĩnh như SavedPlaces, SavedVideos cũ).
+ * Hiện tại toàn bộ ứng dụng sử dụng trải nghiệm toàn màn hình Liquid Glass trên /explore.
+ * File này được giữ lại nhằm mục đích tham khảo, không xóa.
+ */
 
 import { useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'

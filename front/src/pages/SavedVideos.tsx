@@ -1,3 +1,9 @@
+/**
+ * @deprecated LEGACY COMPONENT - ĐÃ NGƯNG SỬ DỤNG TRONG ROUTING CHÍNH
+ * Chức năng "Video đã lưu" đã được thay thế bằng ngăn kéo kính thể lỏng (Liquid Drawer: Liked Videos)
+ * trực tiếp trên trang /explore.
+ * File này được giữ lại nhằm mục đích tham khảo mã nguồn cũ, không xóa.
+ */
 
 import MainLayout from './MainLayout'
 import './SavedVideos.css'

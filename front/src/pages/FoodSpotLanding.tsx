@@ -1,231 +1,430 @@
-
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState, useRef } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet'
+import { HOT_WEEKLY_SPOTS, type HotFoodSpot } from '../components/liquid/mockData'
+import CloudTransitionOverlay from '../components/transition/CloudTransitionOverlay'
 import './FoodSpotLanding.css'
+import '../styles/swoosh-transition.css'
 
-
-
-
-const spots = [
-  {
-    name: 'Một tô mì, trọn vị miền Trung',
-    type: 'Món Việt',
-    description: 'Mì Quảng · Bữa trưa đậm đà',
-    image: 'photo-1569718212165-3a8278d5f624',
-    lat: 16.0678,
-    lng: 108.2208,
-  },
-  {
-    name: 'Góc cà phê cho ngày thong thả',
-    type: 'Cà phê',
-    description: 'Cà phê · Một chút bình yên',
-    image: 'photo-1445116572660-236099ec97a0',
-    lat: 16.0614,
-    lng: 108.2232,
-  },
-  {
-    name: 'Hẹn nhau một bữa thật ngon',
-    type: 'Món Việt',
-    description: 'Món Việt · Đi cùng bạn bè',
-    image: 'photo-1504674900247-0877df9cc836',
-    lat: 16.0544,
-    lng: 108.2022,
-  },
+const CATEGORY_ITEMS = [
+  { value: 'Tất cả', label: 'Tất cả món ngon', icon: '🍽️' },
+  { value: 'Ăn Vặt & Đường Phố', label: 'Ăn Vặt & Đường Phố', icon: '🍢' },
+  { value: 'Món Việt & Phở', label: 'Món Việt & Phở', icon: '🍜' },
+  { value: 'Hải Sản Tươi Sống', label: 'Hải Sản Tươi Sống', icon: '🦀' },
+  { value: 'Món Nhật Bản', label: 'Món Nhật Bản', icon: '🍣' },
+  { value: 'Healthy & Eatclean', label: 'Healthy & Eatclean', icon: '🥗' },
 ]
-
-const categories = ['Tất cả', 'Món Việt', 'Cà phê']
 
 function MapFocus({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
 
   useEffect(() => {
-    map.flyTo([lat, lng], 15, { duration: 0.7 })
+    map.flyTo([lat, lng], 14, { duration: 0.75 })
   }, [map, lat, lng])
 
   return null
 }
 
-
 export default function FoodSpotLanding() {
-  const [menu, setMenu] = useState(false)
-  const [category, setCategory] = useState('Tất cả')
-  const [selected, setSelected] = useState(0)
+  const [category, setCategory] = useState<string>('Tất cả')
+  const [isCatDropdownOpen, setIsCatDropdownOpen] = useState<boolean>(false)
+  const catDropdownRef = useRef<HTMLDivElement>(null)
+  const [selectedId, setSelectedId] = useState<string>(HOT_WEEKLY_SPOTS[0].id)
+  const [isCloudActive, setIsCloudActive] = useState<boolean>(false)
+  const [targetDestination, setTargetDestination] = useState<string>('')
+  const [showMapHint, setShowMapHint] = useState<boolean>(true)
 
-  useEffect(() => { 
-    document.title = 'Food Spot — Xem review, tìm quán ngon' 
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    document.title = 'Food Spot — Món Hot Trong Tuần & Bản Đồ Review'
   }, [])
 
-  const visible = spots.map((spot, index) => ({ ...spot, index })).filter(spot => category === 'Tất cả' || spot.type === category)
-  
-  function chooseCategory(value: string) {
+  // Dòng nhắc nhở trên minimap chỉ hiện nhẹ vài giây (3.5s) rồi tự động tắt, không hiện vĩnh viễn
+  useEffect(() => {
+    const hintTimer = setTimeout(() => {
+      setShowMapHint(false)
+    }, 3500)
+    return () => clearTimeout(hintTimer)
+  }, [])
+
+  // Đóng dropdown thể loại khi click ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (catDropdownRef.current && !catDropdownRef.current.contains(e.target as Node)) {
+        setIsCatDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const visible = HOT_WEEKLY_SPOTS.filter(
+    (spot) => category === 'Tất cả' || spot.type === category,
+  )
+
+  const selectedSpot =
+    visible.find((s) => s.id === selectedId) || visible[0] || HOT_WEEKLY_SPOTS[0]
+
+  const chooseCategory = (value: string) => {
     setCategory(value)
-    setSelected(Math.max(0, spots.findIndex(spot => value === 'Tất cả' || spot.type === value)))
+    const firstMatch = HOT_WEEKLY_SPOTS.find(
+      (spot) => value === 'Tất cả' || spot.type === value,
+    )
+    if (firstMatch) {
+      setSelectedId(firstMatch.id)
+    }
+  }
+
+  const pendingSpotRef = useRef<HotFoodSpot | null>(null)
+  const transitionSeqRef = useRef<number>(1)
+
+  // Chuyển sang Bản đồ Review kèm hiệu ứng mây bay xuyên màn hình
+  const handlePlayReview = (spot: HotFoodSpot) => {
+    pendingSpotRef.current = spot
+    transitionSeqRef.current += 1
+    setTargetDestination(`${spot.dishName} (${spot.name})`)
+    setIsCloudActive(true)
+  }
+
+  // Khi mây đã phủ kín hoàn toàn màn hình: chuyển trang sang Bản đồ Review
+  const handleCloudCovered = () => {
+    const spot = pendingSpotRef.current
+    if (spot) {
+      navigate(`/explore?vid=${spot.videoId}`, {
+        state: {
+          targetVideoId: spot.videoId,
+          lat: spot.lat,
+          lng: spot.lng,
+          fromCloudTransition: true,
+          transitionTimestamp: transitionSeqRef.current,
+        },
+      })
+    }
+  }
+
+  // Khi mây đã dạt ra 2 bên hoàn tất: đóng lớp overlay mây
+  const handleCloudRevealed = () => {
+    setIsCloudActive(false)
+    pendingSpotRef.current = null
+  }
+
+  const handleGoToExplore = (e: React.MouseEvent) => {
+    e.preventDefault()
+    handlePlayReview(selectedSpot)
   }
 
   return (
     <div className="fs-page">
-      <a className="fs-skip" href="#fs-main">Đến nội dung chính</a>
-      
-      <header className="fs-header">
-        <div className="fs-container fs-nav">
-          <Link to="/" aria-label="Food Spot — Trang chủ">
-            <img className="fs-logo" src="/food-spot.svg" alt="Food Spot" />
-          </Link>
-          <button 
-            className="fs-menu" 
-            aria-expanded={menu} 
-            aria-controls="fs-navigation" 
-            aria-label={menu ? 'Đóng menu' : 'Mở menu'} 
-            onClick={() => setMenu(!menu)}
-          >
-            <Icon name={menu ? 'close' : 'menu'} />
-          </button>
-          <nav 
-            id="fs-navigation" 
-            className={menu ? 'fs-links open' : 'fs-links'} 
-            aria-label="Điều hướng chính" 
-            onKeyDown={event => { if (event.key === 'Escape') setMenu(false) }}
-          >
-            <a className="fs-current" href="#fs-main" onClick={() => setMenu(false)}>Trang chủ</a>
-            <a href="#discover" onClick={() => { chooseCategory('Tất cả'); setMenu(false); }}>Khám phá</a>
-            <a href="#features" onClick={() => setMenu(false)}>Tính năng</a>
-            <a href="#contact" onClick={() => setMenu(false)}>Liên hệ</a>
-            <div className="fs-auth">
-              <Link to="/login">Đăng nhập</Link>
-              <Link className="fs-button" to="/register">Đăng ký <span>↗</span></Link>
-            </div>
-          </nav>
-        </div>
-      </header>
+      {/* Hiệu ứng chuyển cảnh Mây phủ kín màn hình kéo vào từ 2 bên */}
+      <CloudTransitionOverlay
+        isActive={isCloudActive}
+        destinationName={targetDestination}
+        onCovered={handleCloudCovered}
+        onRevealed={handleCloudRevealed}
+      />
 
       <main id="fs-main">
-        {/* Phần Hero */}
-        <section className="fs-hero fs-container">
-          <div className="fs-hero-copy">
-            <span className="fs-eyebrow"><span /> TỪ MÀN HÌNH ĐẾN ĐIỂM HẸN</span>
-            <h1>Xem review.<br />Tìm quán ngon.<br /><em>Đi thôi!</em></h1>
-            <p>Đừng để quán ngon chỉ nằm trong video đã lưu. Cùng Food Spot khám phá địa điểm ăn uống từ những review bạn yêu thích.</p>
-            <div className="fs-hero-actions">
-              <a className="fs-button" href="#discover">Khám phá ngay <Icon name="arrow" /></a>
-              <a className="fs-text-link" href="#features">Tìm hiểu tính năng ↗</a>
-            </div>
-            <div className="fs-hero-note"><span>⌖</span> Một bản đồ, thêm nhiều trải nghiệm ngon.</div>
-          </div>
-          <div className="fs-hero-visual">
-            <div className="fs-photo">
-              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=85" alt="Bàn ăn với nhiều món ăn đầy màu sắc" />
-              <span className="fs-photo-tag">Ăn ngon, đi cùng nhau.</span>
-            </div>
-            <div className="fs-orbit">ĂN GÌ<br /><b>HÔM NAY?</b><span>↙</span></div>
-            <div className="fs-floating">
-              <span className="fs-floating-icon"><Icon name="pin" /></span>
-              <div>
-                <small>ĐIỂM HẸN TIẾP THEO</small>
-                <strong>Quán ngon trong chiếc review ấy</strong>
-                <span>Từ cảm hứng đến một nơi để ghé.</span>
+          {/* Phần Hero */}
+          <section className="fs-hero fs-container">
+            <div className="fs-hero-copy">
+              <span className="fs-eyebrow">
+                <span /> TỪ MÀN HÌNH ĐẾN ĐIỂM HẸN
+              </span>
+              <h1>
+                Xem review.
+                <br />
+                Tìm quán ngon.
+                <br />
+                <em>Đi thôi!</em>
+              </h1>
+              <p>
+                Đừng để quán ngon chỉ nằm trong video đã lưu. Cùng Food Spot khám phá địa điểm ăn uống
+                từ những review bạn yêu thích.
+              </p>
+              <div className="fs-hero-actions">
+                <Link className="fs-button" to="/explore" onClick={handleGoToExplore}>
+                  Khám phá ngay <Icon name="arrow" />
+                </Link>
+                <a className="fs-text-link" href="#features">
+                  Tìm hiểu tính năng ↗
+                </a>
               </div>
-              <span>↗</span>
+              <div className="fs-hero-note">
+                <span>⌖</span> Một bản đồ, thêm nhiều trải nghiệm ngon.
+              </div>
             </div>
-            <span className="fs-spark">✳</span>
-          </div>
-        </section>
+            <div className="fs-hero-visual">
+              <div className="fs-photo">
+                <img
+                  src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=85"
+                  alt="Bàn ăn với nhiều món ăn đầy màu sắc"
+                />
+                <span className="fs-photo-tag">Ăn ngon, đi cùng nhau.</span>
+              </div>
+              <div className="fs-orbit">
+                ĂN GÌ
+                <br />
+                <b>HÔM NAY?</b>
+                <span>↙</span>
+              </div>
+              <div
+                className="fs-floating"
+                onClick={handleGoToExplore}
+                style={{ cursor: 'pointer' }}
+                title="Bấm để bay vào Bản đồ Review ngay"
+              >
+                <span className="fs-floating-icon">
+                  <Icon name="pin" />
+                </span>
+                <div>
+                  <small>ĐIỂM HẸN TIẾP THEO</small>
+                  <strong>Quán ngon trong chiếc review ấy</strong>
+                  <span>Từ cảm hứng đến một nơi để ghé.</span>
+                </div>
+                <span>↗</span>
+              </div>
+              <span className="fs-spark">✳</span>
+            </div>
+          </section>
 
-        {/* Phần Bản đồ và danh sách quán */}
+        {/* Phần Bản đồ và danh sách Món Hot Trong Tuần */}
         <section id="discover" className="fs-discover">
           <div className="fs-container">
             <div className="fs-section-head">
               <div>
-                
-                <h2>Hôm nay, mình ăn ở đâu?</h2>
+                <span className="fs-eyebrow">🔥 XU HƯỚNG ẨM THỰC TUẦN NÀY</span>
+                <h2>Món Hot Trong Tuần — Ăn là dính!</h2>
+                <p>
+                  Khám phá các tọa độ quán ăn & món ngon đang viral trên TikTok.
+                  Chọn món để xem vị trí, nhấn xem review để bay xuyên mây đến video review chi tiết!
+                </p>
               </div>
-              
             </div>
+
             <div className="fs-demo">
+              {/* CỘT 1: Danh sách món hot trong tuần (thu gọn) */}
               <div className="fs-results">
                 <div className="fs-demo-title">
-                  <h3>Khám phá theo khẩu vị</h3>
+                  <div className="fs-title-group">
+                    <span className="fs-title-badge">HOT TUẦN NÀY</span>
+                    <h3>Món hot đang viral</h3>
+                  </div>
                   <Icon name="compass" />
                 </div>
-                <div className="fs-filters" aria-label="Loại địa điểm">
-                  {categories.map(value => (
-                    <button key={value} aria-pressed={category === value} onClick={() => chooseCategory(value)}>{value}</button>
-                  ))}
+
+                <div className="fs-category-dropdown-container" ref={catDropdownRef}>
+                  <button
+                    type="button"
+                    className={`fs-cat-dropdown-trigger ${isCatDropdownOpen ? 'is-active' : ''}`}
+                    onClick={() => setIsCatDropdownOpen(!isCatDropdownOpen)}
+                    aria-expanded={isCatDropdownOpen}
+                    aria-label="Chọn thể loại món ăn"
+                  >
+                    <span className="fs-cat-active-icon">
+                      {CATEGORY_ITEMS.find((c) => c.value === category)?.icon || '🍽️'}
+                    </span>
+                    <span className="fs-cat-active-label">
+                      {CATEGORY_ITEMS.find((c) => c.value === category)?.label || category}
+                    </span>
+                    <span className={`fs-cat-arrow-icon ${isCatDropdownOpen ? 'is-flipped' : ''}`}>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </span>
+                  </button>
+
+                  {isCatDropdownOpen && (
+                    <div className="fs-cat-dropdown-menu">
+                      {CATEGORY_ITEMS.map((item) => {
+                        const isSelected = category === item.value
+                        return (
+                          <button
+                            key={item.value}
+                            type="button"
+                            className={`fs-cat-menu-item ${isSelected ? 'is-selected' : ''}`}
+                            onClick={() => {
+                              chooseCategory(item.value)
+                              setIsCatDropdownOpen(false)
+                            }}
+                          >
+                            <span className="fs-menu-item-emoji">{item.icon}</span>
+                            <span className="fs-menu-item-text">{item.label}</span>
+                            {isSelected && <span className="fs-menu-item-checkmark">✓</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
+
                 <div className="fs-spot-list">
-                  {visible.map(spot => (
-                    <button 
-                      className={`fs-spot ${selected === spot.index ? 'selected' : ''}`} 
-                      key={spot.name} 
-                      onClick={() => setSelected(spot.index)} 
-                      aria-pressed={selected === spot.index}
-                    >
-                      <img src={`https://images.unsplash.com/${spot.image}?auto=format&fit=crop&w=280&q=80`} alt="" />
-                      <div className="fs-spot-info">
-                        <small>{spot.type}</small>
-                        <strong>{spot.name}</strong>
-                        <span>{spot.description}</span>
-                      </div>
-                      <span className="fs-spot-arrow">↗</span>
-                    </button>
-                  ))}
+                  {visible.map((spot) => {
+                    const isSelected = selectedSpot.id === spot.id
+                    return (
+                      <button
+                        className={`fs-spot ${isSelected ? 'selected' : ''}`}
+                        key={spot.id}
+                        type="button"
+                        onClick={() => setSelectedId(spot.id)}
+                        aria-pressed={isSelected}
+                      >
+                        <div className="fs-spot-thumb-wrap">
+                          <img
+                            src={`https://images.unsplash.com/${spot.image}?auto=format&fit=crop&w=160&q=80`}
+                            alt={spot.dishName}
+                          />
+                          <span className="fs-spot-icon-overlay">{spot.icon}</span>
+                        </div>
+                        <div className="fs-spot-info">
+                          <div className="fs-spot-top-line">
+                            <small>{spot.type}</small>
+                            {spot.badge && (
+                              <span className="fs-spot-mini-badge">{spot.badge}</span>
+                            )}
+                          </div>
+                          <strong>{spot.dishName}</strong>
+                          <span className="fs-spot-place-name">📍 {spot.name}</span>
+                          <span className="fs-spot-price-tag">{spot.price}</span>
+                        </div>
+                        <span className="fs-spot-arrow">↗</span>
+                      </button>
+                    )
+                  })}
                 </div>
-                <p className="fs-demo-note">Rê chuột hoặc chọn quán để xem vị trí trên bản đồ.</p>
+
+                <p className="fs-demo-note">Chọn hoặc rê chuột vào món để xem vị trí & mô tả chi tiết.</p>
               </div>
 
-              {/* KHUNG BẢN ĐỒ KHU VỰC ĐƯỜNG PHỐ THỰC TẾ */}
-              
-<div className="fs-map" aria-label="Bản đồ địa điểm ăn uống">
-  <MapContainer
-    center={[16.0678, 108.2208]}
-    zoom={13}
-    scrollWheelZoom={true}
-    className="fs-leaflet-map"
-  >
-    <TileLayer
-  attribution='&copy; OpenStreetMap contributors &copy; CARTO'
-  url={`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`}
-/>
+              {/* CỘT 2: KHUNG BẢN ĐỒ MINIMAP KÉO QUA GIỮA */}
+              <div className="fs-map" aria-label="Bản đồ tọa độ quán hot">
+                <MapContainer
+                  center={[selectedSpot.lat, selectedSpot.lng]}
+                  zoom={13}
+                  maxZoom={20}
+                  scrollWheelZoom={true}
+                  className="fs-leaflet-map"
+                >
+                  <TileLayer
+                    attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+                    url={`https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`}
+                    maxNativeZoom={18}
+                    maxZoom={20}
+                  />
 
-    <MapFocus
-      lat={spots[selected].lat}
-      lng={spots[selected].lng}
-    />
+                  <MapFocus lat={selectedSpot.lat} lng={selectedSpot.lng} />
 
-    {visible.map(spot => (
-      <CircleMarker
-        key={spot.name}
-        center={[spot.lat, spot.lng]}
-        radius={selected === spot.index ? 11 : 8}
-        pathOptions={{
-          color: '#ffffff',
-          weight: 3,
-          fillColor: selected === spot.index ? '#315d43' : '#d9825b',
-          fillOpacity: 1,
-        }}
-        eventHandlers={{
-          click: () => setSelected(spot.index),
-        }}
-      >
-        <Popup>
-          <strong>{spot.name}</strong>
-          <br />
-          {spot.description}
-        </Popup>
-      </CircleMarker>
-    ))}
-  
-  </MapContainer>
-</div>
+                  {visible.map((spot) => {
+                    const isSelected = selectedSpot.id === spot.id
+                    return (
+                      <CircleMarker
+                        key={spot.id}
+                        center={[spot.lat, spot.lng]}
+                        radius={isSelected ? 13 : 9}
+                        pathOptions={{
+                          color: '#ffffff',
+                          weight: isSelected ? 3.5 : 2,
+                          fillColor: isSelected ? '#1b4332' : '#e65100',
+                          fillOpacity: 1,
+                        }}
+                        eventHandlers={{
+                          click: () => {
+                            setSelectedId(spot.id)
+                            setShowMapHint(false)
+                          },
+                        }}
+                      >
+                        <Popup>
+                          <div className="fs-map-popup-card">
+                            <span className="fs-popup-badge">{spot.badge || spot.type}</span>
+                            <strong>{spot.dishName}</strong>
+                            <p className="fs-popup-place">📍 {spot.name}</p>
+                            <span className="fs-popup-price">{spot.price}</span>
+                            <button
+                              type="button"
+                              className="fs-popup-play-btn"
+                              onClick={() => handlePlayReview(spot)}
+                            >
+                              ▶ Xem review ngay
+                            </button>
+                          </div>
+                        </Popup>
+                      </CircleMarker>
+                    )
+                  })}
+                </MapContainer>
+
+                <div className={`fs-map-floating-hint ${!showMapHint ? 'fade-out' : ''}`}>
+                  <span>🗺️ Lướt bản đồ hoặc bấm marker để chọn quán</span>
+                </div>
+              </div>
+
+              {/* CỘT 3: KHỐI CHI TIẾT QUÁN & MÓN ĂN TRƯỢT TỪ PHẢI SANG TRÁI */}
+              <div className="fs-spot-detail-panel" key={selectedSpot.id}>
+                <div className="fs-detail-card">
+                  <div className="fs-detail-image-wrap">
+                    <img
+                      src={`https://images.unsplash.com/${selectedSpot.image}?auto=format&fit=crop&w=700&q=85`}
+                      alt={selectedSpot.dishName}
+                      className="fs-detail-cover"
+                    />
+                    <div className="fs-detail-image-overlay" />
+                    {selectedSpot.badge && (
+                      <span className="fs-detail-hot-badge">{selectedSpot.badge}</span>
+                    )}
+                    <span className="fs-detail-emoji-tag">{selectedSpot.icon}</span>
+                  </div>
+
+                  <div className="fs-detail-body">
+                    <div className="fs-detail-meta-row">
+                      <span className="fs-detail-cat-pill">{selectedSpot.type}</span>
+                      <span className="fs-detail-price-pill">{selectedSpot.price}</span>
+                    </div>
+
+                    <h4 className="fs-detail-dish-title">{selectedSpot.dishName}</h4>
+
+                    <div className="fs-detail-location-box">
+                      <span className="fs-loc-pin">📍</span>
+                      <div>
+                        <strong>{selectedSpot.name}</strong>
+                        <p>{selectedSpot.address}</p>
+                      </div>
+                    </div>
+
+                    <div className="fs-detail-quote-box">
+                      <span className="quote-mark">“</span>
+                      <p>{selectedSpot.description}</p>
+                    </div>
+
+                    <div className="fs-detail-author-row">
+                      <span className="fs-author-label">Reviewer TikTok:</span>
+                      <span className="fs-author-handle">{selectedSpot.author}</span>
+                    </div>
+
+                    {/* Nút hành động chính: Nhấn và phát review ngay lập tức */}
+                    <button
+                      type="button"
+                      className="fs-play-review-btn"
+                      onClick={() => handlePlayReview(selectedSpot)}
+                      title="Nhảy đến bản đồ review và phát video TikTok tương ứng"
+                    >
+                      <span className="btn-play-icon">▶</span>
+                      <div className="btn-play-text">
+                        <strong>Xem video review quán</strong>
+                        <small>Bay xuyên mây đến bản đồ review ↗</small>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Phần Tính năng */}
         <section id="features" className="fs-features">
-
           <div className="fs-container">
             <div className="fs-section-head">
               <div>
@@ -238,12 +437,18 @@ export default function FoodSpotLanding() {
               <div className="fs-feature-card">
                 <div className="fs-feature-icon">📍</div>
                 <h3>Bản đồ trực quan</h3>
-                <p>Xác định chính xác vị trí quán ăn ngay từ video review yêu thích mà không phải tìm kiếm thủ công.</p>
+                <p>
+                  Xác định chính xác vị trí quán ăn ngay từ video review yêu thích mà không phải tìm
+                  kiếm thủ công.
+                </p>
               </div>
               <div className="fs-feature-card">
                 <div className="fs-feature-icon">⚡</div>
                 <h3>Lọc nhanh khẩu vị</h3>
-                <p>Dễ dàng phân loại theo món Việt, quán cà phê hay các điểm ăn uống phù hợp với nhu cầu trong ngày.</p>
+                <p>
+                  Dễ dàng phân loại theo món Việt, quán cà phê hay các điểm ăn uống phù hợp với nhu
+                  cầu trong ngày.
+                </p>
               </div>
               <div className="fs-feature-card">
                 <div className="fs-feature-icon">🤝</div>
@@ -256,14 +461,16 @@ export default function FoodSpotLanding() {
 
         {/* Phần Liên hệ */}
         <section id="contact" className="fs-contact">
-              <div className="fs-container">
+          <div className="fs-container">
             <div className="fs-contact-box">
               <div>
                 <span className="fs-eyebrow">KẾT NỐI VỚI CHÚNG MÌNH</span>
                 <h2>Bạn muốn đóng góp hoặc chia sẻ quán ngon?</h2>
                 <p>Hãy gửi ngay gợi ý để Food Spot ngày càng hoàn thiện hơn cho cộng đồng yêu ẩm thực.</p>
               </div>
-              <a className="fs-button" href="mailto:contact@foodspot.vn">Gửi đóng góp ngay <span>↗</span></a>
+              <a className="fs-button" href="mailto:contact@foodspot.vn">
+                Gửi đóng góp ngay <span>↗</span>
+              </a>
             </div>
           </div>
         </section>
@@ -271,7 +478,9 @@ export default function FoodSpotLanding() {
 
       <footer className="fs-footer">
         <div className="fs-container fs-footer-content">
-          <Link to="/" aria-label="Food Spot trang chủ"><img src="/food-spot.svg" alt="Food Spot" /></Link>
+          <Link to="/" aria-label="Food Spot trang chủ">
+            <img src="/food-spot.svg" alt="Food Spot" />
+          </Link>
           <p>Xem review. Tìm quán ngon. Tạo thêm những cuộc hẹn.</p>
           <a href="#fs-main">Về đầu trang ↑</a>
         </div>

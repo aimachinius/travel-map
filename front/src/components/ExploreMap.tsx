@@ -1,4 +1,11 @@
 
+/**
+ * @deprecated LEGACY COMPONENT - ĐÃ NGƯNG SỬ DỤNG
+ * Component bản đồ khung hộp cũ của trang Explore trước đây.
+ * Đã được thay thế hoàn toàn bằng LiquidMap toàn màn hình trong src/components/liquid/LiquidMap.tsx.
+ * File này được giữ lại để tham khảo, không xóa.
+ */
+
 import { useEffect, useState, type FormEvent } from 'react'
 import {
   MapContainer,

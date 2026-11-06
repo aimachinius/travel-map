@@ -1,0 +1,113 @@
+/* ==========================================================================
+   NATIVE GPU VIEW TRANSITION (CHỈ TRƯỢT PHẦN THÂN - HEADER ĐỨNG YÊN)
+   - Header cố định hoàn toàn: view-transition-name: app-header (animation: none)
+   - Thân trang trượt 2 chiều: view-transition-name: app-page-body
+   - Hướng tiến (Trang chủ -> Explore): Trượt từ Phải sang Trái
+   - Hướng lùi (Explore -> Trang chủ): Trượt NGƯỢC LẠI từ Trái sang Phải
+   ========================================================================== */
+
+/* Ngăn thanh cuộn ngang khi trượt */
+html, body {
+  overflow-x: hidden;
+  background-color: #fafbfc;
+}
+
+/* Tắt chuyển động của root snapshot để thanh head / toàn khung không bị trượt */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none !important;
+}
+
+/* Thanh Header đứng yên tuyệt đối 100% không dịch chuyển */
+::view-transition-group(app-header) {
+  animation: none !important;
+  z-index: 10000;
+}
+::view-transition-old(app-header),
+::view-transition-new(app-header) {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+/* Chỉ animate riêng biệt phần thân trang app-page-body bên dưới */
+::view-transition-group(app-page-body) {
+  overflow: hidden;
+  z-index: 1;
+}
+
+::view-transition-old(app-page-body),
+::view-transition-new(app-page-body) {
+  animation-duration: 0.32s;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  mix-blend-mode: normal;
+}
+
+/* ==========================================================================
+   1. HƯỚNG TIẾN: TRANG CHỦ -> EXPLORE (Chỉ thân trượt từ Phải sang Trái)
+   ========================================================================== */
+:root::view-transition-old(app-page-body) {
+  animation-name: slideOutToLeft;
+  z-index: 1;
+}
+
+:root::view-transition-new(app-page-body) {
+  animation-name: slideInFromRight;
+  z-index: 2;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes slideOutToLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-30%);
+    opacity: 0.85;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* ==========================================================================
+   2. HƯỚNG LÙI: EXPLORE -> TRANG CHỦ (Chỉ thân trượt NGƯỢC LẠI từ Trái sang Phải)
+   ========================================================================== */
+:root.back-transition::view-transition-old(app-page-body),
+:root[data-direction="back"]::view-transition-old(app-page-body) {
+  animation-name: slideOutToRight !important;
+  z-index: 2;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.12);
+}
+
+:root.back-transition::view-transition-new(app-page-body),
+:root[data-direction="back"]::view-transition-new(app-page-body) {
+  animation-name: slideInFromLeft !important;
+  z-index: 1;
+}
+
+@keyframes slideOutToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-30%);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

@@ -1,3 +1,10 @@
+/**
+ * @deprecated LEGACY COMPONENT - ĐÃ NGƯNG SỬ DỤNG TRONG ROUTING CHÍNH
+ * Chức năng "Địa điểm yêu thích" đã được thay thế bằng ngăn kéo kính thể lỏng (Liquid Drawer: Liked Places)
+ * trực tiếp trên trang /explore.
+ * File này được giữ lại nhằm mục đích tham khảo mã nguồn cũ, không xóa.
+ */
+
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MainLayout from './MainLayout'

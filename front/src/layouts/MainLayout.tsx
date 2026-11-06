@@ -1,3 +1,9 @@
+/**
+ * @deprecated LEGACY LAYOUT - ĐÃ NGƯNG SỬ DỤNG
+ * Bố cục vỏ app-shell cũ. Đã được thay thế bởi Liquid Glass layout.
+ * File này được giữ lại để tham khảo, không xóa.
+ */
+
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import Icon from '../components/Icon'

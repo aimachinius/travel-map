@@ -1,0 +1,511 @@
+import type { ChromaticPalette, MapCity, VideoPlaylistItem } from './types'
+
+export interface HotFoodSpot {
+  id: string
+  videoId: string
+  name: string
+  type: string
+  dishName: string
+  price: string
+  address: string
+  description: string
+  author: string
+  image: string
+  lat: number
+  lng: number
+  tiktokUrl: string
+  icon: string
+  badge?: string
+}
+
+// =========================================================================
+// DANH SÁCH MÓN HOT TRONG TUẦN (MOCKUP TỪ VID.HTML)
+// =========================================================================
+export const HOT_WEEKLY_SPOTS: HotFoodSpot[] = [
+  {
+    id: 'hot-1',
+    videoId: '7664936764628421908',
+    name: 'Buffet Healthy Ropie',
+    dishName: 'Buffet Cơm Healthy 89K Ăn Thả Ga',
+    type: 'Healthy & Eatclean',
+    price: '89.000đ / suất',
+    address: '124 Lê Lợi, Ngô Quyền, Hải Phòng 🇻🇳',
+    description: 'Buffet cơm healthy chỉ 89k với hơn 20 món đạm, rau củ tươi rói nạp năng lượng cực đã, sốt chấm mè rang siêu cuốn!',
+    author: '@chuppywithropie',
+    image: 'photo-1546069901-ba9599a7e63c',
+    lat: 20.8542,
+    lng: 106.6881,
+    tiktokUrl: 'https://www.tiktok.com/@chuppywithropie/video/7664936764628421908',
+    icon: '🍠',
+    badge: 'TOP 1 XU HƯỚNG',
+  },
+  {
+    id: 'hot-2',
+    videoId: '7593696238403374344',
+    name: 'Phở Chọc Trời Landmark 81',
+    dishName: 'Phở Bò Wagyu Đỉnh Chóp Landmark 81',
+    type: 'Món Việt & Phở',
+    price: 'Khoảng 450.000đ - 750.000đ',
+    address: 'Vinpearl Landmark 81, Bình Thạnh, TP. HCM 🇻🇳',
+    description: 'Thưởng thức tô phở chọc trời với đuôi bò hầm thảo mộc và thịt bò wagyu hảo hạng, view ngắm trọn toàn cảnh Sài Gòn từ tầng mây.',
+    author: '@lontodagi',
+    image: 'photo-1582878826629-29b7ad1cdc43',
+    lat: 10.7951,
+    lng: 106.7218,
+    tiktokUrl: 'https://www.tiktok.com/@lontodagi/video/7593696238403374344',
+    icon: '🍜',
+    badge: 'ĐẲNG CẤP',
+  },
+  {
+    id: 'hot-3',
+    videoId: '7688742149319363860',
+    name: 'Thịt Xiên Nướng Phố Đi Bộ',
+    dishName: 'Thịt Xiên & Chả Nướng Than Hoa',
+    type: 'Ăn Vặt & Đường Phố',
+    price: '5.000đ - 15.000đ / xiên',
+    address: '15 Trịnh Công Sơn, Tây Hồ, Hà Nội 🇻🇳',
+    description: 'Thịt xiên nướng than hoa thơm lừng béo ngậy, chả nướng mật ong chấm ớt cay nồng cực cuốn tại phố đi bộ Trịnh Công Sơn.',
+    author: '@longlongneee',
+    image: 'photo-1555939594-58d7cb561ad1',
+    lat: 21.0718,
+    lng: 105.8194,
+    tiktokUrl: 'https://www.tiktok.com/@longlongneee/video/7688742149319363860',
+    icon: '🍢',
+    badge: 'ĂN VẶT QUỐC DÂN',
+  },
+  {
+    id: 'hot-4',
+    videoId: '7683865149949660436',
+    name: 'Ăn Vặt Tuổi Thơ Tam Trinh',
+    dishName: 'Bột Lọc 2K & Phở Cuốn 3K Bất Chấp Bão Giá',
+    type: 'Ăn Vặt Giá Rẻ',
+    price: '2.000đ - 3.000đ / cái',
+    address: '139 Tam Trinh, Hoàng Mai, Hà Nội 🇻🇳',
+    description: 'Bột lọc tôm thịt 2k dẻo quánh trong veo, phở cuốn chấm nước mắm chua ngọt tuổi thơ siêu rẻ bất chấp thời bão giá.',
+    author: '@eatwhning',
+    image: 'photo-1569718212165-3a8278d5f624',
+    lat: 20.9852,
+    lng: 105.8617,
+    tiktokUrl: 'https://www.tiktok.com/@eatwhning/video/7683865149949660436',
+    icon: '🫪',
+    badge: 'GIÁ HỌC SINH',
+  },
+  {
+    id: 'hot-5',
+    videoId: '7626789785125866768',
+    name: 'Làng Hải Sản Mix',
+    dishName: 'Thau Cua Hoàng Đế & Hải Sản Mix Sốt Cajun',
+    type: 'Hải Sản Tươi Sống',
+    price: 'Khoảng 400.000đ / người',
+    address: 'Làng Hải Sản Mix — Trương Định, Quận 3, TP. HCM 🇻🇳',
+    description: '400 cành là mắc hay rẻ? Cua hoàng đế sốt bơ tỏi và cajun đẫm vị, tôm mực tươi rói gây sốt cộng đồng ẩm thực Sài Gòn.',
+    author: '@langhaisanmix_hcm',
+    image: 'photo-1565680018434-b513d5e5fd47',
+    lat: 10.7769,
+    lng: 106.6953,
+    tiktokUrl: 'https://www.tiktok.com/@langhaisanmix_hcm/video/7626789785125866768',
+    icon: '🦀',
+    badge: 'HẢI SẢN VIRAL',
+  },
+  {
+    id: 'hot-6',
+    videoId: '7703037073510518037',
+    name: 'Ẩm Thực Nhật Bản Kita',
+    dishName: 'Set Cơm Nhật Bản Siêu To Khổng Lồ',
+    type: 'Món Nhật Bản',
+    price: '65.000đ - 120.000đ / phần',
+    address: 'Quán Nhật Kita — Nguyễn Thị Minh Khai, Quận 1, TP. HCM 🇻🇳',
+    description: 'Quán Nhật này ăn cũng lâu ròi á, đồ ăn tươi ngon, giá oke, phần to khổng lồ no nê chuẩn phong cách Tokyo!',
+    author: '@iamnot_kita',
+    image: 'photo-1569058242253-92a9c755a0ec',
+    lat: 10.7875,
+    lng: 106.7001,
+    tiktokUrl: 'https://www.tiktok.com/@iamnot_kita/video/7703037073510518037',
+    icon: '🍱',
+    badge: 'ĐẬM CHẤT NHẬT',
+  },
+]
+
+export const PRESET_PLAYLIST: VideoPlaylistItem[] = [
+  // 6 Video Món Hot Trong Tuần từ vid.html
+  {
+    id: '7664936764628421908',
+    url: 'https://www.tiktok.com/@chuppywithropie/video/7664936764628421908',
+    title: '🍠 Buffet Cơm Healthy 89K Hải Phòng',
+    author: '@chuppywithropie',
+    locationName: 'Buffet Healthy Ropie — 124 Lê Lợi, Ngô Quyền, Hải Phòng 🇻🇳',
+    lat: 20.8542,
+    lng: 106.6881,
+    gmapQuery: '124 Le Loi, Ngo Quyen, Hai Phong',
+    category: 'Healthy & Eatclean',
+    icon: '🍠',
+    desc: 'Buffet cơm healthy chỉ 89k với hơn 20 món đạm, rau củ tươi rói nạp năng lượng cực đã #foodreview #ancungtiktok',
+  },
+  {
+    id: '7593696238403374344',
+    url: 'https://www.tiktok.com/@lontodagi/video/7593696238403374344',
+    title: '🍜 Review Phở Landmark 81 Đỉnh Chóp',
+    author: '@lontodagi',
+    locationName: 'Phở Chọc Trời — Vinpearl Landmark 81, Bình Thạnh, TP. HCM 🇻🇳',
+    lat: 10.7951,
+    lng: 106.7218,
+    gmapQuery: 'Vinpearl Landmark 81, 720A Dien Bien Phu, Binh Thanh, Ho Chi Minh City',
+    category: 'Món Việt & Phở',
+    icon: '🍜',
+    desc: 'Review phở Landmark 81 với @dinovux ngắm trọn view Sài Gòn từ tầng mây #reviewanngon #ancungtiktok',
+  },
+  {
+    id: '7688742149319363860',
+    url: 'https://www.tiktok.com/@longlongneee/video/7688742149319363860',
+    title: '🍢 Thịt Xiên & Chả Nướng Phố Đi Bộ',
+    author: '@longlongneee',
+    locationName: 'Thịt Xiên Nướng — 15 Trịnh Công Sơn, Tây Hồ, Hà Nội 🇻🇳',
+    lat: 21.0718,
+    lng: 105.8194,
+    gmapQuery: '15 Trinh Cong Son, Nhat Tan, Tay Ho, Hanoi',
+    category: 'Ăn Vặt & Đường Phố',
+    icon: '🍢',
+    desc: 'Thịt xiên, chả nướng: 15 Trịnh Công Sơn giá chỉ từ 5-15 cành thơm nức mũi #ancungtiktok #reviewanngon',
+  },
+  {
+    id: '7683865149949660436',
+    url: 'https://www.tiktok.com/@eatwhning/video/7683865149949660436',
+    title: '🫪 Bột Lọc 2K & Phở Cuốn 3K Tam Trinh',
+    author: '@eatwhning',
+    locationName: 'Quán Bột Lọc Tuổi Thơ — 139 Tam Trinh, Hoàng Mai, Hà Nội 🇻🇳',
+    lat: 20.9852,
+    lng: 105.8617,
+    gmapQuery: '139 Tam Trinh, Mai Dong, Hoang Mai, Hanoi',
+    category: 'Ăn Vặt Giá Rẻ',
+    icon: '🫪',
+    desc: 'Bột lọc 2k, phở cuốn 3k không biết ở đâu còn bán giá này nữa không #eatwhning #doanvat #ancungtiktok',
+  },
+  {
+    id: '7626789785125866768',
+    url: 'https://www.tiktok.com/@langhaisanmix_hcm/video/7626789785125866768',
+    title: '🦀 Cua Hoàng Đế & Hải Sản Mix 400K',
+    author: '@langhaisanmix_hcm',
+    locationName: 'Làng Hải Sản Mix — Trương Định, Quận 3, TP. HCM 🇻🇳',
+    lat: 10.7769,
+    lng: 106.6953,
+    gmapQuery: 'Truong Dinh, District 3, Ho Chi Minh City',
+    category: 'Hải Sản Tươi Sống',
+    icon: '🦀',
+    desc: '400 cành là mắc hay rẻ? Cua hoàng đế sốt bơ tỏi và cajun đẫm vị #cuahoangde #xuhuong',
+  },
+  {
+    id: '7703037073510518037',
+    url: 'https://www.tiktok.com/@iamnot_kita/video/7703037073510518037',
+    title: '🍱 Quán Nhật Kita Siêu To Khổng Lồ',
+    author: '@iamnot_kita',
+    locationName: 'Quán Nhật Kita — Nguyễn Thị Minh Khai, Quận 1, TP. HCM 🇻🇳',
+    lat: 10.7875,
+    lng: 106.7001,
+    gmapQuery: 'Nguyen Thi Minh Khai, Da Kao, District 1, Ho Chi Minh City',
+    category: 'Món Nhật Bản',
+    icon: '🍱',
+    desc: 'Quán Nhật này ăn cũng lâu rồi á, đồ ăn tươi ngon, giá oke, phần to khổng lồ #japanesefood #reviewanngon',
+  },
+  // Các video gốc trước đó
+  {
+    id: '7703907303770115349',
+    url: 'https://www.tiktok.com/@xenhalacanh/video/7703907303770115349',
+    title: "🍔 Review Burger S&L's Diner",
+    author: '@xenhalacanh',
+    locationName: "S&L's Diner — 22 Bảo Khánh, Hoàn Kiếm, Hà Nội 🇻🇳",
+    lat: 21.0315,
+    lng: 105.8512,
+    gmapQuery: "S&L's Diner, 22 Bao Khanh, Hoan Kiem, Hanoi, Vietnam",
+    category: 'Món Âu & Burger',
+    icon: '🍔',
+    desc: "Review burger chuẩn Mỹ siêu ngon tại S&L's Diner với @xenhalacanh #reviewanngon #ancungtiktok",
+  },
+  {
+    id: '7703912356916514100',
+    url: 'https://www.tiktok.com/@nguyenhimatto/video/7703912356916514100',
+    title: '🍻 Quán Lai Rai Tự Do Cùng Em Longi',
+    author: '@nguyenhimatto',
+    locationName: 'Quán Nhậu Tự Do — 67 Khúc Thừa Dụ, Cầu Giấy, Hà Nội 🇻🇳',
+    lat: 21.0336,
+    lng: 105.7925,
+    gmapQuery: 'Quán Nhậu Tự Do, 67 Khuc Thua Du, Cau Giay, Hanoi, Vietnam',
+    category: 'Quán Nhậu & Lai Rai',
+    icon: '🍻',
+    desc: 'Cùng em longi review quán lai rai Tự Do hehe 😆😆😆 #nguyenhimatto #nguyentainguyen #food #mukbang #cook',
+  },
+  {
+    id: '7701296532288572679',
+    url: 'https://www.tiktok.com/@tiktok/video/7701296532288572679',
+    title: '🦀 The Crab Shack Mì Lava Hải Sản',
+    author: '@thecrabshack',
+    locationName: 'The Crab Shack — 54 Nguyễn Du, Bến Nghé, Quận 1, TP. HCM 🇻🇳',
+    lat: 10.7792,
+    lng: 106.6987,
+    gmapQuery: 'The Crab Shack, 54 Nguyen Du, Ben Nghe, District 1, Ho Chi Minh City, Vietnam',
+    category: 'Hải Sản Cao Cấp',
+    icon: '🦀',
+    desc: 'Dự định đến The Crab Shack để thử mì lava bữa giờ viral, nhưng mà… #AnCungTikTok #ReviewAnNgon',
+  },
+  {
+    id: '7611546729841773844',
+    url: 'https://www.tiktok.com/@sieureview/video/7611546729841773844',
+    title: '✈️ Ăn Suốt 22 Tiếng Emirates First Class',
+    author: '@sieureview',
+    locationName: 'Emirates First Class Lounge — Sân bay Quốc tế Dubai (DXB) 🇦🇪',
+    lat: 25.2532,
+    lng: 55.3657,
+    gmapQuery: 'Dubai International Airport, DXB, Dubai, United Arab Emirates',
+    category: 'Trải Nghiệm Đẳng Cấp',
+    icon: '✈️',
+    desc: 'Ăn suốt 22 tiếng không nghỉ 😆 #fyp #LearnOnTikTok #siêureview #foryoupage #emirates',
+  },
+  {
+    id: '7693204974662077727',
+    url: 'https://www.tiktok.com/@wholesome/video/7693204974662077727',
+    title: '🍣 FUJI SAKU 藤咲 - Sushi Local Tokyo',
+    author: '@wholesome',
+    locationName: 'FUJI SAKU 藤咲 — 4-5-6 Kinshi, Sumida City, Tokyo 🇯🇵',
+    lat: 35.6963,
+    lng: 139.8145,
+    gmapQuery: 'FUJI SAKU 藤咲 Japan, Tokyo, Sumida City, Kinshi, 4 Chome-5-6',
+    category: 'Sushi & Omakase',
+    icon: '🍣',
+    desc: 'POV: Visiting Your Favorite Local Sushi Restaurant in Tokyo, Japan 📍 FUJI SAKU 藤咲 #japanesefood #sushi #wholesome #foodreview',
+  },
+  {
+    id: '7624465323420290312',
+    url: 'https://www.tiktok.com/@nhquynhne/video/7624465323420290312',
+    title: '🍟 Fryday Trích Sài - Khoai Tây Chiên Hồ Tây',
+    author: '@nhquynhne',
+    locationName: 'Fryday — 233 Trích Sài, Tây Hồ, Hà Nội 🇻🇳',
+    lat: 21.0532,
+    lng: 105.8173,
+    gmapQuery: 'Fryday, 233 Trich Sai, Tay Ho, Hanoi, Vietnam',
+    category: 'Ăn Vặt Hồ Tây',
+    icon: '🍟',
+    desc: 'Món này hot vchh mà ai chưa ăn thì đây là một vài sự thật mng nên biết trước nhaaa😀 📍Fryday Trích Sài',
+  },
+  {
+    id: '7695378325845544213',
+    url: 'https://www.tiktok.com/@tidikhach/video/7695378325845544213',
+    title: '🌮 Zero2One Tacos 70k Mắc Hay Rẻ?',
+    author: '@tidikhach',
+    locationName: 'Zero2One Tacos — 144 Bùi Thị Xuân, Quận 1, TP. HCM 🇻🇳',
+    lat: 10.7718,
+    lng: 106.6896,
+    gmapQuery: 'Zero2One Tacos, 144 Bui Thi Xuan, District 1, Ho Chi Minh City, Vietnam',
+    category: 'Tacos & Street Food',
+    icon: '🌮',
+    desc: 'Một bịch tacos 70k là mắc hay rẻ? #tidikhach #xuhuong #tacos #zero2one #reviewfood',
+  },
+  {
+    id: '7339739506692984070',
+    url: 'https://www.tiktok.com/@ohmwts/video/7339739506692984070',
+    title: '🍜 Sapporo Miso Ramen Nóng Hổi',
+    author: '@ohmwts',
+    locationName: 'Ganso Ramen Yokocho, Sapporo, Hokkaido 🇯🇵',
+    lat: 43.0552,
+    lng: 141.3533,
+    gmapQuery: 'Ganso Ramen Yokocho, Sapporo, Hokkaido, Japan',
+    category: 'Ẩm thực Nhật Bản',
+    icon: '🍜',
+    desc: 'Quán mì Miso Ramen truyền thống trứ danh tại con ngõ Ramen Yokocho, tuyết rơi trắng xóa.',
+    mp4Url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  },
+  {
+    id: '7106594312292453678',
+    url: 'https://www.tiktok.com/@tiktok/video/7106594312292453678',
+    title: '🏮 Khám Phá Shibuya Night Vibes',
+    author: '@tiktok',
+    locationName: 'Shibuya Crossing, Tokyo 🇯🇵',
+    lat: 35.6595,
+    lng: 139.7005,
+    gmapQuery: 'Shibuya Crossing, Tokyo, Japan',
+    category: 'Du lịch & Đô thị',
+    icon: '🏮',
+    desc: 'Giao lộ bận rộn nhất thế giới với ánh đèn neon rực rỡ và ẩm thực đêm sầm uất.',
+    mp4Url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  },
+]
+
+export const PRESET_CITIES: MapCity[] = [
+  { name: 'Hà Nội', flag: '🇻🇳', center: [21.0285, 105.8542], zoom: 14 },
+  { name: 'TP. Hồ Chí Minh', flag: '🇻🇳', center: [10.7769, 106.7009], zoom: 14 },
+  { name: 'Tokyo', flag: '🇯🇵', center: [35.6762, 139.6503], zoom: 13 },
+  { name: 'Dubai', flag: '🇦🇪', center: [25.2048, 55.2708], zoom: 13 },
+  { name: 'Đà Nẵng', flag: '🇻🇳', center: [16.0544, 108.2022], zoom: 14 },
+  { name: 'Sapporo', flag: '🇯🇵', center: [43.0618, 141.3545], zoom: 13 },
+  { name: 'New York', flag: '🇺🇸', center: [40.7128, -74.006], zoom: 13 },
+  { name: 'Paris', flag: '🇫🇷', center: [48.8566, 2.3522], zoom: 13 },
+]
+
+export const PRESET_PALETTES: Record<string, ChromaticPalette> = {
+  // S&L's Diner Burger
+  '7703907303770115349': {
+    c1: '#ff8a00',
+    c2: '#e52e71',
+    c3: '#3b5335',
+    c4: '#ffd000',
+    c5: '#00ff88',
+    c6: '#ff3b30',
+    c7: '#ff9500',
+    tl: 'rgba(255, 138, 0, 0.95)',
+    tr: 'rgba(229, 46, 113, 0.95)',
+    bl: 'rgba(59, 83, 53, 0.95)',
+    br: 'rgba(255, 208, 0, 0.95)',
+    mid: 'rgba(255, 149, 0, 0.85)',
+  },
+  // Quán Nhậu Tự Do
+  '7703912356916514100': {
+    c1: '#f59e0b',
+    c2: '#10b981',
+    c3: '#06b6d4',
+    c4: '#eab308',
+    c5: '#84cc16',
+    c6: '#f97316',
+    c7: '#22c55e',
+    tl: 'rgba(245, 158, 11, 0.95)',
+    tr: 'rgba(16, 185, 129, 0.95)',
+    bl: 'rgba(6, 182, 212, 0.95)',
+    br: 'rgba(234, 179, 8, 0.95)',
+    mid: 'rgba(132, 204, 22, 0.85)',
+  },
+  // The Crab Shack
+  '7701296532288572679': {
+    c1: '#ef4444',
+    c2: '#f97316',
+    c3: '#0284c7',
+    c4: '#dc2626',
+    c5: '#38bdf8',
+    c6: '#ea580c',
+    c7: '#fb923c',
+    tl: 'rgba(239, 68, 68, 0.95)',
+    tr: 'rgba(249, 115, 22, 0.95)',
+    bl: 'rgba(2, 132, 199, 0.95)',
+    br: 'rgba(220, 38, 38, 0.95)',
+    mid: 'rgba(56, 189, 248, 0.85)',
+  },
+  // Emirates Dubai
+  '7611546729841773844': {
+    c1: '#eab308',
+    c2: '#f59e0b',
+    c3: '#6366f1',
+    c4: '#d97706',
+    c5: '#8b5cf6',
+    c6: '#b45309',
+    c7: '#fbbf24',
+    tl: 'rgba(234, 179, 8, 0.95)',
+    tr: 'rgba(245, 158, 11, 0.95)',
+    bl: 'rgba(99, 102, 241, 0.95)',
+    br: 'rgba(217, 119, 6, 0.95)',
+    mid: 'rgba(139, 92, 246, 0.85)',
+  },
+  // Fuji Saku Tokyo
+  '7693204974662077727': {
+    c1: '#f43f5e',
+    c2: '#10b981',
+    c3: '#06b6d4',
+    c4: '#fb7185',
+    c5: '#34d399',
+    c6: '#e11d48',
+    c7: '#2dd4bf',
+    tl: 'rgba(244, 63, 94, 0.95)',
+    tr: 'rgba(16, 185, 129, 0.95)',
+    bl: 'rgba(6, 182, 212, 0.95)',
+    br: 'rgba(251, 113, 133, 0.95)',
+    mid: 'rgba(52, 211, 153, 0.85)',
+  },
+  // Fryday Trích Sài
+  '7624465323420290312': {
+    c1: '#f59e0b',
+    c2: '#ec4899',
+    c3: '#38bdf8',
+    c4: '#d97706',
+    c5: '#f43f5e',
+    c6: '#0284c7',
+    c7: '#fbbf24',
+    tl: 'rgba(245, 158, 11, 0.95)',
+    tr: 'rgba(236, 72, 153, 0.95)',
+    bl: 'rgba(56, 189, 248, 0.95)',
+    br: 'rgba(217, 119, 6, 0.95)',
+    mid: 'rgba(244, 63, 94, 0.85)',
+  },
+  // Zero2One Tacos
+  '7695378325845544213': {
+    c1: '#ef4444',
+    c2: '#eab308',
+    c3: '#22c55e',
+    c4: '#dc2626',
+    c5: '#f97316',
+    c6: '#16a34a',
+    c7: '#ea580c',
+    tl: 'rgba(239, 68, 68, 0.95)',
+    tr: 'rgba(234, 179, 8, 0.95)',
+    bl: 'rgba(34, 197, 94, 0.95)',
+    br: 'rgba(220, 38, 38, 0.95)',
+    mid: 'rgba(249, 115, 22, 0.85)',
+  },
+  '7339739506692984070': {
+    c1: '#00f0ff',
+    c2: '#a855f7',
+    c3: '#ff007f',
+    c4: '#ff2a8d',
+    c5: '#00ff88',
+    c6: '#ff3b30',
+    c7: '#ff9500',
+    tl: 'rgba(0, 240, 255, 0.95)',
+    tr: 'rgba(255, 0, 127, 0.95)',
+    bl: 'rgba(255, 149, 0, 0.95)',
+    br: 'rgba(0, 255, 136, 0.95)',
+    mid: 'rgba(168, 85, 247, 0.85)',
+  },
+  '7106594312292453678': {
+    c1: '#00f2fe',
+    c2: '#4facfe',
+    c3: '#ff007f',
+    c4: '#f72585',
+    c5: '#00dfa2',
+    c6: '#7928ca',
+    c7: '#4361ee',
+    tl: 'rgba(0, 242, 254, 0.95)',
+    tr: 'rgba(255, 0, 127, 0.95)',
+    bl: 'rgba(121, 40, 202, 0.95)',
+    br: 'rgba(0, 223, 162, 0.95)',
+    mid: 'rgba(79, 172, 254, 0.75)',
+  },
+}
+
+export function generatePaletteFromId(id: string): ChromaticPalette {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i)
+    hash |= 0
+  }
+  const h1 = Math.abs(hash) % 360
+  const h2 = (h1 + 60) % 360
+  const h3 = (h1 + 140) % 360
+  const h4 = (h1 + 200) % 360
+  const h5 = (h1 + 260) % 360
+  const h6 = (h1 + 310) % 360
+  const h7 = (h1 + 340) % 360
+
+  return {
+    c1: `hsl(${h1}, 95%, 55%)`,
+    c2: `hsl(${h2}, 90%, 55%)`,
+    c3: `hsl(${h3}, 95%, 50%)`,
+    c4: `hsl(${h4}, 90%, 55%)`,
+    c5: `hsl(${h5}, 95%, 50%)`,
+    c6: `hsl(${h6}, 90%, 55%)`,
+    c7: `hsl(${h7}, 95%, 50%)`,
+  }
+}
+
+export function extractTikTokVideoId(url: string): string | null {
+  const trimmed = url.trim()
+  if (/^\d{15,22}$/.test(trimmed)) {
+    return trimmed
+  }
+  const match = /(?:video\/|v\/|embed\/v2\/|embed\/v1\/|player\/v1\/|\/v\/)(\d{15,22})/.exec(trimmed)
+  return match ? match[1] : null
+}
+

@@ -1,0 +1,66 @@
+/* ==========================================================================
+   ROOT LAYOUT SHELL (DUAL-TRACK NATIVE GPU HORIZONTAL SLIDER)
+   - Cố định Header ở đỉnh (100% static, không di chuyển, không chớp nháy)
+   - Khung viewport bên dưới lướt 2 chiều siêu mượt bằng GPU translate3d
+   - Tốc độ mượt mà tối đa 60/120FPS, không có giật lag, không tải lại bản đồ
+   ========================================================================== */
+
+.unified-app-shell {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: #fafbfc;
+  position: relative;
+}
+
+.dual-track-viewport {
+  position: relative;
+  width: 100vw;
+  height: calc(100vh - 56px);
+  margin-top: 56px;
+  overflow: hidden;
+  background-color: #fafbfc;
+}
+
+.dual-track-slider {
+  display: flex;
+  width: 200vw;
+  height: 100%;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.dual-track-slider.has-transition {
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dual-track-slider.at-home {
+  transform: translate3d(0, 0, 0);
+}
+
+.dual-track-slider.at-explore {
+  transform: translate3d(-100vw, 0, 0);
+}
+
+.dual-track-pane {
+  width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.pane-home {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+.pane-explore {
+  overflow: hidden;
+  height: 100%;
+  position: relative;
+}
