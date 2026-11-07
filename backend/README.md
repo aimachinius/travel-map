@@ -20,11 +20,13 @@ Tài liệu này là bộ đặc tả kỹ thuật chuẩn hóa (Ground Truth) h
 * **ORM & Migration**: SQLAlchemy, GeoAlchemy2 (xử lý kiểu hình học `Geometry(POINT, 4326)`), Alembic.
 
 
-* **Hàng đợi & Cache**: Redis (quản lý Dual-Priority Job Queue và chống trùng lặp URL).
-
+* **Hàng đợi & Cache**: Redis (quản lý Dual-Priority Job Queue và chống trùng lặp URL), `cachetools` (TTLCache cho vùng hành chính).
 
 * **Async HTTP Client**: `httpx` (giao tiếp bất đồng bộ với External AI Server và ArcGIS Geocoder).
 
+* **Cào dữ liệu (Web Scraping)**: `playwright` (`chromium-headless-shell`) phục vụ tiến trình tự động cào link video TikTok theo từ khóa.
+
+* **Tính toán diện tích & Độ phủ hành chính**: `shapely`, `pyproj` (phép chiếu Azimuthal Equidistant `+proj=aeqd`).
 
 * **Xác thực & Kiểm thử**: JWT Bearer Token, Passlib/Bcrypt, Pydantic v2, Pytest (`pytest-asyncio`).
 
@@ -59,7 +61,7 @@ backend/
 │   │   ├── video_service.py         # Nghiệp vụ quản lý video
 │   │   ├── analysis_service.py      # Điều phối hàng đợi & gọi External AI Server
 │   │   ├── geocoding_service.py     # Chuẩn hóa địa chỉ & tọa độ qua ArcGIS Geocoder
-│   │   ├── discovery_service.py     # Tự động sinh từ khóa & cào video theo vị trí
+│   │   ├── discovery_service.py     # Tự động phân giải vùng hành chính, sinh từ khóa & cào video TikTok
 │   │   ├── place_service.py         # Truy vấn bán kính PostGIS & thông tin quán
 │   │   └── saved_service.py         # Nghiệp vụ lưu trữ mục yêu thích
 │   └── main.py                      # Entrypoint khởi chạy ứng dụng & background workers
@@ -140,43 +142,96 @@ flowchart TD
 
 ---
 
-### 2.3. Luồng 2: Chủ động khám phá & Cào video theo vị trí bản đồ (Location-Based Auto Discovery)
+### 2.3. Luồng 2: Tự động quét & cào video theo vị trí bản đồ (`SYSTEM_DISCOVERY` — Mức ưu tiên 2 / Priority 2)
+
+Nguồn này giúp tự động làm giàu dữ liệu cho bản đồ ẩm thực tại khu vực người dùng quan tâm mà không cần người dùng phải tự tìm và gửi từng link video. Hệ thống áp dụng **Kiến trúc Đường ống Dạng dòng (Streaming Pipeline)**: Cào xong từ khóa nào là lập tức lọc trùng, lưu DB và đẩy ngay vào hàng đợi Redis để Server AI phân tích song song, không phải chờ cào xong toàn bộ từ khóa.
 
 ```mermaid
 flowchart TD
-    Start([Bắt đầu: User ghim/chọn tọa độ lat, lon trên Map]) --> CheckScanCache{Khu vực này đã quét<br/>trong vòng 24h qua?<br/>bảng discovery_scans}
+    Start([Bắt đầu: User ghim/chọn tọa độ lat, lon trên Map]) --> CheckScanCache{Vùng này đang quét hoặc<br/>cách <= 1km trong 24h?<br/>bảng discovery_scans}
     
-    CheckScanCache -- Đã quét gần đây --> SkipScan([Bỏ qua quét mới - Trả kết quả sẵn có trong DB])
-    CheckScanCache -- Chưa quét / Hết hạn --> SaveScanLog[Ghi nhận tọa độ vào bảng discovery_scans]
+    CheckScanCache -- Đã quét / Cách <= 1km --> SkipScan([Bỏ qua quét mới - Trả kết quả sẵn có trong DB])
+    CheckScanCache -- Chưa quét / Hết hạn --> SaveScanLog[Ghi nhận tọa độ & bán kính vào bảng discovery_scans]
     
-    SaveScanLog --> ReverseGeo[Gọi ArcGISGeocoder.reverse_geocode lat, lon<br/>& Mở rộng POI/Tuyến đường lân cận]
-    ReverseGeo --> GeoSuccess{Trích xuất được tên đường,<br/>POI hoặc khu vực?}
+    SaveScanLog --> ResolveArea[Gọi mô-đun find/area:<br/>1. resolve_current_address lat, lon<br/>2. get_district_coverage tính độ phủ Phường/Quận]
+    ResolveArea --> AreaSuccess{Trích xuất được tên<br/>Phường/Quận/Thành phố?}
     
-    GeoSuccess -- Không --> EndFail([Kết thúc tiến trình Discovery])
-    GeoSuccess -- Có --> GenKeywords[Sinh bộ từ khóa tìm kiếm theo mẫu:<br/>- 'quán ăn gần + POI'<br/>- 'quán ngon đường + Tên đường'<br/>- 'ăn vặt + Khu vực']
+    AreaSuccess -- Không --> EndFail([Kết thúc tiến trình Discovery])
+    AreaSuccess -- Có --> GenKeywords[Sinh bộ từ khóa phân tách ít trùng lặp:<br/>- 'quán ăn ở + Khu vực'<br/>- 'quán cafe ở + Khu vực'<br/>- 'ăn vặt + Khu vực']
     
-    GenKeywords --> SearchScraper[Truy vấn Search Engine với bộ lọc:<br/>site:tiktok.com & site:youtube.com/shorts]
-    SearchScraper --> LoopLinks[Duyệt qua từng URL video thu thập được]
+    GenKeywords --> FilterKeywords[Lọc bỏ từ khóa đã dùng trong 24h qua]
+    FilterKeywords --> CheckRemaining{Còn từ khóa mới<br/>cần cào không?}
+    CheckRemaining -- Hết --> EndDone([Bỏ qua cào - Toàn bộ từ khóa đã cào trong 24h])
     
-    LoopLinks --> CheckDuplicate{URL / platform_video_id<br/>đã có trong DB hoặc Redis?}
-    CheckDuplicate -- Đã tồn tại --> NextLink{Còn link khác?}
-    CheckDuplicate -- Chưa tồn tại --> SaveNewVideo[Tạo bản ghi videos & analysis_runs:<br/>status = PENDING<br/>trigger_source = SYSTEM_DISCOVERY<br/>priority = 2]
+    CheckRemaining -- Còn --> ForEachKeyword[Vòng lặp từng từ khóa cào Streaming]
     
-    SaveNewVideo --> PushLowQueue[Đẩy task vào Redis Queue:<br/>queue:low_priority]
-    PushLowQueue --> NextLink
-    NextLink -- Còn --> LoopLinks
-    NextLink -- Hết --> EndSuccess([Hoàn tất đẩy hàng đợi cào tự động])
-
+    subgraph StreamPipeline["Cơ chế Streaming: Cào tới đâu đẩy AI Server phân tích tới đó"]
+        ForEachKeyword --> CrawlKW[Cào TikTok cho từ khóa này<br/>Playwright Headless + Session Warmup]
+        CrawlKW --> LoopLinks[Duyệt danh sách link vừa cào được của từ khóa]
+        LoopLinks --> CheckDuplicate{Video đã tồn tại<br/>trong DB / analysis_runs?}
+        CheckDuplicate -- Đã có --> NextLink{Còn link trong từ khóa?}
+        CheckDuplicate -- Chưa có --> SaveVideo[Lưu bảng videos & tạo analysis_runs<br/>status = PENDING, priority = 2]
+        SaveVideo --> PushQueue[Đẩy ngay vào Redis queue:low_priority]
+        PushQueue --> ParallelAI[Background Worker rút task & gửi sang Server AI phân tích song song]
+        PushQueue --> NextLink
+        NextLink -- Còn link --> LoopLinks
+        NextLink -- Hết link --> DelayKW[Nghỉ 5s chống rate-limit TikTok]
+    end
+    
+    DelayKW --> NextKW{Còn từ khóa<br/>tiếp theo?}
+    NextKW -- Còn --> ForEachKeyword
+    NextKW -- Hết --> UpdateScan[Cập nhật videos_found_count vào discovery_scans]
+    UpdateScan --> EndSuccess([Hoàn tất phiên Discovery])
 ```
 
-* **Các bước xử lý & Điều kiện rẽ nhánh**:
-1. **Kiểm tra lịch sử vùng quét (`discovery_scans`)**: Khi người dùng chọn một tọa độ `(lat, lon)`, hệ thống kiểm tra xem bán kính quanh điểm đó đã được quét gần đây chưa để tránh spam truy vấn.
+#### 2.3.1. Thời điểm kích hoạt & Cơ chế chống quét lặp
 
+* **Sự kiện kích hoạt**: Khi người dùng ghim hoặc chọn một tọa độ `(lat, lon)` kèm bán kính `radius_m` trên bản đồ (hoặc khi gọi endpoint `GET /api/v1/places/nearby-videos`).
+* **Kiểm tra vùng quét (`discovery_scans` & Khoảng cách <= 1km)**:
+  * Hệ thống kiểm tra xem tọa độ mới `(lat, lon)` có nằm cách bất kỳ điểm quét nào trong vòng **24 giờ qua** một khoảng cách $\le 1000\text{m}$ ($1\text{km}$) hay không (`ST_DWithin(center_location::geography, target_point::geography, 1000)`).
+  * **Nếu khoảng cách $\le 1000\text{m}$**: Coi như cùng một vùng không gian đã có dữ liệu, **bỏ qua tiến trình quét mới** và trả về ngay dữ liệu sẵn có trong DB.
+  * **Nếu cách xa $> 1000\text{m}$ (hoặc chưa quét)**: Ghi nhận bản ghi vùng quét mới vào bảng `discovery_scans` và kích hoạt ngầm `DiscoveryService`.
 
-2. **Nghịch đảo tọa độ & Sinh từ khóa**: Gọi `ArcGISGeocoder.reverse_geocode(lat, lon)` để lấy địa chỉ thực tế (tên địa danh như Đại học Bách Khoa, tên đường như Nguyễn Lương Bằng, Ngô Sĩ Liên, phường/quận) rồi ghép vào các mẫu từ khóa ẩm thực.
+#### 2.3.2. Quy trình thu thập video tự động (4 Bước chi tiết)
 
+1. **Bước 1: Lấy tên vị trí & Đơn vị hành chính từ tọa độ `(lat, lon)`** *(Tham chiếu đặc tả [`referent_for_BE/area/dat_ta_tim_khu_vuc.md`](../referent_for_BE/area/dat_ta_tim_khu_vuc.md))*:
+   * **Phân giải địa chỉ điểm ghim (`resolve_current_address`)**: Sử dụng cơ chế phân giải 3 lớp dự phòng (*Nominatim OSM API* $\rightarrow$ *ArcGIS World Geocoding Service* $\rightarrow$ *Photon Komoot Geocoder*) kết hợp hàm chuẩn hóa tiền tố `_normalize_prefix` để lấy tên Phường/Xã (`ward`), Quận/Huyện (`district`) và Tỉnh/Thành phố (`city`) (ví dụ: `"Phường Hòa Khánh Nam, Quận Liên Chiểu, Thành phố Đà Nẵng"`).
+   * **Tính độ phủ các khu vực lân cận trong bán kính (`get_district_coverage` / `DistrictCoverageService`)**: Chiếu tọa độ sang hệ phẳng cục bộ Azimuthal Equidistant (`+proj=aeqd`), dựng vùng đệm hình tròn bán kính `radius_m` và tính tỷ lệ diện tích giao cắt (`percentage` %) với các đa giác hành chính OpenStreetMap (`admin_level="6"` hoặc `"8"`) để trích xuất danh sách các Phường/Quận thực tế nằm trong vùng bán kính (ví dụ: *Phường Hòa Khánh Nam, Phường Hòa Minh, Quận Liên Chiểu tại Đà Nẵng*).
+   * **Lưu đệm (Cache)**: Tận dụng `TTLCache` (`.cache_area.json` với khóa `addr:{lat}:{lon}` và `area:{lat}:{lon}:{radius_m}:{admin_level}`, TTL 24 giờ) để giảm tải truy vấn ra máy chủ bản đồ.
 
-3. **Tìm kiếm & Phân loại vào hàng đợi thấp**: Truy vấn công cụ tìm kiếm để thu thập danh sách link TikTok/YouTube Shorts, lọc bỏ các video đã có trong hệ thống và đẩy các video mới vào hàng đợi ưu tiên thấp (`queue:low_priority`) với `trigger_source = SYSTEM_DISCOVERY` và `priority = 2`.
+2. **Bước 2: Tự động sinh bộ từ khóa ẩm thực phân tách & Lọc từ khóa đã dùng trong 24h**:
+   * **Quy chuẩn nguồn địa danh**: **CHỈ lấy tên từ cấp đơn vị hành chính cấp Xã/Phường (`ward`) trở lên (`district`, `city`)**. Tuyệt đối không dùng tên POI (trường học, quán xá, địa điểm công cộng):
+     * Cấp Xã / Phường: Ví dụ `"Hòa Khánh Nam, Đà Nẵng"`, `"Hòa Minh, Đà Nẵng"`.
+     * Cấp Quận / Huyện: Ví dụ `"Liên Chiểu, Đà Nẵng"`.
+     * Bảo vệ các đơn vị dạng số: Giữ nguyên `"Quận 1"`, `"Quận 3"`, `"Phường 10"` tránh rút gọn thành số đơn lẻ.
+   * **Phân tách 3 danh mục rõ rệt**:
+     * **Nhóm món ăn / bữa chính**: `quán ăn ở [Tên Phường/Quận, Tên TP]` hoặc `ăn gì ở [Tên Phường/Quận, Tên TP]`.
+     * **Nhóm đồ uống / cafe**: `quán cafe ở [Tên Phường/Quận, Tên TP]`.
+     * **Nhóm ăn vặt**: `ăn vặt [Tên Phường/Quận, Tên TP]`.
+   * **Cơ chế lọc từ khóa đã cào trong 24 giờ qua**:
+     * Truy vấn danh sách `keywords_generated` từ bảng `discovery_scans` được thực hiện trong vòng 24 giờ qua.
+     * So sánh và loại bỏ toàn bộ các từ khóa đã từng được dùng để cào trong 24 giờ qua (không phân biệt hoa thường).
+     * **Nếu toàn bộ từ khóa đều đã được cào trong 24h**: Bỏ qua tiến trình cào, trả về kết quả sẵn có trong DB.
+     * **Nếu còn từ khóa mới**: Chỉ cào các từ khóa mới này, đồng thời lưu danh sách từ khóa mới vào cột `keywords_generated` (JSONB) của bảng `discovery_scans`.
+
+3. **Bước 3: Cào link video TikTok & Nạp dòng tức thì (Streaming Ingestion Pipeline)** *(Tham chiếu đặc tả [`referent_for_BE/cao_link/dat_ta_cao_link.md`](../referent_for_BE/cao_link/dat_ta_cao_link.md))*:
+   * Thay vì cơ chế Gom Lô (chờ cào xong toàn bộ 6 từ khóa mới lưu), hệ thống triển khai theo mô hình **Streaming Ingestion**: Cào xong từ khóa nào là lập tức xử lý và đẩy sang AI Server ngay từ khóa đó.
+   * Duyệt qua từng từ khóa hợp lệ và gọi `crawl_tiktok_links_async(query=keyword, scroll_count=3, headless=True)`:
+     * **Khởi tạo & Anti-Bot**: Viewport 1920x1080, `locale="vi-VN"`, ẩn cờ `navigator.webdriver`, thực hiện Session Warmup truy cập `https://www.tiktok.com/explore` trong 2.5s lấy cookie trước khi tìm kiếm.
+     * **Cuộn trang & Trích xuất**: Tự động đóng modal đăng nhập, xử lý nút "Thử lại", cuộn trang 3 lần (cách nhau 2.5s) và trích xuất `a[href*='/video/']`.
+     * **Làm sạch URL**: Cắt bỏ tracking query sau dấu `?` (`split('?')[0]`) để chuẩn hóa về dạng `https://www.tiktok.com/@<author>/video/<id>`.
+     * **Chống khóa IP (Rate Limit)**: Duy trì độ trễ **5 giây** giữa các lần cào từ khóa kế tiếp.
+
+4. **Bước 4: Khử trùng lặp, Lưu DB & Đẩy ngay sang Server AI theo thời gian thực**:
+   * Ngay sau khi cào xong 1 từ khóa, duyệt ngay danh sách URL của từ khóa đó:
+     * Kiểm tra `platform_video_id` trong bảng `videos` và `analysis_runs` (`PENDING`, `PROCESSING`, `COMPLETED`).
+     * **Nếu chưa tồn tại**:
+       1. Lưu bản ghi vào bảng `videos` (`platform='tiktok'`, `platform_video_id`, `video_url`).
+       2. Tạo bản ghi `analysis_runs` (`user_id=NULL`, `status='PENDING'`, `trigger_source='SYSTEM_DISCOVERY'`, `priority=2`).
+       3. **Đẩy task ngay lập tức vào Redis `queue:low_priority`**.
+       4. `background_queue_worker` ngay lập tức rút task và gửi HTTP POST sang Server AI (`AI_SERVER_EXTRACT_URL`) để bóc tách địa điểm ẩm thực song song.
+   * **Hiệu quả**: Server AI phân tích song song ngay từ phút đầu tiên, các quán ăn tìm thấy sẽ xuất hiện dần trên bản đồ theo thời gian thực (real-time map enrichment) mà không cần chờ cào xong toàn bộ các từ khóa.
+   * Kết thúc toàn bộ các từ khóa, cập nhật tổng số lượng video tìm thấy lũy kế vào cột `videos_found_count` của bảng `discovery_scans`.
 
 
 
@@ -380,34 +435,22 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 ### 4.2. Dịch vụ Chuẩn hóa & Định vị Tọa độ (`app/services/geocoding_service.py`)
 
-Hệ thống **chỉ sử dụng duy nhất ArcGIS World Geocoding Service** (loại bỏ hoàn toàn Nominatim và Photon OSM):
+Hệ thống phân tách rõ hai cơ chế định vị địa lý:
+* **Định vị quán ăn từ địa chỉ AI trích xuất (Forward Geocoding)**: Sử dụng duy nhất **ArcGIS World Geocoding Service** nhằm tối ưu độ chính xác số nhà (`PointAddress`) tại Việt Nam.
+* **Phân giải địa chỉ khu vực ghim trên Map (Discovery Reverse Resolution)**: Sử dụng chuỗi dự phòng 3 lớp (*Nominatim OSM* $\rightarrow$ *ArcGIS Geocoder* $\rightarrow$ *Photon Komoot*) kết hợp tính toán độ phủ hành chính Shapely (xem chi tiết tại Mục 2.3).
 
-1. **Tiền xử lý chuỗi địa chỉ (`generate_sub_queries`)**:
+1. **Tiền xử lý chuỗi địa chỉ quán ăn (`generate_sub_queries`)**:
 * Chuyển các dấu gạch ngang `" - "` thành dấu phẩy `", "`.
-
-
 * Áp dụng từ điển Regex mở rộng viết tắt tiếng Việt (`tp.`, `tphcm`, `hn`, `q.`, `p.`, `tx.`, `tt.`, `đ.`, `ng.`, `h.`) và tên quận hay viết tắt (`phú` $\rightarrow$ `Phú Nhuận`, `bình thạnh`, `gò vấp`...).
-
-
 * Bóc tách số nhà ở đầu chuỗi và tự động chèn tiền tố `"Đường"` kèm dấu phẩy ngăn cách tên quận/thành phố để tối ưu hóa độ chính xác `PointAddress` của ArcGIS.
 
-
-
-
-2. **Forward Geocoding (`geocode_address`)**:
-* Gọi `GET [https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates](https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates)` với `countryCode=VNM`, `maxLocations=5`.
-
-
+2. **Forward Geocoding địa điểm (`geocode_address`)**:
+* Gọi `GET https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates` với `countryCode=VNM`, `maxLocations=5`.
 * **Luật chọn ứng viên**: Ưu tiên số 1 là ứng viên có `AddNum` hoặc `Match_addr`/`LongLabel` chứa chính xác số nhà mục tiêu; ưu tiên số 2 là ứng viên đứng đầu có `score >= 80`.
-
-
 * Trả về bộ 3 giá trị `(latitude, longitude, normalized_address)` để tạo `WKTElement(f"POINT({lon} {lat})", srid=4326)`.
 
-
-
-
-3. **Reverse Geocoding (`reverse_geocode`)**:
-* Gọi `GET [https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode](https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode)` với `location=f"{lon},{lat}"` và `langCode="vi"` để lấy tên đường/địa danh phục vụ tiến trình tự động sinh từ khóa cào video.
+3. **Reverse Geocoding điểm đơn (`reverse_geocode`)**:
+* Gọi `GET https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode` với `location=f"{lon},{lat}"` và `langCode="vi"` khi cần tra cứu nhanh tên đường/địa danh lân cận của một điểm tọa độ đơn lẻ.
 
 
 

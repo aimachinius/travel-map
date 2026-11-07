@@ -1,0 +1,2292 @@
+@import 'leaflet/dist/leaflet.css';
+@import '../../styles/swoosh-transition.css';
+
+/* ==========================================================================
+   LIQUID GLASS DESIGN SYSTEM (FOOD SPOT CLEAN WHITE / LIGHT THEME)
+   Hoàn toàn đồng bộ với Trang chủ: Tươi mát, Sạch sẽ, Sang trọng
+   ========================================================================== */
+
+.liquid-experience-root {
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Food Spot Brand White / Light Palette */
+  --bg-page: #fafbfc;
+  --surface-white: #ffffff;
+  --text-main: #2c3e2e;
+  --text-muted: #4a5c44;
+  --text-dim: #768872;
+
+  /* Food Spot Brand Greens & Warm Accents */
+  --brand-green-primary: #3b5335;
+  --brand-green-hover: #2c3e2e;
+  --brand-green-soft: #eef3e8;
+  --brand-green-border: #e2e8db;
+  --brand-amber-warm: #d9825b;
+
+  /* Light Glass Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-bg-clear: rgba(255, 255, 255, 0.75);
+  --glass-bg-hover: rgba(255, 255, 255, 0.98);
+  --glass-border: 1px solid rgba(226, 232, 219, 0.95);
+  --glass-border-hover: 1px solid #3b5335;
+  --glass-border-active: 1px solid #2c3e2e;
+
+  /* Depth & Inner Shadows */
+  --glass-shadow:
+    0 6px 20px rgba(44, 62, 46, 0.08),
+    inset 0 1px 1px #ffffff;
+
+  --glass-shadow-hover:
+    0 10px 28px rgba(44, 62, 46, 0.12),
+    inset 0 1px 1.5px #ffffff;
+
+  --glass-shadow-error:
+    0 8px 24px rgba(239, 68, 68, 0.15),
+    inset 0 1px 1.5px rgba(254, 202, 202, 0.8);
+
+  /* Animation Easing */
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-glass: transform 0.2s var(--ease-smooth), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 76px);
+  overflow: hidden;
+  font-family: var(--font-primary);
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  z-index: 10;
+}
+
+/* Common Liquid Glass utility */
+.liquid-glass {
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: var(--transition-glass);
+}
+
+/* ==========================================================================
+   1. Explore Unified Header (Đồng bộ 100% với Header Trang chủ)
+   ========================================================================== */
+.explore-unified-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 76px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid #eaeef0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+}
+
+.explore-nav-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.explore-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.explore-logo-img {
+  height: 36px;
+  width: auto;
+}
+
+.explore-mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #2c3e2e;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.explore-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.explore-nav-item {
+  text-decoration: none;
+  color: #4a5c44;
+  font-weight: 500;
+  font-size: 15px;
+  transition: color 0.15s ease;
+}
+
+.explore-nav-item:hover {
+  color: #2c3e2e;
+}
+
+.explore-nav-item.is-active {
+  color: #3b5335;
+  font-weight: 700;
+}
+
+/* Khối tài khoản trên Header */
+.explore-auth-slot {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+  padding-left: 20px;
+  border-left: 1px solid #eaeef0;
+}
+
+.explore-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #eef3e8;
+  border: 1px solid #e2e8db;
+  border-radius: 99px;
+  padding: 4px 12px 4px 6px;
+}
+
+.explore-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #3b5335;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.explore-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e2e;
+}
+
+.explore-logout-link {
+  font-size: 12px;
+  color: #b42318;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 2px;
+  padding: 2px 4px;
+  font-weight: 500;
+}
+
+.explore-logout-link:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   2. Bản đồ nền Leaflet (Mặc định Sáng - Carto Voyager)
+   ========================================================================== */
+.map-background-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-color: var(--bg-page);
+  cursor: grab;
+}
+
+.map-background-container:active {
+  cursor: grabbing;
+}
+
+.map-dark-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.map-dark-overlay.is-dark {
+  opacity: 1;
+  background: radial-gradient(circle at 75% 50%, rgba(9, 18, 12, 0.35) 0%, rgba(9, 18, 12, 0.75) 100%);
+}
+
+.liquid-experience-root .leaflet-bottom.leaflet-right {
+  bottom: 8px !important;
+  right: 6px !important;
+  z-index: 55 !important;
+}
+
+.liquid-experience-root .leaflet-control-zoom {
+  border: 1px solid #e2e8db !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(44, 62, 46, 0.12) !important;
+  margin-right: 6px !important;
+  margin-bottom: 6px !important;
+  z-index: 55 !important;
+}
+
+.liquid-experience-root .leaflet-control-zoom a {
+  background: #ffffff !important;
+  color: #2c3e2e !important;
+  border-bottom: 1px solid #e2e8db !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 15px !important;
+}
+
+.liquid-experience-root .leaflet-control-zoom a:hover {
+  background: #eef3e8 !important;
+  color: #3b5335 !important;
+}
+
+/* Ghim vị trí Food Spot trên bản đồ */
+.foodspot-marker-container {
+  background: transparent;
+  border: none;
+}
+
+/* Hiệu ứng nhảy lên bật lò xo (Spring / Bounce Up) của các địa điểm khi mây tan 50% */
+.foodspot-marker-bounce {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: 50% 100%;
+  animation: markerSpringUp 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes markerSpringUp {
+  0% {
+    transform: scale(0) translateY(24px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.24) translateY(-8px);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.92) translateY(2px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Marker ở trạng thái tĩnh khi đã ở trong map và chuyển điểm: Giữ nguyên vững chãi, không nhảy lại */
+.foodspot-marker-static {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: 50% 100%;
+}
+
+/* Hiệu ứng focus nhẹ nhàng, đáng yêu khi đổi điểm chọn (không giật toàn bộ marker trên map) */
+.foodspot-marker-active-pulse {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-origin: 50% 100%;
+  animation: activeFocusSmooth 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes activeFocusSmooth {
+  0% {
+    transform: scale(0.92);
+  }
+  65% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.foodspot-marker-pin {
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 0;
+  background: #3b5335;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -24px 0 0 -17px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 14px rgba(44, 62, 46, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.foodspot-marker-pin:hover {
+  transform: rotate(-45deg) scale(1.15);
+}
+
+.foodspot-marker-pin.is-active {
+  background: #3b5335;
+  border-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(44, 62, 46, 0.45);
+}
+
+.foodspot-marker-pin::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: #86efac;
+  position: absolute;
+  border-radius: 50%;
+}
+
+/* ==========================================================================
+   CYAN ACTIVE LOCATION GLOW (ĐỊA ĐIỂM ĐANG CHỌN ÁNH XANH CYAN)
+   ========================================================================== */
+
+/* Pin màu Cyan nổi bật rực rỡ với viền phát sáng */
+.foodspot-marker-pin.is-active.is-cyan {
+  background: linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%) !important;
+  border: 2.5px solid #ffffff !important;
+  box-shadow: 
+    0 0 16px rgba(6, 182, 212, 0.95),
+    0 0 35px rgba(34, 211, 238, 0.75),
+    0 6px 20px rgba(0, 0, 0, 0.35) !important;
+}
+
+.foodspot-marker-pin.is-active.is-cyan::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: #cffafe !important;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ffffff, 0 0 14px #22d3ee;
+}
+
+/* Vòng sóng tỏa sáng màu Cyan phát ra liên tục */
+.foodspot-marker-pulse.is-cyan {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.7) 0%, rgba(34, 211, 238, 0.35) 50%, transparent 75%) !important;
+  box-shadow: 0 0 22px rgba(6, 182, 212, 0.85), 0 0 38px rgba(34, 211, 238, 0.5) !important;
+  animation: foodspotCyanPulse 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite !important;
+}
+
+@keyframes foodspotCyanPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+/* Hào quang ánh sáng Cyan tĩnh thở nhẹ */
+.foodspot-marker-cyan-glow {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.55) 0%, rgba(6, 182, 212, 0.25) 60%, transparent 100%);
+  left: 50%;
+  top: 50%;
+  margin: -27px 0 0 -27px;
+  pointer-events: none;
+  animation: cyanAuraBreathe 2.4s ease-in-out infinite alternate;
+  z-index: -2;
+}
+
+@keyframes cyanAuraBreathe {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 1;
+  }
+}
+
+.foodspot-marker-pulse {
+  background: rgba(74, 222, 128, 0.4);
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -10px 0 0 -10px;
+  z-index: -1;
+  animation: foodspotPulse 2.4s ease-out infinite;
+}
+
+@keyframes foodspotPulse {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ==========================================================================
+   3. Cụm công cụ dưới cùng (Sáng/Tối & Đo FPS)
+   Dịch sang bên trái để khung điện thoại 9:16 tuyệt đối không thể che khuất
+   ========================================================================== */
+.bottom-utility-dock {
+  position: absolute;
+  right: calc(min(720px, 84vh) * 9 / 16 + 68px);
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 60;
+}
+
+.bottom-util-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8db;
+  color: #2c3e2e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(44, 62, 46, 0.08);
+  transition: all 0.2s ease;
+}
+
+.bottom-util-btn:hover {
+  background: #ffffff;
+  border-color: #3b5335;
+  color: #3b5335;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 83, 53, 0.16);
+}
+
+.bottom-util-fps {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e2e8db;
+  color: #5c7254;
+  font-size: 12px;
+  font-family: monospace;
+  box-shadow: 0 4px 16px rgba(44, 62, 46, 0.08);
+}
+
+.fps-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ==========================================================================
+   4. Cụm phím tác vụ trái (Left Floating Dock)
+   ========================================================================== */
+.left-floating-dock {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 30;
+}
+
+.glass-circle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 0 16px 16px 0;
+  border-left: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.94);
+  border-top: 1px solid #e2e8db;
+  border-right: 1px solid #e2e8db;
+  border-bottom: 1px solid #e2e8db;
+  color: #3b5335;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  box-shadow: 2px 4px 16px rgba(44, 62, 46, 0.08);
+  /* Ấn sâu vào mép trái một chút ở trạng thái mặc định */
+  transform: translateX(-16px);
+  padding-left: 10px;
+  opacity: 0.88;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.glass-circle-btn:hover {
+  background: #3b5335;
+  border-color: #3b5335;
+  color: #ffffff;
+  /* Đưa chuột vào thì lộ nhẹ ra ngoài mép trái */
+  transform: translateX(4px);
+  opacity: 1;
+  box-shadow: 4px 8px 24px rgba(59, 83, 53, 0.28);
+}
+
+.glass-circle-btn:active {
+  transform: translateX(1px) scale(0.97);
+}
+
+.dock-tooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-6px);
+  background: #2c3e2e;
+  border: 1px solid #3b5335;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.glass-circle-btn:hover .dock-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* ==========================================================================
+   5. Khu vực tìm kiếm & Bộ lọc Bán kính Khám phá (Bottom-Left)
+   ========================================================================== */
+.controls-area {
+  position: absolute;
+  left: 48px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 20;
+  max-width: 440px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.controls-area.is-collapsed {
+  max-width: fit-content;
+}
+
+/* Nút mở rộng dạng pill nhỏ nhắn, đáng yêu khi thu gọn */
+.controls-collapsed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dce5d5;
+  box-shadow: 0 4px 18px rgba(44, 62, 46, 0.1);
+  color: #2c3e2e;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.controls-collapsed-pill:hover {
+  background: #f0f7ec;
+  border-color: #3b5335;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(44, 62, 46, 0.18);
+}
+
+.collapsed-pill-icon {
+  font-size: 14px;
+}
+
+.collapsed-pill-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #2c3e2e;
+}
+
+.collapsed-pill-badge {
+  padding: 2px 7px;
+  background: #eef5ea;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2e5a32;
+}
+
+.collapsed-pill-chevron {
+  color: #4a5c44;
+  display: flex;
+  align-items: center;
+}
+
+/* Thanh công cụ lọc thông minh (Nổi tiếng / Quanh đây) - Nhỏ gọn, tinh tế */
+.discovery-filter-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid #e2e8db;
+  border-radius: 18px;
+  box-shadow: 0 6px 24px rgba(44, 62, 46, 0.08);
+}
+
+.filter-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.filter-mode-pills {
+  display: flex;
+  align-items: center;
+  background: #f0f4ec;
+  padding: 2px;
+  border-radius: 99px;
+  border: 1px solid #dce5d5;
+}
+
+.mode-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 11px;
+  border-radius: 99px;
+  border: none;
+  background: transparent;
+  color: #4a5c44;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mode-pill-btn:hover {
+  color: #2c3e2e;
+}
+
+.mode-pill-btn.active {
+  background: #ffffff;
+  color: #2c3e2e;
+  box-shadow: 0 2px 8px rgba(44, 62, 46, 0.12);
+}
+
+.filter-right-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.matched-spots-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  background: #eef5ea;
+  border: 1px solid #c9dec1;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #2e5a32;
+}
+
+/* Nút Thu gọn bản điều khiển để mở rộng map */
+.controls-collapse-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-radius: 99px;
+  border: 1px solid #dce5d5;
+  background: #f4f8f1;
+  color: #4a5c44;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.controls-collapse-toggle-btn:hover {
+  background: #3b5335;
+  color: #ffffff;
+  border-color: #3b5335;
+}
+
+.spots-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: radarPulse 1.8s infinite;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.radius-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #e2e8db;
+}
+
+.hub-selector-strip,
+.radius-selector-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.strip-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a5c44;
+  min-width: 56px;
+}
+
+.hub-chips,
+.radius-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hub-chip,
+.radius-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 99px;
+  border: 1px solid #dce5d5;
+  background: #ffffff;
+  color: #3b5335;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.hub-chip:hover,
+.radius-pill:hover {
+  background: #f0f7ec;
+  border-color: #3b5335;
+  transform: translateY(-1px);
+}
+
+.hub-chip.active,
+.radius-pill.active {
+  background: #2f4b36;
+  border-color: #2f4b36;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(47, 75, 54, 0.25);
+}
+
+/* Marker beacon cho tâm vị trí bán kính */
+.center-hub-pin-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-hub-beacon {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.35);
+  animation: beaconWave 2s ease-out infinite;
+}
+
+@keyframes beaconWave {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.center-hub-pin {
+  position: relative;
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.input-action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-pill-wrapper {
+  width: 340px;
+  height: 44px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 16px;
+  gap: 10px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e2e8db;
+  box-shadow: 0 4px 18px rgba(44, 62, 46, 0.08);
+  transition: all 0.2s ease;
+}
+
+.input-pill-wrapper:focus-within {
+  border-color: #3b5335;
+  box-shadow: 0 6px 24px rgba(59, 83, 53, 0.16);
+  transform: scale(1.01);
+}
+
+.input-pill-wrapper.shake-error {
+  animation: shake-error 0.4s ease;
+  border-color: #ef4444 !important;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2) !important;
+}
+
+@keyframes shake-error {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.input-icon-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5c7254;
+  flex-shrink: 0;
+}
+
+.video-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #2c3e2e;
+  font-family: var(--font-primary);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.video-input::placeholder {
+  color: #8c9e8a;
+}
+
+.clear-btn, .paste-btn {
+  background: #eef3e8;
+  border: 1px solid #e2e8db;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4a5c44;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clear-btn:hover, .paste-btn:hover {
+  background: #3b5335;
+  border-color: #3b5335;
+  color: #ffffff;
+  transform: scale(1.08);
+}
+
+.search-btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: #3b5335;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 4px 16px rgba(59, 83, 53, 0.3);
+  transition: all 0.2s ease;
+}
+
+.search-btn-circle:hover {
+  background: #2c3e2e;
+  transform: scale(1.06);
+  box-shadow: 0 6px 20px rgba(44, 62, 46, 0.35);
+}
+
+.search-btn-circle:active {
+  transform: scale(0.96);
+}
+
+.helper-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #5c7254;
+  padding-left: 12px;
+}
+
+.status-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3b5335;
+  box-shadow: 0 0 6px #86efac;
+}
+
+/* ==========================================================================
+   6. Khung xem Video 9:16 (Pearl Ceramic Glass Trắng)
+   Dịch nhẹ sang phải (right: 44px) để tối ưu tầm nhìn map ở trung tâm, không che nút nào
+   ========================================================================== */
+.video-display-area {
+  position: absolute;
+  right: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 50;
+}
+
+.liquid-glass-bezel {
+  height: min(670px, 76vh);
+  width: calc(min(670px, 76vh) * 9 / 16);
+  border-radius: 44px;
+  position: relative;
+  overflow: hidden;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 20px 60px rgba(44, 62, 46, 0.16),
+    0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.liquid-glass-bezel.is-empty {
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #e2e8db;
+}
+
+.liquid-glass-bezel.is-playing {
+  background: #ffffff;
+  box-shadow:
+    0 24px 64px rgba(44, 62, 46, 0.18),
+    0 0 24px rgba(59, 83, 53, 0.12);
+}
+
+.ambient-glow-wrapper {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50px;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.35;
+}
+
+.ambient-glow-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(59, 83, 53, 0.18) 0%, transparent 75%);
+  filter: blur(14px);
+}
+
+.glass-surface-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 46px;
+  pointer-events: none;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 2px #ffffff;
+}
+
+.device-notch {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+}
+
+.speaker-grill {
+  width: 32px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.lens-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.video-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 42px;
+  overflow: hidden;
+  z-index: 1;
+  background: #000000;
+  contain: paint;
+}
+
+.screen-state {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.screen-state.active {
+  display: flex;
+}
+
+.loading-state {
+  background: rgba(250, 251, 252, 0.95);
+  color: #2c3e2e;
+}
+
+.liquid-spinner {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+
+.spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+
+.ring-outer {
+  border-top-color: #3b5335;
+  border-right-color: #d9825b;
+  animation: liquid-spin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+}
+
+.ring-inner {
+  inset: 6px;
+  border-bottom-color: #86efac;
+  border-left-color: #3b5335;
+  animation: liquid-spin 0.8s linear infinite reverse;
+}
+
+@keyframes liquid-spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-label {
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a5c44;
+}
+
+/* ==========================================================================
+   Cụm phím tác vụ phải (Right Floating Dock) - Gắn sát tường phải đối xứng cụm trái
+   ========================================================================== */
+.frame-floating-controls {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 60;
+}
+
+.frame-action-btn {
+  width: 46px;
+  height: 44px;
+  border-radius: 16px 0 0 16px;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.94);
+  border-top: 1px solid #e2e8db;
+  border-left: 1px solid #e2e8db;
+  border-bottom: 1px solid #e2e8db;
+  color: #3b5335;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  box-shadow: -2px 4px 16px rgba(44, 62, 46, 0.08);
+  /* Ấn sâu vào mép tường phải một chút ở trạng thái mặc định (đối xứng 3 nút bên trái) */
+  transform: translateX(16px);
+  padding-right: 10px;
+  opacity: 0.88;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.frame-action-btn:hover {
+  background: #3b5335;
+  border-color: #3b5335;
+  color: #ffffff;
+  /* Đưa chuột vào thì lộ nhẹ ra ngoài mép tường phải */
+  transform: translateX(-4px);
+  opacity: 1;
+  box-shadow: -4px 8px 24px rgba(59, 83, 53, 0.28);
+}
+
+.frame-action-btn:active {
+  transform: translateX(-1px) scale(0.97);
+}
+
+/* Tooltip hiển thị trượt về bên trái cho cụm nút phải */
+.dock-tooltip.right-side {
+  left: auto;
+  right: calc(100% + 12px);
+  transform: translateY(-50%) translateX(6px);
+}
+
+.frame-action-btn:hover .dock-tooltip.right-side {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Lá chắn góc dưới: Đặt pointer-events: none để nút Cài đặt (⚙) hoạt động 100% trơn tru */
+.fullscreen-blocker-shield {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 28px;
+  z-index: 25;
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Frame TikTok active duy nhất (Virtual Single-Player) */
+.tiktok-active-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Các frame TikTok trong hệ thống trượt Sliding Tri-Buffer */
+.tiktok-sliding-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Lớp cảm ứng lướt TikTok chuẩn giao diện ứng dụng (Cuộn chuột, vuốt ngón tay, kéo chuột) */
+.tiktok-gesture-surface {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 68px;
+  bottom: 50px;
+  z-index: 22;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tiktok-gesture-surface:active {
+  cursor: grabbing;
+}
+
+/* Biểu tượng Pause ở giữa màn hình khi tạm dừng (chuẩn TikTok) */
+.tiktok-center-pause-indicator {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 23;
+  animation: pauseFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pause-icon-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pause-icon-circle svg {
+  transform: translateX(3px);
+}
+
+@keyframes pauseFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Gợi ý cử chỉ lướt tinh tế (chỉ hiện khi mới vào, lướt 1 phát là ẩn) */
+.tiktok-swipe-hint {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  pointer-events: none;
+  opacity: 0.95;
+  z-index: 24;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  animation: hintFloatPulse 2.4s ease-in-out infinite;
+}
+
+/* Nút huy hiệu bật âm thanh nhanh trên màn hình video khi đang tắt tiếng */
+.tiktok-mute-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tiktok-mute-badge:hover {
+  background: rgba(15, 23, 42, 0.95);
+  transform: scale(1.05);
+  border-color: rgba(6, 182, 212, 0.6);
+  color: #22d3ee;
+}
+
+.frame-action-btn.is-sound-on {
+  color: #06b6d4 !important;
+  border-color: rgba(6, 182, 212, 0.45) !important;
+  background: rgba(6, 182, 212, 0.12) !important;
+}
+
+@keyframes hintFloatPulse {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.95;
+  }
+  50% {
+    transform: translateX(-50%) translateY(4px);
+    opacity: 0.75;
+  }
+}
+
+/* Các frame TikTok nhúng được lưu trong DOM cache (nếu dùng) */
+.tiktok-cache-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  transition: opacity 0.25s ease;
+}
+
+.tiktok-cache-frame.is-active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.tiktok-cache-frame.is-cached {
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Lá chắn vô hình cạnh phải chặn click Tim, Bình luận, Share (chỉ xem số liệu) */
+.tiktok-actions-shield {
+  position: absolute;
+  right: 0;
+  bottom: 50px;
+  width: 68px;
+  height: 250px;
+  z-index: 25;
+  background: transparent;
+  cursor: default;
+  pointer-events: auto;
+}
+
+/* Lá chắn vô hình góc trên chặn click Avatar và Watermark TikTok */
+.tiktok-top-shield {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 25;
+  background: transparent;
+  cursor: default;
+  pointer-events: auto;
+}
+
+/* Overlay hiển thị poster khi không ở trang Khám phá để tắt hoàn toàn âm thanh */
+.inactive-poster-overlay {
+  position: absolute;
+  inset: 0;
+  background: #0f1610;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.inactive-play-hint {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(59, 83, 53, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.engine-tag {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.stream-nav-divider {
+  width: 28px;
+  height: 1px;
+  background: #dce5d5;
+  align-self: flex-end;
+  margin: 2px 6px 2px 0;
+}
+
+/* ==========================================================================
+   7. Ngăn kéo thông tin (Slide-in Drawer)
+   ========================================================================== */
+.drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(44, 62, 46, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 190;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.liquid-glass-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 440px;
+  height: 100%;
+  z-index: 200;
+  background: rgba(255, 255, 255, 0.98);
+  border-left: 1px solid #eaeef0;
+  box-shadow: -10px 0 40px rgba(44, 62, 46, 0.12);
+  transform: translateX(100%);
+  transition: transform 0.32s var(--ease-smooth);
+  display: flex;
+  flex-direction: column;
+}
+
+.liquid-glass-drawer.active {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eaeef0;
+}
+
+.drawer-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.drawer-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #eef3e8;
+  border: 1px solid #e2e8db;
+  color: #3b5335;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawer-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #2c3e2e;
+}
+
+.drawer-subtitle {
+  font-size: 12px;
+  color: #5c7254;
+  margin-top: 2px;
+}
+
+.drawer-close-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafbfc;
+  border: 1px solid #e2e8db;
+  color: #4a5c44;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.drawer-close-btn:hover {
+  background: #eef3e8;
+  color: #2c3e2e;
+  transform: scale(1.1);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.drawer-card {
+  padding: 14px 16px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8db;
+  box-shadow: 0 2px 8px rgba(44, 62, 46, 0.04);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.drawer-card:hover {
+  background: #eef3e8;
+  border-color: #3b5335;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 46, 0.08);
+}
+
+.drawer-card-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.drawer-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-card-desc {
+  font-size: 12px;
+  color: #5c7254;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-card-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #eef3e8;
+  border: 1px solid #e2e8db;
+  color: #3b5335;
+}
+
+/* ==========================================================================
+   8. Thông báo nổi Toast
+   ========================================================================== */
+.toast-notification {
+  position: absolute;
+  top: 92px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 10px 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e2e8db;
+  box-shadow: 0 8px 30px rgba(44, 62, 46, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s var(--ease-smooth);
+}
+
+.toast-notification.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-notification.success {
+  border-color: #3b5335;
+}
+
+.toast-notification.error {
+  border-color: #ef4444;
+}
+
+.toast-notification.info {
+  border-color: #3b5335;
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  color: #3b5335;
+}
+
+.toast-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2c3e2e;
+}
+
+.toast-msg {
+  font-size: 12px;
+  color: #5c7254;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .bottom-utility-dock {
+    left: 48px;
+    bottom: 84px;
+    right: auto;
+  }
+}
+
+@media (max-width: 1024px) {
+  .video-display-area {
+    right: 44px;
+    height: 70vh;
+  }
+  .frame-floating-controls {
+    right: 0;
+  }
+  .controls-area {
+    left: 12px;
+    bottom: 12px;
+  }
+  .input-pill-wrapper {
+    width: 320px;
+  }
+  .left-floating-dock {
+    left: 0;
+  }
+  .bottom-utility-dock {
+    left: 12px;
+    bottom: 74px;
+    right: auto;
+  }
+  .liquid-experience-root .leaflet-control-zoom {
+    margin-right: 8px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+/* ==========================================================================
+   TÍNH NĂNG CHỈ ĐƯỜNG & ĐO THỜI GIAN OSRM (ROUTING & NAVIGATION)
+   Phong cách Pearl Ceramic Glass, bo góc mềm mại, chuẩn UX du lịch/Foodie
+   ========================================================================== */
+
+/* Nút chỉ đường trên thanh tác vụ nổi bên phải */
+.frame-action-btn.is-routing-active {
+  background: rgba(224, 247, 250, 0.95) !important;
+  border-color: #0891b2 !important;
+  color: #0891b2 !important;
+  box-shadow: 0 0 16px rgba(8, 145, 178, 0.45) !important;
+}
+
+/* Chấm định vị Điểm xuất phát (Origin Pin) trên Leaflet */
+.route-origin-marker-container {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Badge chỉ dẫn nổi trên đầu nút xuất phát */
+.route-origin-badge {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0891b2;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(8, 145, 178, 0.45);
+  pointer-events: none;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.route-origin-badge::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #0891b2 transparent transparent transparent;
+}
+
+.route-origin-beacon {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.22);
+  border: 1.5px solid rgba(8, 145, 178, 0.6);
+  animation: originBeaconPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes originBeaconPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+}
+
+.route-origin-pin {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid #0891b2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  box-shadow: 0 4px 14px rgba(8, 145, 178, 0.35);
+  z-index: 2;
+  cursor: grab;
+}
+
+.route-origin-pin:active {
+  cursor: grabbing;
+}
+
+/* Đường vẽ lộ trình OSRM trên bản đồ */
+.foodspot-route-core-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 2px 6px rgba(8, 145, 178, 0.4));
+}
+
+/* Thẻ nổi Lộ trình & Đo thời gian (Liquid Route Card) */
+.liquid-route-card-container {
+  position: absolute;
+  top: 14px;
+  left: 62px;
+  z-index: 450;
+  width: 350px;
+  max-width: calc(100vw - 120px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(35, 60, 42, 0.16);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: routeCardSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes routeCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.route-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.route-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.route-card-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.route-card-label {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #0891b2;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.route-card-dest-name {
+  margin: 1px 0 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1b4332;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.route-card-close-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.route-card-close-btn:hover {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  transform: rotate(90deg);
+}
+
+/* Khối Điểm xuất phát (Tự chọn & gợi ý điểm nhanh) */
+.route-origin-card-box {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 9px 12px;
+  background: rgba(244, 247, 242, 0.9);
+  border-radius: 14px;
+  border: 1px solid rgba(210, 225, 205, 0.8);
+}
+
+.route-origin-row-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.route-origin-pin-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.route-origin-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.route-origin-sublabel {
+  font-size: 9px;
+  font-weight: 700;
+  color: #0891b2;
+  letter-spacing: 0.5px;
+}
+
+.route-origin-name {
+  font-size: 12.5px;
+  color: #1b4332;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-origin-reset-btn {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid #c7d2cb;
+  background: #ffffff;
+  color: #2f4b36;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.route-origin-reset-btn:hover {
+  background: #edf5ed;
+  border-color: #2f4b36;
+}
+
+.route-origin-hint-note {
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 5px 8px;
+  border-radius: 8px;
+  border-left: 2.5px solid #0891b2;
+}
+
+/* Các gợi ý điểm đi nhanh */
+.route-landmarks-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.landmarks-pills-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.landmarks-pills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.landmark-pill-btn {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  color: #334155;
+  font-size: 10.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.landmark-pill-btn:hover {
+  background: #f1f5f9;
+  border-color: #0891b2;
+  color: #0891b2;
+}
+
+.landmark-pill-btn.is-selected {
+  background: #0891b2;
+  border-color: #0891b2;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(8, 145, 178, 0.25);
+}
+
+/* 3 Tabs Phương tiện */
+.route-vehicle-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.vehicle-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fbfcf9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+}
+
+.vehicle-tab-btn:hover {
+  background: #ffffff;
+  border-color: #a7d0b8;
+  transform: translateY(-1px);
+}
+
+.vehicle-tab-btn.is-active {
+  background: #2f4b36;
+  border-color: #2f4b36;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(47, 75, 54, 0.22);
+}
+
+.v-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.v-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.v-name {
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  line-height: 1.1;
+  opacity: 0.85;
+}
+
+.vehicle-tab-btn.is-active .v-name {
+  color: #d1fae5;
+  opacity: 1;
+}
+
+.v-eta {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/* Trạng thái Loading / Lỗi */
+.route-status-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 11.5px;
+}
+
+.route-status-box.is-loading {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.route-status-box.is-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.route-spinner {
+  display: inline-block;
+  animation: routeSpin 1s linear infinite;
+}
+
+@keyframes routeSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Phần Tóm tắt & Chi tiết */
+.route-summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.route-metrics-row {
+  display: flex;
+  gap: 8px;
+}
+
+.metric-pill {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f4f7f2;
+  border: 1px solid rgba(220, 230, 215, 0.7);
+}
+
+.metric-pill.is-distance {
+  border-left: 3px solid #0891b2;
+}
+
+.metric-pill.is-time {
+  border-left: 3px solid #2f4b36;
+}
+
+.m-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1b4332;
+}
+
+.m-sub {
+  font-size: 9.5px;
+  color: #666;
+}
+
+.route-via-text {
+  font-size: 11px;
+  color: #4b6352;
+  background: rgba(237, 245, 237, 0.6);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.route-toggle-steps-btn {
+  background: none;
+  border: none;
+  color: #0891b2;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+  transition: color 0.2s;
+}
+
+.route-toggle-steps-btn:hover {
+  color: #0e7490;
+  text-decoration: underline;
+}
+
+.route-steps-scrollable {
+  max-height: 160px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.route-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  color: #334155;
+  transition: background 0.15s;
+}
+
+.route-step-item:hover {
+  background: #f8fafc;
+}
+
+.step-icon {
+  font-size: 12px;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.step-body {
+  flex: 1;
+}
+
+.step-instruction {
+  margin: 0;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+.step-distance {
+  font-size: 9.5px;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* Nút Google Maps điều hướng */
+.route-gmaps-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #2f4b36 0%, #1b4332 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(27, 67, 50, 0.25);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.route-gmaps-nav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(27, 67, 50, 0.35);
+  filter: brightness(1.08);
+}
+

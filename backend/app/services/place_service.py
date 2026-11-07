@@ -111,18 +111,6 @@ class PlaceService:
                 "distance_m": round(float(distance_m), 1) if distance_m is not None else None,
             })
 
-        # Nếu số lượng điểm quá ít (< 3), kích hoạt ngầm DiscoveryService
-        if len(items) < 3:
-            logger.info(f"Ít video ({len(items)}) quanh tọa độ ({lat}, {lon}). Kích hoạt auto discovery...")
-            # Chạy async task không block
-            try:
-                loop = asyncio.get_running_loop()
-                loop.create_task(
-                    DiscoveryService.discover_location(db=db, lat=lat, lon=lon, radius_m=radius_m)
-                )
-            except RuntimeError:
-                pass
-
         return items
 
     @classmethod

@@ -1,23 +1,24 @@
+"""Tests for administrative keyword generation logic."""
+
 import pytest
-from app.services.discovery_service import DiscoveryService
+from app.services.discovery import generate_orthogonal_keywords
 
 
-def test_generate_keywords_full_info():
-    geo_info = {
-        "poi": "Đại học Bách Khoa",
-        "street": "Đường Nguyễn Lương Bằng",
-        "district": "Liên Chiểu",
-        "city": "Đà Nẵng",
+def test_generate_keywords_administrative_only():
+    current_address = {
+        "ward": "Phường Hòa Khánh Nam",
+        "district": "Quận Liên Chiểu",
+        "city": "Thành phố Đà Nẵng",
     }
-    keywords = DiscoveryService.generate_keywords(geo_info)
+    keywords = generate_orthogonal_keywords(current_address, max_keywords=3)
 
-    assert "quán ăn gần Đại học Bách Khoa" in keywords
-    assert "quán ngon đường Nguyễn Lương Bằng" in keywords
-    assert "ăn vặt Liên Chiểu" in keywords
+    assert len(keywords) == 3
+    # Check that keywords use administrative units
+    assert any("Hòa Khánh Nam" in kw for kw in keywords)
 
 
 def test_generate_keywords_fallback():
-    geo_info = {}
-    keywords = DiscoveryService.generate_keywords(geo_info)
+    current_address = {}
+    keywords = generate_orthogonal_keywords(current_address, max_keywords=3)
     assert len(keywords) > 0
-    assert "quán ăn ngon" in keywords
+    assert any("Đà Nẵng" in kw for kw in keywords)

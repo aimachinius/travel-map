@@ -1,6 +1,15 @@
 import asyncio
 from contextlib import asynccontextmanager
 import logging
+import sys
+
+# Configure root logger so INFO logs from services and routers are visible in Docker logs
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout)],
+)
+logging.getLogger("app").setLevel(logging.INFO)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

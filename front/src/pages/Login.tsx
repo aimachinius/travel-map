@@ -1,8 +1,8 @@
-
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../services/useAuth'
+import { ApiError } from '../services/api'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -15,12 +15,19 @@ export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
 
+  const fillDemoAccount = () => {
+    setEmail('demo@foodspot.vn')
+    setPassword('password123')
+    setError('')
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
 
-    if (!email.trim() || !password) {
-      setError('Vui lòng nhập đầy đủ email và mật khẩu.')
+    const identifier = email.trim()
+    if (!identifier || !password) {
+      setError('Vui lòng nhập tài khoản hoặc email và mật khẩu.')
       return
     }
 
@@ -28,30 +35,29 @@ export default function Login() {
 
     try {
       await login({
-        username_or_email: email.trim(),
+        username_or_email: identifier,
         password,
       })
+
       navigate('/explore')
-    } catch (err: any) {
-      setError(err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.')
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setError(typeof err.detail === 'string' ? err.detail : err.message)
+      } else {
+        setError((err as Error)?.message || 'Đăng nhập không thành công. Vui lòng thử lại.')
+      }
     } finally {
       setLoading(false)
     }
   }
-
 
   return (
     <main className="login-page">
       {/* Bên trái: hình ảnh minh họa Food Spot */}
       <section className="login-visual" aria-label="Khám phá địa điểm ăn uống">
         <Link to="/" className="login-brand" aria-label="Quay về trang chủ Food Spot">
-  <img
-    className="fs-logo"
-    src="/food-spot.svg"
-    alt="Food Spot"
-  />
-  
-</Link>
+          <img className="fs-logo" src="/food-spot.svg" alt="Food Spot" />
+        </Link>
 
         <div className="login-collage">
           <div className="login-photo login-photo-food">
@@ -152,31 +158,23 @@ export default function Login() {
       <section className="login-form-panel">
         <div className="login-form-wrap">
           <h1 className="login-title">
-  <img
-    className="fs-logo login-title-logo"
-    src="/food-spot.svg"
-    alt=""
-  />
-  <span>Đăng nhập</span>
-</h1>
+            <img className="fs-logo login-title-logo" src="/food-spot.svg" alt="" />
+            <span>Đăng nhập</span>
+          </h1>
 
           <form className="login-form" onSubmit={handleSubmit} noValidate>
             <div className="login-field">
               <label htmlFor="login-email">Email</label>
               <div className="login-input-wrap">
-                <svg
-                  className="login-input-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="m4 7 8 6 8-6" />
+                <svg className="login-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2Z" />
+                  <polyline points="22,6 12,13 2,6" />
                 </svg>
+
                 <input
                   id="login-email"
                   type="email"
-                  placeholder="Nhập email của bạn"
+                  placeholder="name@example.com"
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -187,12 +185,7 @@ export default function Login() {
             <div className="login-field">
               <label htmlFor="login-password">Mật khẩu</label>
               <div className="login-input-wrap">
-                <svg
-                  className="login-input-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                >
+                <svg className="login-input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <rect x="4" y="10" width="16" height="11" rx="2" />
                   <path d="M8 10V7a4 4 0 0 1 8 0v3" />
                   <path d="M12 14v3" />
@@ -240,9 +233,16 @@ export default function Login() {
                 <span>Ghi nhớ đăng nhập</span>
               </label>
 
-              <Link to="/forgot-password" className="login-forgot">
+              <a
+                href="#forgot-password"
+                onClick={(e) => {
+                  e.preventDefault()
+                  alert('Tính năng khôi phục mật khẩu qua Email đang được phát triển. Vui lòng liên hệ quản trị viên Food Spot để được hỗ trợ cấp lại.')
+                }}
+                className="login-forgot"
+              >
                 Quên mật khẩu?
-              </Link>
+              </a>
             </div>
 
             {error && (
@@ -251,11 +251,7 @@ export default function Login() {
               </p>
             )}
 
-            <button
-              type="submit"
-              className="login-submit"
-              disabled={loading}
-            >
+            <button type="submit" className="login-submit" disabled={loading}>
               {loading ? 'Đang xử lý...' : 'Đăng nhập'}
               {!loading && (
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -263,6 +259,31 @@ export default function Login() {
                   <path d="m13 5 7 7-7 7" />
                 </svg>
               )}
+            </button>
+
+            {/* Nút đăng nhập nhanh bằng tài khoản mẫu */}
+            <button
+              type="button"
+              onClick={fillDemoAccount}
+              style={{
+                marginTop: '12px',
+                background: 'rgba(49, 93, 67, 0.08)',
+                border: '1px dashed #315d43',
+                borderRadius: '10px',
+                padding: '10px 14px',
+                color: '#315d43',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: 'pointer',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'background 0.2s ease',
+              }}
+            >
+              <span>⚡</span> Nhấp để điền tài khoản dùng thử (demo@foodspot.vn)
             </button>
           </form>
 

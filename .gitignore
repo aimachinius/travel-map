@@ -44,3 +44,5 @@ ecc-install.json
 # Temporary files
 *.tmp
 *.bak
+
+.cache_area.json

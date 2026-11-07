@@ -1,94 +1,71 @@
-import { useEffect, useMemo, useState } from 'react'
+/**
+ * @deprecated LEGACY COMPONENT - ĐÃ NGƯNG SỬ DỤNG TRONG ROUTING CHÍNH
+ * Chức năng "Địa điểm yêu thích" đã được thay thế bằng ngăn kéo kính thể lỏng (Liquid Drawer: Liked Places)
+ * trực tiếp trên trang /explore.
+ * File này được giữ lại nhằm mục đích tham khảo mã nguồn cũ, không xóa.
+ */
+
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MainLayout from './MainLayout'
-import PlaceDetailModal from '../components/place/PlaceDetailModal'
-import VideoEmbedModal from '../components/video/VideoEmbedModal'
-import { getSavedPlaces, unsavePlace } from '../api/saved'
-import { useAuth } from '../contexts/AuthContext'
-import type { SavedPlaceItem } from '../types/saved'
-import type { Place } from '../types/place'
-import type { Video } from '../types/video'
 import './SavedPlaces.css'
 
-const DEFAULT_FOOD_IMAGE =
-  'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'
+type Place = {
+  id: number
+  name: string
+  address: string
+  category: 'Quán ăn' | 'Cà phê'
+  image: string
+}
+
+const initialPlaces: Place[] = [
+  {
+    id: 1,
+    name: 'Bún chả cá Đà Nẵng',
+    address: 'Đà Nẵng, Việt Nam',
+    category: 'Quán ăn',
+    image:
+      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 2,
+    name: 'Góc cà phê xanh',
+    address: 'Đà Nẵng, Việt Nam',
+    category: 'Cà phê',
+    image:
+      'https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=800&q=80',
+  },
+  {
+    id: 3,
+    name: 'Món ngon địa phương',
+    address: 'Đà Nẵng, Việt Nam',
+    category: 'Quán ăn',
+    image:
+      'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+  },
+]
 
 export default function SavedPlaces() {
   const navigate = useNavigate()
-  const { isAuthenticated } = useAuth()
-
-  const [savedPlaces, setSavedPlaces] = useState<SavedPlaceItem[]>([])
-  const [loading, setLoading] = useState(false)
+  const [places, setPlaces] = useState(initialPlaces)
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('Tất cả')
 
-  const [detailPlace, setDetailPlace] = useState<Place | null>(null)
-  const [playingVideo, setPlayingVideo] = useState<Video | any | null>(null)
-
-  useEffect(() => {
-    if (!isAuthenticated) return
-
-    let cancelled = false
-    setLoading(true)
-
-    getSavedPlaces(50, 0)
-      .then((items) => {
-        if (!cancelled) {
-          setSavedPlaces(items)
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          console.error('Lỗi lấy danh sách quán đã lưu:', err)
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [isAuthenticated])
-
-  const categories = useMemo(() => {
-    const set = new Set<string>()
-    set.add('Tất cả')
-    for (const item of savedPlaces) {
-      if (item.place.category) {
-        set.add(item.place.category)
-      }
-    }
-    return Array.from(set)
-  }, [savedPlaces])
-
   const filteredPlaces = useMemo(() => {
-    return savedPlaces.filter((item) => {
-      const p = item.place
+    return places.filter((place) => {
       const matchesSearch =
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.address && p.address.toLowerCase().includes(search.toLowerCase())) ||
-        (p.normalized_address &&
-          p.normalized_address.toLowerCase().includes(search.toLowerCase()))
+        place.name.toLowerCase().includes(search.toLowerCase()) ||
+        place.address.toLowerCase().includes(search.toLowerCase())
 
       const matchesCategory =
-        category === 'Tất cả' || p.category === category
+        category === 'Tất cả' || place.category === category
 
       return matchesSearch && matchesCategory
     })
-  }, [savedPlaces, search, category])
+  }, [places, search, category])
 
-  const handleRemovePlace = async (placeId: string) => {
-    try {
-      await unsavePlace(placeId)
-      setSavedPlaces((current) =>
-        current.filter((item) => item.place.id !== placeId),
-      )
-    } catch (err: any) {
-      alert(err.message || 'Không thể bỏ lưu địa điểm.')
-    }
+  const removePlace = (id: number) => {
+    setPlaces((current) => current.filter((place) => place.id !== id))
   }
 
   return (
@@ -98,11 +75,11 @@ export default function SavedPlaces() {
           <div>
             <span className="saved-places-eyebrow">YOUR COLLECTION</span>
             <h2>Địa điểm yêu thích</h2>
-            <p>Những quán ăn và quán cà phê bạn đã lưu để ghé thăm.</p>
+            <p>Lưu lại những nơi bạn muốn ghé thăm tiếp theo.</p>
           </div>
 
           <div className="saved-places-count">
-            <span>{savedPlaces.length}</span>
+            <span>{places.length}</span>
             <span>địa điểm</span>
           </div>
         </div>
@@ -130,7 +107,7 @@ export default function SavedPlaces() {
           </label>
 
           <div className="saved-places-filters">
-            {categories.map((item) => (
+            {['Tất cả', 'Quán ăn', 'Cà phê'].map((item) => (
               <button
                 type="button"
                 key={item}
@@ -143,50 +120,20 @@ export default function SavedPlaces() {
           </div>
         </div>
 
-        {!isAuthenticated ? (
-          <div className="saved-places-empty">
-            <div className="saved-places-empty-icon">🔒</div>
-            <h3>Yêu cầu đăng nhập</h3>
-            <p>Vui lòng đăng nhập để xem danh sách quán ăn yêu thích của bạn.</p>
-            <button
-              type="button"
-              className="saved-place-map-button"
-              onClick={() => navigate('/login')}
-            >
-              Đăng nhập ngay
-            </button>
-          </div>
-        ) : loading ? (
-          <div className="saved-places-empty">
-            <div className="saved-places-empty-icon">⌖</div>
-            <h3>Đang tải dữ liệu...</h3>
-            <p>Đang đồng bộ danh sách địa điểm ẩm thực đã lưu.</p>
-          </div>
-        ) : filteredPlaces.length > 0 ? (
+        {filteredPlaces.length > 0 ? (
           <div className="saved-places-grid">
-            {filteredPlaces.map(({ place, video_count }) => (
+            {filteredPlaces.map((place) => (
               <article className="saved-place-card" key={place.id}>
-                <div
-                  className="saved-place-image"
-                  onClick={() => setDetailPlace(place)}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <img
-                    src={DEFAULT_FOOD_IMAGE}
-                    alt={place.name}
-                    loading="lazy"
-                  />
+                <div className="saved-place-image">
+                  <img src={place.image} alt={place.name} loading="lazy" />
                   <span className="saved-place-category">
-                    {place.category || 'Ẩm thực'}
+                    {place.category}
                   </span>
 
                   <button
                     type="button"
                     className="saved-place-heart"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemovePlace(place.id)
-                    }}
+                    onClick={() => removePlace(place.id)}
                     aria-label={`Bỏ lưu ${place.name}`}
                     title="Bỏ khỏi địa điểm yêu thích"
                   >
@@ -195,32 +142,26 @@ export default function SavedPlaces() {
                 </div>
 
                 <div className="saved-place-content">
-                  <h3
-                    onClick={() => setDetailPlace(place)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {place.name}
-                  </h3>
+                  <h3>{place.name}</h3>
 
                   <p className="saved-place-address">
                     <span aria-hidden="true">⌖</span>
-                    {place.normalized_address ||
-                      place.address ||
-                      'Chưa có địa chỉ chi tiết'}
+                    {place.address}
                   </p>
 
                   <div className="saved-place-actions">
                     <button
                       type="button"
                       className="saved-place-map-button"
-                      onClick={() => setDetailPlace(place)}
+                      onClick={() => navigate('/explore')}
                     >
-                      <span>▷</span> {video_count} video review
+                      <span aria-hidden="true">⌖</span>
+                      Xem bản đồ
                     </button>
                     <button
                       type="button"
                       className="saved-place-remove"
-                      onClick={() => handleRemovePlace(place.id)}
+                      onClick={() => removePlace(place.id)}
                     >
                       Bỏ lưu
                     </button>
@@ -240,7 +181,7 @@ export default function SavedPlaces() {
             <p>
               {search || category !== 'Tất cả'
                 ? 'Thử thay đổi từ khóa hoặc bộ lọc để tìm địa điểm.'
-                : 'Khi tìm được một quán ăn thú vị trên bản đồ, hãy lưu lại để dễ dàng tìm thấy sau này.'}
+                : 'Khi tìm được một quán ăn thú vị, hãy lưu lại để dễ dàng tìm thấy sau này.'}
             </p>
             <button
               type="button"
@@ -252,22 +193,6 @@ export default function SavedPlaces() {
           </div>
         )}
       </section>
-
-      {/* Place Detail Modal */}
-      <PlaceDetailModal
-        place={detailPlace}
-        onClose={() => setDetailPlace(null)}
-        onPlayVideo={(v) => {
-          setDetailPlace(null)
-          setPlayingVideo(v)
-        }}
-      />
-
-      {/* Video Player Modal */}
-      <VideoEmbedModal
-        video={playingVideo}
-        onClose={() => setPlayingVideo(null)}
-      />
     </MainLayout>
   )
-}
+}

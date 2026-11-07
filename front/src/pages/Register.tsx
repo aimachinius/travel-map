@@ -3,12 +3,14 @@ import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
 import './Register.css'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../services/useAuth'
+import { ApiError } from '../services/api'
 
 export default function Register() {
   const navigate = useNavigate()
   const { register } = useAuth()
   const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -27,7 +29,7 @@ export default function Register() {
       return
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError('Email không hợp lệ.')
       return
     }
@@ -50,20 +52,31 @@ export default function Register() {
     setLoading(true)
 
     try {
-      const generatedUsername =
-        email.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '') +
-        Math.floor(100 + Math.random() * 900)
+      const cleanEmail = email.trim().toLowerCase()
+      let finalUsername = username.trim()
+        ? username.trim().toLowerCase().replace(/[^a-zA-Z0-9_]/g, '')
+        : cleanEmail.split('@')[0].replace(/[^a-zA-Z0-9_]/g, '_')
+
+      if (finalUsername.length < 3) {
+        finalUsername = `user_${finalUsername}_${Math.random().toString(36).slice(2, 6)}`
+      }
 
       await register({
-        username: generatedUsername,
-        email: email.trim().toLowerCase(),
+        username: finalUsername,
+        email: cleanEmail,
         password,
         full_name: fullName.trim(),
       })
 
-      navigate('/explore')
-    } catch (err: any) {
-      setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.')
+      setError('')
+      alert('Đăng ký thành công! Bạn có thể đăng nhập ngay.')
+      navigate('/login')
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        setError(typeof err.detail === 'string' ? err.detail : err.message)
+      } else {
+        setError((err as Error)?.message || 'Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.')
+      }
     } finally {
       setLoading(false)
     }
@@ -234,6 +247,30 @@ export default function Register() {
             </div>
 
             <div className="login-field">
+              <label htmlFor="register-username">Tên đăng nhập (Username)</label>
+              <div className="login-input-wrap">
+                <svg
+                  className="login-input-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+
+                <input
+                  id="register-username"
+                  type="text"
+                  placeholder="Chọn tên đăng nhập (ví dụ: nam_foodie)"
+                  autoComplete="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="login-field">
               <label htmlFor="register-email">Email</label>
               <div className="login-input-wrap">
                 <svg
@@ -365,9 +402,25 @@ export default function Register() {
               />
               <span>
                 Tôi đồng ý với{' '}
-                <Link to="/terms">Điều khoản sử dụng</Link>
+                <a
+                  href="#terms"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    alert('Food Spot cam kết bảo vệ dữ liệu người dùng và cung cấp thông tin khám phá ẩm thực minh bạch, chính xác.')
+                  }}
+                >
+                  Điều khoản sử dụng
+                </a>
                 {' '}và{' '}
-                <Link to="/privacy">Chính sách bảo mật</Link>.
+                <a
+                  href="#privacy"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    alert('Dữ liệu tài khoản của bạn được bảo mật an toàn với chuẩn mã hóa bcrypt và JWT Bearer Token.')
+                  }}
+                >
+                  Chính sách bảo mật
+                </a>.
               </span>
             </label>
 
