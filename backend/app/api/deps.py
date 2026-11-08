@@ -1,3 +1,5 @@
+import asyncio
+import time
 from uuid import UUID
 
 import jwt
@@ -7,7 +9,7 @@ from jwt.exceptions import InvalidTokenError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.db.session import get_db
+from app.db.session import SessionLocal, get_db
 from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -20,10 +22,48 @@ oauth2_scheme_optional = OAuth2PasswordBearer(
     auto_error=False,
 )
 
+# In-memory TTL cache (60s) cho User đang active để giảm truy vấn lặp DB trên mỗi request xác thực JWT
+_ACTIVE_USER_CACHE: dict[UUID, tuple[User, float]] = {}
+_USER_CACHE_TTL_SEC = 60.0
 
-def get_current_user(
+
+def _fetch_user_sync(user_uuid: UUID) -> User | None:
+    with SessionLocal() as db:
+        user = db.get(User, user_uuid)
+        if user is None or not user.is_active:
+            _ACTIVE_USER_CACHE.pop(user_uuid, None)
+            return None
+
+        # Nạp sẵn các thuộc tính scalar trước khi tách khỏi session để tái sử dụng an toàn
+        _ = (
+            user.id,
+            user.username,
+            user.email,
+            user.full_name,
+            user.avatar_url,
+            user.is_active,
+            user.created_at,
+            user.updated_at,
+        )
+        db.expunge(user)
+        if len(_ACTIVE_USER_CACHE) > 2000:
+            _ACTIVE_USER_CACHE.clear()
+        _ACTIVE_USER_CACHE[user_uuid] = (user, time.monotonic() + _USER_CACHE_TTL_SEC)
+        return user
+
+
+async def _get_cached_active_user(user_uuid: UUID) -> User | None:
+    now = time.monotonic()
+    cached = _ACTIVE_USER_CACHE.get(user_uuid)
+    if cached is not None:
+        user_obj, exp_ts = cached
+        if now < exp_ts:
+            return user_obj
+    return await asyncio.to_thread(_fetch_user_sync, user_uuid)
+
+
+async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,16 +87,15 @@ def get_current_user(
     except (InvalidTokenError, ValueError, TypeError):
         raise credentials_exception
 
-    user = db.get(User, user_uuid)
-    if user is None or not user.is_active:
+    user = await _get_cached_active_user(user_uuid)
+    if user is None:
         raise credentials_exception
 
     return user
 
 
-def get_optional_current_user(
+async def get_optional_current_user(
     token: str | None = Depends(oauth2_scheme_optional),
-    db: Session = Depends(get_db),
 ) -> User | None:
     if not token:
         return None
@@ -71,9 +110,6 @@ def get_optional_current_user(
         if not user_id:
             return None
         user_uuid = UUID(user_id)
-        user = db.get(User, user_uuid)
-        if user and user.is_active:
-            return user
-        return None
+        return await _get_cached_active_user(user_uuid)
     except Exception:
         return None

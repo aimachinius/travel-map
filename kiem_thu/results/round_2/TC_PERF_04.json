@@ -1,0 +1,184 @@
+{
+  "tc_id": "TC_PERF_04",
+  "title": "Kiểm thử tăng tải đột biến (Spike) khi người dùng truy cập đồng loạt",
+  "endpoint": "GET /api/v1/places/nearby-videos (90%) + POST /api/v1/auth/login (10%) [Mapped from /places/nearby]",
+  "executed_at": "2026-11-08T10:12:43.048225+00:00",
+  "total_duration_sec": 150.8,
+  "overall": {
+    "total_requests": 7045,
+    "success_requests": 7045,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 46.72,
+    "nearby_requests": 6342,
+    "login_requests": 703,
+    "nearby_ratio_pct": 90.02,
+    "login_ratio_pct": 9.98,
+    "latency": {
+      "count": 7045,
+      "min_ms": 3.21,
+      "avg_ms": 59.9,
+      "p50_ms": 10.35,
+      "p90_ms": 159.01,
+      "p95_ms": 319.93,
+      "p99_ms": 707.96,
+      "max_ms": 1862.19
+    }
+  },
+  "stages": {
+    "baseline": {
+      "stage": "baseline_15vus_60s",
+      "vus": 15,
+      "target_rps": 10.0,
+      "duration_sec": 60.05,
+      "total_requests": 1119,
+      "success_requests": 1119,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 18.63,
+      "latency": {
+        "count": 1119,
+        "min_ms": 3.21,
+        "avg_ms": 18.77,
+        "p50_ms": 8.84,
+        "p90_ms": 49.45,
+        "p95_ms": 58.59,
+        "p99_ms": 128.27,
+        "max_ms": 405.62
+      },
+      "status_counts": {
+        "200": 1119
+      },
+      "sample_errors": []
+    },
+    "spike_ramp": {
+      "stage": "spike_ramp_120vus_15s",
+      "vus": 120,
+      "target_rps": 50.0,
+      "duration_sec": 15.34,
+      "total_requests": 1531,
+      "success_requests": 1531,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 99.79,
+      "latency": {
+        "count": 1531,
+        "min_ms": 3.36,
+        "avg_ms": 110.76,
+        "p50_ms": 27.26,
+        "p90_ms": 336.83,
+        "p95_ms": 508.64,
+        "p99_ms": 855.32,
+        "max_ms": 1368.44
+      },
+      "status_counts": {
+        "200": 1531
+      },
+      "sample_errors": []
+    },
+    "spike_hold": {
+      "stage": "spike_hold_120vus_60s",
+      "vus": 120,
+      "target_rps": 50.0,
+      "duration_sec": 60.34,
+      "total_requests": 3698,
+      "success_requests": 3698,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 61.29,
+      "latency": {
+        "count": 3698,
+        "min_ms": 4.33,
+        "avg_ms": 57.61,
+        "p50_ms": 9.42,
+        "p90_ms": 143.89,
+        "p95_ms": 320.72,
+        "p99_ms": 728.41,
+        "max_ms": 1862.19
+      },
+      "status_counts": {
+        "200": 3698
+      },
+      "sample_errors": []
+    },
+    "spike": {
+      "stage": "spike_combined_120vus_75s",
+      "vus": 120,
+      "target_rps": 50.0,
+      "duration_sec": 75.68,
+      "total_requests": 5229,
+      "success_requests": 5229,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 69.09,
+      "latency": {
+        "count": 5229,
+        "min_ms": 3.36,
+        "avg_ms": 73.17,
+        "p50_ms": 10.12,
+        "p90_ms": 226.75,
+        "p95_ms": 392.74,
+        "p99_ms": 805.96,
+        "max_ms": 1862.19
+      }
+    },
+    "recovery": {
+      "stage": "recovery_15vus_15s",
+      "vus": 15,
+      "target_rps": 10.0,
+      "duration_sec": 15.05,
+      "total_requests": 697,
+      "success_requests": 697,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 46.3,
+      "latency": {
+        "count": 697,
+        "min_ms": 3.57,
+        "avg_ms": 26.38,
+        "p50_ms": 14.02,
+        "p90_ms": 58.61,
+        "p95_ms": 98.01,
+        "p99_ms": 197.38,
+        "max_ms": 375.26
+      },
+      "status_counts": {
+        "200": 697
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 150,
+    "cpu_avg_pct": 16.64,
+    "cpu_max_pct": 48.0,
+    "ram_avg_pct": 89.09,
+    "ram_max_pct": 92.7,
+    "ram_min_avail_mb": 578.88,
+    "ram_start_used_mb": 6952.23,
+    "ram_end_used_mb": 6926.06,
+    "ram_delta_mb": -26.17
+  },
+  "prerequisites": {
+    "uvicorn_backlog_configured": true,
+    "uvicorn_backlog_value": 512,
+    "uvicorn_workers_count": 2,
+    "postgres_max_connections": 100,
+    "prerequisites_met": true
+  },
+  "extra_checks": {
+    "uvicorn_worker_alive_after_spike": true,
+    "prerequisites_met": true,
+    "postgres_max_connections": 100,
+    "uvicorn_backlog": 512,
+    "uvicorn_workers": 2,
+    "traffic_mix": "nearby=6342 (90.0%), login=703 (10.0%)"
+  },
+  "sla_evaluation": {
+    "spike_p95_ms": 392.74,
+    "spike_error_rate_pct": 0.0,
+    "recovery_p95_ms": 98.01,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "tc_id": "TC_PERF_08",
+  "title": "Kiểm thử tải tiếp nhận URL video vào hàng đợi xử lý (Analysis Queue)",
+  "endpoint": "POST /api/v1/videos/submit (HTTP 202 Accepted -> Redis queue:high_priority)",
+  "executed_at": "2026-11-07T16:03:17.067245+00:00",
+  "total_duration_sec": 73.97,
+  "config": {
+    "vus": 50,
+    "target_rps": 20.0,
+    "ramp_up_sec": 7.5,
+    "steady_sec": 45.0,
+    "ramp_down_sec": 7.5,
+    "sla_p95_ms": 400.0,
+    "sla_error_rate_pct": 0.1
+  },
+  "overall": {
+    "total_requests": 1154,
+    "success_requests": 1079,
+    "error_requests": 75,
+    "error_rate_pct": 6.499,
+    "actual_rps": 15.6,
+    "latency": {
+      "count": 1154,
+      "min_ms": 19.01,
+      "avg_ms": 775.07,
+      "p50_ms": 77.77,
+      "p90_ms": 525.62,
+      "p95_ms": 9999.71,
+      "p99_ms": 10016.66,
+      "max_ms": 10021.06
+    },
+    "status_counts": {
+      "202": 1079,
+      "0": 75
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 25,
+      "target_rps": 10.0,
+      "duration_sec": 7.77,
+      "total_requests": 167,
+      "success_requests": 167,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 21.49,
+      "latency": {
+        "count": 167,
+        "min_ms": 26.77,
+        "avg_ms": 352.6,
+        "p50_ms": 407.73,
+        "p90_ms": 551.21,
+        "p95_ms": 577.92,
+        "p99_ms": 631.36,
+        "max_ms": 641.07
+      },
+      "status_counts": {
+        "202": 167
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 50,
+      "target_rps": 20.0,
+      "duration_sec": 54.99,
+      "total_requests": 962,
+      "success_requests": 912,
+      "error_requests": 50,
+      "error_rate_pct": 5.198,
+      "actual_rps": 17.49,
+      "latency": {
+        "count": 962,
+        "min_ms": 19.01,
+        "avg_ms": 608.58,
+        "p50_ms": 73.44,
+        "p90_ms": 306.59,
+        "p95_ms": 9990.68,
+        "p99_ms": 10016.91,
+        "max_ms": 10021.06
+      },
+      "status_counts": {
+        "202": 912,
+        "0": 50
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 25,
+      "target_rps": 10.0,
+      "duration_sec": 11.2,
+      "total_requests": 25,
+      "success_requests": 0,
+      "error_requests": 25,
+      "error_rate_pct": 100.0,
+      "actual_rps": 2.23,
+      "latency": {
+        "count": 25,
+        "min_ms": 9996.09,
+        "avg_ms": 10003.6,
+        "p50_ms": 10000.1,
+        "p90_ms": 10015.76,
+        "p95_ms": 10016.39,
+        "p99_ms": 10018.23,
+        "max_ms": 10018.78
+      },
+      "status_counts": {
+        "0": 25
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 74,
+    "cpu_avg_pct": 25.55,
+    "cpu_max_pct": 71.3,
+    "ram_avg_pct": 90.59,
+    "ram_max_pct": 91.8,
+    "ram_min_avail_mb": 649.02,
+    "ram_start_used_mb": 7163.66,
+    "ram_end_used_mb": 7143.08,
+    "ram_delta_mb": -20.58
+  },
+  "extra_checks": {
+    "redis_queue_high_priority_len_before_cleanup": 1045,
+    "total_enqueued_in_db": 1087,
+    "cleaned_up_synthetic_tasks": true
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 9990.68,
+    "steady_error_rate_pct": 5.198,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

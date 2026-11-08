@@ -1,4 +1,5 @@
 import logging
+import time
 from uuid import UUID
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
@@ -16,6 +17,11 @@ router = APIRouter(
     prefix="/places",
     tags=["Places"],
 )
+
+# Debounce lưới tọa độ ~1km (làm tròn 2 chữ số thập phân) trong 300 giây để tránh kích hoạt
+# hàng trăm BackgroundTasks mở DB session thừa khi quét bản đồ tần suất cao
+_RECENT_DISCOVERY_GRID: dict[tuple[float, float], float] = {}
+_DISCOVERY_DEBOUNCE_TTL_SEC = 300.0
 
 
 async def _trigger_discovery_task(lat: float, lon: float, radius_m: float) -> None:
@@ -43,7 +49,7 @@ async def _trigger_discovery_task(lat: float, lon: float, radius_m: float) -> No
     response_model=list[NearbyVideoItem],
     summary="Tìm kiếm video trong bán kính xung quanh tọa độ",
 )
-async def get_nearby_videos(
+def get_nearby_videos(
     background_tasks: BackgroundTasks,
     lat: float = Query(..., ge=-90.0, le=90.0, description="Vĩ độ"),
     lon: float = Query(..., ge=-180.0, le=180.0, description="Kinh độ"),
@@ -64,8 +70,15 @@ async def get_nearby_videos(
         current_user_id=current_user_id,
     )
 
-    # Kích hoạt ngầm DiscoveryService qua FastAPI BackgroundTasks (tự động kiểm tra chống quét lặp 1km/24h)
-    background_tasks.add_task(_trigger_discovery_task, lat, lon, radius_m)
+    # Chỉ kích hoạt ngầm DiscoveryService nếu ô lưới ~1km chưa được trigger trong 300 giây gần nhất
+    grid_cell = (round(lat, 2), round(lon, 2))
+    now = time.monotonic()
+    last_trigger = _RECENT_DISCOVERY_GRID.get(grid_cell, 0.0)
+    if now - last_trigger >= _DISCOVERY_DEBOUNCE_TTL_SEC:
+        if len(_RECENT_DISCOVERY_GRID) > 1000:
+            _RECENT_DISCOVERY_GRID.clear()
+        _RECENT_DISCOVERY_GRID[grid_cell] = now
+        background_tasks.add_task(_trigger_discovery_task, lat, lon, radius_m)
 
     return results
 

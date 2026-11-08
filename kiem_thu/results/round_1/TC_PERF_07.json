@@ -1,0 +1,144 @@
+{
+  "tc_id": "TC_PERF_07",
+  "title": "Kiểm thử sức bền quét bản đồ liên tục (Endurance / Soak Test)",
+  "endpoint": "GET /api/v1/places/nearby-videos?lat=16.0610&lon=108.2208&radius_m=5000",
+  "executed_at": "2026-11-08T02:43:50.488394+00:00",
+  "total_duration_sec": 217.49,
+  "config": {
+    "vus": 40,
+    "target_rps": 15.0,
+    "ramp_up_sec": 12.0,
+    "steady_sec": 180.0,
+    "ramp_down_sec": 12.0,
+    "sla_p95_ms": 500.0,
+    "sla_error_rate_pct": 0.1
+  },
+  "overall": {
+    "total_requests": 1111,
+    "success_requests": 431,
+    "error_requests": 680,
+    "error_rate_pct": 61.206,
+    "actual_rps": 5.11,
+    "latency": {
+      "count": 1111,
+      "min_ms": 48.89,
+      "avg_ms": 6311.68,
+      "p50_ms": 10008.76,
+      "p90_ms": 10023.31,
+      "p95_ms": 10026.32,
+      "p99_ms": 10029.68,
+      "max_ms": 10036.12
+    },
+    "status_counts": {
+      "200": 431,
+      "0": 680
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 20,
+      "target_rps": 7.5,
+      "duration_sec": 13.13,
+      "total_requests": 121,
+      "success_requests": 121,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 9.21,
+      "latency": {
+        "count": 121,
+        "min_ms": 50.13,
+        "avg_ms": 393.49,
+        "p50_ms": 231.53,
+        "p90_ms": 1079.61,
+        "p95_ms": 1172.83,
+        "p99_ms": 1464.09,
+        "max_ms": 1541.77
+      },
+      "status_counts": {
+        "200": 121
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 40,
+      "target_rps": 15.0,
+      "duration_sec": 183.36,
+      "total_requests": 950,
+      "success_requests": 310,
+      "error_requests": 640,
+      "error_rate_pct": 67.368,
+      "actual_rps": 5.18,
+      "latency": {
+        "count": 950,
+        "min_ms": 48.89,
+        "avg_ms": 6909.46,
+        "p50_ms": 10010.18,
+        "p90_ms": 10023.82,
+        "p95_ms": 10026.69,
+        "p99_ms": 10029.86,
+        "max_ms": 10036.12
+      },
+      "status_counts": {
+        "200": 310,
+        "0": 640
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 20,
+      "target_rps": 7.5,
+      "duration_sec": 20.98,
+      "total_requests": 40,
+      "success_requests": 0,
+      "error_requests": 40,
+      "error_rate_pct": 100.0,
+      "actual_rps": 1.91,
+      "latency": {
+        "count": 40,
+        "min_ms": 10001.68,
+        "avg_ms": 10016.77,
+        "p50_ms": 10018.8,
+        "p90_ms": 10023.36,
+        "p95_ms": 10023.97,
+        "p99_ms": 10024.42,
+        "max_ms": 10024.44
+      },
+      "status_counts": {
+        "0": 40
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 216,
+    "cpu_avg_pct": 29.86,
+    "cpu_max_pct": 70.7,
+    "ram_avg_pct": 91.18,
+    "ram_max_pct": 93.8,
+    "ram_min_avail_mb": 485.55,
+    "ram_start_used_mb": 7241.38,
+    "ram_end_used_mb": 7224.99,
+    "ram_delta_mb": -16.39
+  },
+  "extra_checks": {
+    "db_connections_before": 1,
+    "db_connections_after": 1,
+    "db_connection_leak_detected": false,
+    "postgis_explain_after_soak": {
+      "execution_time_ms": 97.336,
+      "planning_time_ms": 44.317,
+      "uses_index_in_plan": true,
+      "shared_buffers": "128MB",
+      "active_db_connections": 1
+    }
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 10026.69,
+    "steady_error_rate_pct": 67.368,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

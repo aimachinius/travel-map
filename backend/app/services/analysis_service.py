@@ -28,12 +28,23 @@ QUEUE_LOW = "queue:low_priority"
 _in_memory_high_queue: asyncio.Queue = asyncio.Queue()
 _in_memory_low_queue: asyncio.Queue = asyncio.Queue()
 
+_redis_client = None
+_RETRY_COUNTS: dict[UUID, int] = {}
+MAX_TUNNEL_RETRIES = 3
+
 
 def get_redis_client():
+    global _redis_client
+    if _redis_client is not None:
+        return _redis_client
     try:
         import redis.asyncio as aioredis
-        client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
-        return client
+        _redis_client = aioredis.from_url(
+            settings.REDIS_URL,
+            decode_responses=True,
+            max_connections=100,
+        )
+        return _redis_client
     except Exception as e:
         logger.warning(f"Could not connect to Redis: {e}. Falling back to in-memory queues.")
         return None
@@ -53,7 +64,6 @@ async def enqueue_analysis(analysis_run_id: UUID | str, priority: int = 1) -> No
         try:
             await redis_client.rpush(queue_name, run_id_str)
             logger.info(f"Enqueued {run_id_str} to Redis {queue_name}")
-            await redis_client.aclose()
             return
         except Exception as e:
             logger.warning(f"Redis rpush error: {e}. Using in-memory fallback.")
@@ -78,16 +88,12 @@ async def dequeue_next_analysis() -> tuple[str | None, int]:
             # 1. Check high priority
             item = await redis_client.lpop(QUEUE_HIGH)
             if item:
-                await redis_client.aclose()
                 return item, 1
 
             # 2. Check low priority
             item = await redis_client.lpop(QUEUE_LOW)
             if item:
-                await redis_client.aclose()
                 return item, 2
-
-            await redis_client.aclose()
         except Exception as e:
             logger.warning(f"Redis lpop error: {e}. Falling back to in-memory.")
 
@@ -107,8 +113,8 @@ def start_analysis(db: Session, analysis_run_id: UUID) -> AnalysisRun:
     if analysis is None:
         raise ValueError("Không tìm thấy yêu cầu phân tích")
 
-    if analysis.status != "PENDING":
-        raise ValueError("Chỉ có thể bắt đầu yêu cầu đang PENDING")
+    if analysis.status not in ("PENDING", "RETRY"):
+        raise ValueError("Chỉ có thể bắt đầu yêu cầu đang PENDING hoặc RETRY")
 
     analysis.status = "PROCESSING"
     analysis.started_at = datetime.now(timezone.utc)
@@ -157,13 +163,36 @@ def fail_analysis(
     if analysis is None:
         raise ValueError("Không tìm thấy yêu cầu phân tích")
 
-    if analysis.status not in ("PENDING", "PROCESSING"):
+    if analysis.status not in ("PENDING", "PROCESSING", "RETRY"):
         raise ValueError("Không thể đánh dấu thất bại cho yêu cầu này")
 
     analysis.status = "FAILED"
     analysis.error_message = error_message
     analysis.completed_at = datetime.now(timezone.utc)
 
+    db.commit()
+    db.refresh(analysis)
+    return analysis
+
+
+async def _delayed_reenqueue(analysis_run_id: UUID, priority: int = 1, delay_sec: float = 15.0) -> None:
+    """Đợi backoff (mặc định 15s) trước khi đẩy lại task RETRY vào hàng đợi Redis để tránh lặp vô tận khi đứt mạng."""
+    await asyncio.sleep(delay_sec)
+    await enqueue_analysis(analysis_run_id, priority=priority)
+
+
+def mark_retry_analysis(
+    db: Session,
+    analysis_run_id: UUID,
+    error_message: str,
+    retry_num: int,
+) -> AnalysisRun:
+    analysis = db.get(AnalysisRun, analysis_run_id)
+    if analysis is None:
+        raise ValueError("Không tìm thấy yêu cầu phân tích")
+
+    analysis.status = "RETRY"
+    analysis.error_message = f"[RETRY {retry_num}/{MAX_TUNNEL_RETRIES}] {error_message}"
     db.commit()
     db.refresh(analysis)
     return analysis
@@ -177,7 +206,7 @@ async def process_analysis_run(
     """
     Luồng 3: Thực thi phân tích 1 task:
     1. start_analysis -> notify WebSocket PROCESSING
-    2. Gọi External AI Server qua POST AI_SERVER_EXTRACT_URL (timeout=180s)
+    2. Gọi External AI Server qua POST AI_SERVER_EXTRACT_URL (connect timeout=10s, read timeout=180s)
     3. Cập nhật videos & geocode address qua ArcGIS
     4. complete_analysis -> notify WebSocket COMPLETED
     """
@@ -195,15 +224,45 @@ async def process_analysis_run(
             status="PROCESSING",
         )
 
-    # 2. Gọi External AI Server
+    # 2. Gọi External AI Server (connect timeout = 10.0s để ngắt nhanh khi đứt Cloudflare Tunnel)
     should_close_client = False
     if http_client is None:
-        http_client = httpx.AsyncClient(timeout=float(settings.AI_REQUEST_TIMEOUT))
+        timeout_cfg = httpx.Timeout(timeout=float(settings.AI_REQUEST_TIMEOUT), connect=10.0)
+        http_client = httpx.AsyncClient(timeout=timeout_cfg)
         should_close_client = True
 
     try:
         payload = {"url": analysis.submitted_url}
-        ai_resp = await http_client.post(settings.AI_SERVER_EXTRACT_URL, json=payload)
+        try:
+            ai_resp = await http_client.post(settings.AI_SERVER_EXTRACT_URL, json=payload)
+        except httpx.RequestError as req_err:
+            retry_cnt = _RETRY_COUNTS.get(analysis.id, 0) + 1
+            _RETRY_COUNTS[analysis.id] = retry_cnt
+            err_msg = f"Tunnel/Network error connecting to AI Server: {req_err}"
+            if retry_cnt <= MAX_TUNNEL_RETRIES:
+                logger.warning(f"Task {analysis.id} gặp lỗi kết nối Tunnel ({req_err}), chuyển sang RETRY ({retry_cnt}/{MAX_TUNNEL_RETRIES})...")
+                analysis = mark_retry_analysis(db, analysis.id, err_msg, retry_cnt)
+                if analysis.trigger_source == "USER_SUBMIT" and analysis.user_id:
+                    await websocket_manager.broadcast_analysis_update(
+                        user_id=analysis.user_id,
+                        analysis_run_id=analysis.id,
+                        video_id=analysis.video_id,
+                        status="RETRY",
+                        error_message=analysis.error_message,
+                    )
+                asyncio.create_task(_delayed_reenqueue(analysis.id, priority=analysis.priority or 1, delay_sec=15.0))
+                return analysis
+            fail_analysis(db, analysis.id, err_msg)
+            return analysis
+
+        if ai_resp.status_code in (502, 503, 504, 530):
+            retry_cnt = _RETRY_COUNTS.get(analysis.id, 0) + 1
+            _RETRY_COUNTS[analysis.id] = retry_cnt
+            err_msg = f"AI Tunnel unavailable (HTTP {ai_resp.status_code})"
+            if retry_cnt <= MAX_TUNNEL_RETRIES:
+                analysis = mark_retry_analysis(db, analysis.id, err_msg, retry_cnt)
+                asyncio.create_task(_delayed_reenqueue(analysis.id, priority=analysis.priority or 1, delay_sec=15.0))
+                return analysis
 
         if ai_resp.status_code != 200:
             err_msg = f"AI Server returned HTTP {ai_resp.status_code}: {ai_resp.text[:200]}"

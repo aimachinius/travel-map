@@ -1,0 +1,201 @@
+{
+  "tc_id": "TC_PERF_16",
+  "title": "Kiểm thử tìm ngưỡng giới hạn (Breaking Point) trên Laptop 8GB RAM",
+  "endpoint": "GET /api/v1/places/nearby-videos (Step Stress: 50 -> 100 -> 150 -> 200 -> 250 VUs)",
+  "executed_at": "2026-11-08T09:48:47.403441+00:00",
+  "total_duration_sec": 92.83,
+  "overall": {
+    "total_requests": 7787,
+    "error_requests": 0,
+    "latency": {
+      "count": 7787,
+      "min_ms": 3.74,
+      "avg_ms": 181.98,
+      "p50_ms": 14.28,
+      "p90_ms": 506.8,
+      "p95_ms": 961.89,
+      "p99_ms": 2615.53,
+      "max_ms": 4351.75
+    }
+  },
+  "stages": {
+    "step_50_vus": {
+      "stage": "step_50_vus",
+      "vus": 50,
+      "target_rps": 25.0,
+      "duration_sec": 15.18,
+      "total_requests": 840,
+      "success_requests": 840,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 55.33,
+      "latency": {
+        "count": 840,
+        "min_ms": 4.38,
+        "avg_ms": 73.0,
+        "p50_ms": 25.22,
+        "p90_ms": 213.04,
+        "p95_ms": 297.25,
+        "p99_ms": 520.76,
+        "max_ms": 878.13
+      },
+      "status_counts": {
+        "200": 840
+      },
+      "sample_errors": [],
+      "ram_percent_at_end": 87.3
+    },
+    "step_100_vus": {
+      "stage": "step_100_vus",
+      "vus": 100,
+      "target_rps": 45.0,
+      "duration_sec": 16.03,
+      "total_requests": 1186,
+      "success_requests": 1186,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 74.0,
+      "latency": {
+        "count": 1186,
+        "min_ms": 4.33,
+        "avg_ms": 142.09,
+        "p50_ms": 15.07,
+        "p90_ms": 466.56,
+        "p95_ms": 780.2,
+        "p99_ms": 1343.13,
+        "max_ms": 2203.36
+      },
+      "status_counts": {
+        "200": 1186
+      },
+      "sample_errors": [],
+      "ram_percent_at_end": 90.6
+    },
+    "step_150_vus": {
+      "stage": "step_150_vus",
+      "vus": 150,
+      "target_rps": 65.0,
+      "duration_sec": 15.48,
+      "total_requests": 1594,
+      "success_requests": 1594,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 103.0,
+      "latency": {
+        "count": 1594,
+        "min_ms": 4.46,
+        "avg_ms": 140.58,
+        "p50_ms": 17.68,
+        "p90_ms": 470.09,
+        "p95_ms": 708.22,
+        "p99_ms": 1207.2,
+        "max_ms": 2025.32
+      },
+      "status_counts": {
+        "200": 1594
+      },
+      "sample_errors": [],
+      "ram_percent_at_end": 90.5
+    },
+    "step_200_vus": {
+      "stage": "step_200_vus",
+      "vus": 200,
+      "target_rps": 85.0,
+      "duration_sec": 15.64,
+      "total_requests": 1887,
+      "success_requests": 1887,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 120.66,
+      "latency": {
+        "count": 1887,
+        "min_ms": 4.1,
+        "avg_ms": 165.71,
+        "p50_ms": 12.69,
+        "p90_ms": 617.25,
+        "p95_ms": 857.73,
+        "p99_ms": 1376.59,
+        "max_ms": 1992.11
+      },
+      "status_counts": {
+        "200": 1887
+      },
+      "sample_errors": [],
+      "ram_percent_at_end": 90.5
+    },
+    "step_250_vus": {
+      "stage": "step_250_vus",
+      "vus": 250,
+      "target_rps": 100.0,
+      "duration_sec": 17.47,
+      "total_requests": 1819,
+      "success_requests": 1819,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 104.14,
+      "latency": {
+        "count": 1819,
+        "min_ms": 4.26,
+        "avg_ms": 352.02,
+        "p50_ms": 13.06,
+        "p90_ms": 1592.73,
+        "p95_ms": 2490.9,
+        "p99_ms": 3589.83,
+        "max_ms": 4351.75
+      },
+      "status_counts": {
+        "200": 1819
+      },
+      "sample_errors": [],
+      "ram_percent_at_end": 89.4
+    },
+    "recovery": {
+      "stage": "recovery_15_vus",
+      "vus": 15,
+      "target_rps": 10.0,
+      "duration_sec": 10.03,
+      "total_requests": 461,
+      "success_requests": 461,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 45.98,
+      "latency": {
+        "count": 461,
+        "min_ms": 3.74,
+        "avg_ms": 22.09,
+        "p50_ms": 13.77,
+        "p90_ms": 47.05,
+        "p95_ms": 82.69,
+        "p99_ms": 152.4,
+        "max_ms": 312.36
+      },
+      "status_counts": {
+        "200": 461
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 92,
+    "cpu_avg_pct": 33.41,
+    "cpu_max_pct": 95.6,
+    "ram_avg_pct": 89.97,
+    "ram_max_pct": 92.2,
+    "ram_min_avail_mb": 618.32,
+    "ram_start_used_mb": 7120.25,
+    "ram_end_used_mb": 6977.94,
+    "ram_delta_mb": -142.31
+  },
+  "breaking_point_analysis": {
+    "breaking_point_vus": 250,
+    "breaking_reason": "p95=2490.9ms (>2000ms) hoặc RAM=89.4% (>=95%)",
+    "recovery_p95_ms": 82.69,
+    "services_survived_without_crash": true
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 82.69,
+    "recovery_p95_ms": 82.69,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

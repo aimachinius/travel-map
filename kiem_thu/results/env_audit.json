@@ -1,0 +1,255 @@
+{
+  "host": {
+    "timestamp": "2026-11-08T09:36:23.335098+00:00",
+    "os": "Windows-10-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 140 Stepping 2, GenuineIntel",
+    "cpu_physical_cores": 4,
+    "cpu_logical_cores": 8,
+    "cpu_freq_mhz": 2817.0,
+    "cpu_usage_percent": 24.3,
+    "ram_total_mb": 7894.11,
+    "ram_available_mb": 1311.33,
+    "ram_used_mb": 6582.79,
+    "ram_percent": 83.4,
+    "disk_free_gb": 76.73
+  },
+  "docker": [
+    {
+      "name": "foodspot-backend",
+      "cpu_percent": "0.47%",
+      "mem_usage": "224.7MiB / 3.681GiB",
+      "mem_percent": "5.96%"
+    },
+    {
+      "name": "foodspot-front",
+      "cpu_percent": "0.00%",
+      "mem_usage": "10.06MiB / 3.681GiB",
+      "mem_percent": "0.27%"
+    },
+    {
+      "name": "foodspot-redis",
+      "cpu_percent": "0.51%",
+      "mem_usage": "11.31MiB / 3.681GiB",
+      "mem_percent": "0.30%"
+    },
+    {
+      "name": "foodspot-mock-ai",
+      "cpu_percent": "0.29%",
+      "mem_usage": "99.52MiB / 3.681GiB",
+      "mem_percent": "2.64%"
+    },
+    {
+      "name": "foodspot-db",
+      "cpu_percent": "0.00%",
+      "mem_usage": "79.61MiB / 3.681GiB",
+      "mem_percent": "2.11%"
+    }
+  ],
+  "postgres": {
+    "status": "ok",
+    "max_connections": "100",
+    "shared_buffers": "128MB",
+    "table_counts": {
+      "users": 502,
+      "places": 10053,
+      "videos": 673,
+      "video_place_matches": 2613,
+      "analysis_runs": 1131,
+      "saved_places": 2228,
+      "saved_videos": 2281,
+      "discovery_scans": 262
+    },
+    "indexes": [
+      {
+        "name": "alembic_version_pkc",
+        "def": "CREATE UNIQUE INDEX alembic_version_pkc ON public.alembic_version USING btree (version_num)"
+      },
+      {
+        "name": "analysis_runs_pkey",
+        "def": "CREATE UNIQUE INDEX analysis_runs_pkey ON public.analysis_runs USING btree (id)"
+      },
+      {
+        "name": "ix_analysis_runs_result_place_id",
+        "def": "CREATE INDEX ix_analysis_runs_result_place_id ON public.analysis_runs USING btree (result_place_id)"
+      },
+      {
+        "name": "ix_analysis_runs_status",
+        "def": "CREATE INDEX ix_analysis_runs_status ON public.analysis_runs USING btree (status)"
+      },
+      {
+        "name": "ix_analysis_runs_status_priority_created",
+        "def": "CREATE INDEX ix_analysis_runs_status_priority_created ON public.analysis_runs USING btree (status, priority, created_at)"
+      },
+      {
+        "name": "ix_analysis_runs_user_id",
+        "def": "CREATE INDEX ix_analysis_runs_user_id ON public.analysis_runs USING btree (user_id)"
+      },
+      {
+        "name": "ix_analysis_runs_video_id",
+        "def": "CREATE INDEX ix_analysis_runs_video_id ON public.analysis_runs USING btree (video_id)"
+      },
+      {
+        "name": "discovery_scans_pkey",
+        "def": "CREATE UNIQUE INDEX discovery_scans_pkey ON public.discovery_scans USING btree (id)"
+      },
+      {
+        "name": "idx_discovery_scans_center_location",
+        "def": "CREATE INDEX idx_discovery_scans_center_location ON public.discovery_scans USING gist (center_location)"
+      },
+      {
+        "name": "idx_places_addr_trgm",
+        "def": "CREATE INDEX idx_places_addr_trgm ON public.places USING gin (immutable_unaccent_lower(address) gin_trgm_ops)"
+      },
+      {
+        "name": "idx_places_location",
+        "def": "CREATE INDEX idx_places_location ON public.places USING gist (location)"
+      },
+      {
+        "name": "idx_places_location_geog",
+        "def": "CREATE INDEX idx_places_location_geog ON public.places USING gist (((location)::geography))"
+      },
+      {
+        "name": "idx_places_name_trgm",
+        "def": "CREATE INDEX idx_places_name_trgm ON public.places USING gin (immutable_unaccent_lower((name)::text) gin_trgm_ops)"
+      },
+      {
+        "name": "ix_places_name",
+        "def": "CREATE INDEX ix_places_name ON public.places USING btree (name)"
+      },
+      {
+        "name": "places_pkey",
+        "def": "CREATE UNIQUE INDEX places_pkey ON public.places USING btree (id)"
+      },
+      {
+        "name": "ix_saved_places_place_id",
+        "def": "CREATE INDEX ix_saved_places_place_id ON public.saved_places USING btree (place_id)"
+      },
+      {
+        "name": "ix_saved_places_user_id",
+        "def": "CREATE INDEX ix_saved_places_user_id ON public.saved_places USING btree (user_id)"
+      },
+      {
+        "name": "saved_places_pkey",
+        "def": "CREATE UNIQUE INDEX saved_places_pkey ON public.saved_places USING btree (id)"
+      },
+      {
+        "name": "uq_saved_places_user_place",
+        "def": "CREATE UNIQUE INDEX uq_saved_places_user_place ON public.saved_places USING btree (user_id, place_id)"
+      },
+      {
+        "name": "ix_saved_videos_user_id",
+        "def": "CREATE INDEX ix_saved_videos_user_id ON public.saved_videos USING btree (user_id)"
+      },
+      {
+        "name": "ix_saved_videos_video_id",
+        "def": "CREATE INDEX ix_saved_videos_video_id ON public.saved_videos USING btree (video_id)"
+      },
+      {
+        "name": "saved_videos_pkey",
+        "def": "CREATE UNIQUE INDEX saved_videos_pkey ON public.saved_videos USING btree (id)"
+      },
+      {
+        "name": "uq_saved_videos_user_video",
+        "def": "CREATE UNIQUE INDEX uq_saved_videos_user_video ON public.saved_videos USING btree (user_id, video_id)"
+      },
+      {
+        "name": "spatial_ref_sys_pkey",
+        "def": "CREATE UNIQUE INDEX spatial_ref_sys_pkey ON public.spatial_ref_sys USING btree (srid)"
+      },
+      {
+        "name": "ix_users_email",
+        "def": "CREATE UNIQUE INDEX ix_users_email ON public.users USING btree (email)"
+      },
+      {
+        "name": "ix_users_username",
+        "def": "CREATE UNIQUE INDEX ix_users_username ON public.users USING btree (username)"
+      },
+      {
+        "name": "users_pkey",
+        "def": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)"
+      },
+      {
+        "name": "idx_vpm_place_id_video_id",
+        "def": "CREATE INDEX idx_vpm_place_id_video_id ON public.video_place_matches USING btree (place_id, video_id)"
+      },
+      {
+        "name": "ix_video_place_matches_place_id",
+        "def": "CREATE INDEX ix_video_place_matches_place_id ON public.video_place_matches USING btree (place_id)"
+      },
+      {
+        "name": "ix_video_place_matches_video_id",
+        "def": "CREATE INDEX ix_video_place_matches_video_id ON public.video_place_matches USING btree (video_id)"
+      },
+      {
+        "name": "uq_video_place_matches_video_place",
+        "def": "CREATE UNIQUE INDEX uq_video_place_matches_video_place ON public.video_place_matches USING btree (video_id, place_id)"
+      },
+      {
+        "name": "video_place_matches_pkey",
+        "def": "CREATE UNIQUE INDEX video_place_matches_pkey ON public.video_place_matches USING btree (id)"
+      },
+      {
+        "name": "uq_videos_platform_video_id",
+        "def": "CREATE UNIQUE INDEX uq_videos_platform_video_id ON public.videos USING btree (platform, platform_video_id)"
+      },
+      {
+        "name": "videos_pkey",
+        "def": "CREATE UNIQUE INDEX videos_pkey ON public.videos USING btree (id)"
+      }
+    ]
+  },
+  "redis": {
+    "status": "ok",
+    "used_memory_human": "1.14M",
+    "used_memory_peak_human": "1.19M",
+    "maxmemory_human": "0B",
+    "queue_high_priority_len": 0,
+    "queue_low_priority_len": 43
+  },
+  "ai_tunnel": {
+    "extract_url": "https://funk-smooth-alive-hosting.trycloudflare.com/api/v1/extract",
+    "/health": {
+      "status_code": 200,
+      "body_preview": "{\"status\":\"HEALTHY\",\"access_urls\":{\"local_url\":\"http://127.0.0.1:8000\",\"public_tunnel_url\":\"https://funk-smooth-alive-hosting.trycloudflare.com\",\"tunnel_provider\":\"cloudflare\",\"is_tunnel_active\":true},\"gpu_available\":true,\"gpu_name\":\"Tesla T4\",\"onnx_provider\":\"CUDAExecutionProvider\",\"vram_used_mb\":1816,\"vram_total_mb\":14912,\"models_loaded\":{\"dbnet_onnx\":true,\"vintern_1b\":true}}"
+    },
+    "/docs": {
+      "status_code": 200,
+      "body_preview": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/favicon.png\">\n    <title>Restaurant Extraction AI Server v3.0 - Swagger UI</title>\n    </head>\n    <body>\n    <div id=\"swagger-ui\">\n    </div>\n    <script src=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js\"></script>\n    <!-- `SwaggerUIBundle` is now available on the page -->\n    <script>\n    const ui = SwaggerUIBundle({\n        url: '/openapi.json',\n    \"dom_id\": \"#swagger-ui\",\n\"layout\": \"BaseLayout\",\n\"deepLinking\": true,\n\"showExtensions\": true,\n\"showCommonExtensions\": true,\noauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',\n    presets: [\n        SwaggerUIBundle.presets.apis,\n        SwaggerUIBundle.SwaggerUIStandalonePreset\n        ],\n    })\n    </s"
+    },
+    "/openapi.json": {
+      "status_code": 200,
+      "body_preview": "{\"openapi\":\"3.1.0\",\"info\":{\"title\":\"Restaurant Extraction AI Server v3.0\",\"description\":\"AI Server độc lập trích xuất thông tin quán ăn (tên quán, địa chỉ) từ URL video TikTok & YouTube Shorts. Kiến trúc Pure Vision tăng tốc GPU (FastSinglePassSampler + GPUDBNet + Vintern-1B Majority Voting).\",\"version\":\"3.0.0\"},\"paths\":{\"/api/v1/health\":{\"get\":{\"tags\":[\"System Health\"],\"summary\":\"Kiểm tra trạng thái máy chủ, VRAM và Cầu nối mạng\",\"description\":\"Trả về thông tin kết nối cổng local (8000), Public Tunnel URL, tình trạng GPU và các mô hình đã nạp.\",\"operationId\":\"check_health_api_v1_health_get\",\"responses\":{\"200\":{\"description\":\"Successful Response\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/HealthResponse\"}}}}}}},\"/api/v1/extract\":{\"post\":{\"tags\":[\"Extraction\"],\"summary\":\"Trích xuất trực tiếp thông tin quán ăn từ URL (Synchronous)\",\"description\":\"Nhận URL TikTok hoặc YouTube Shorts, chờ xử lý và trả về kết quả JSON ngay lập tức.\",\"operationId\":\"extract_restaura"
+    }
+  },
+  "ai_ssh": {
+    "host": "2.tcp.us-cal-1.ngrok.io",
+    "port": 10083,
+    "status": "connected",
+    "commands": {
+      "uname -a": {
+        "stdout": "Linux bb737c0d961f 6.6.159+ #1 SMP Thu Oct 22 03:07:54 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux",
+        "stderr": ""
+      },
+      "LD_LIBRARY_PATH=/usr/lib64-nvidia:/usr/local/nvidia/lib64 /opt/bin/nvidia-smi": {
+        "stdout": "Sun Nov  8 09:36:33 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n| N/A   72C    P0             30W /   70W |    2615MiB /  15360MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A            5911      C   python3                                2612MiB |\n+-----------------------------------------------------------------------------------------+",
+        "stderr": ""
+      },
+      "free -m": {
+        "stdout": "total        used        free      shared  buff/cache   available\nMem:           12975        4326         315          32        8683        8648\nSwap:              0           0           0",
+        "stderr": ""
+      },
+      "df -h": {
+        "stdout": "Filesystem      Size  Used Avail Use% Mounted on\noverlay         113G  4.6G  109G   5% /\ntmpfs            64M     0   64M   0% /dev\nshm             5.7G  4.0K  5.7G   1% /dev/shm\n/dev/root       2.0G  1.3G  710M  65% /usr/sbin/docker-init\n/dev/sda1       119G  7.6G  112G   7% /opt/bin/.nvidia\ntmpfs           6.4G   72K  6.4G   1% /var/colab\ntmpfs           6.4G     0  6.4G   0% /proc/acpi\ntmpfs           6.4G     0  6.4G   0% /proc/scsi\ntmpfs           6.4G     0  6.4G   0% /sys/firmware",
+        "stderr": ""
+      },
+      "ps aux | grep -E 'python|uvicorn|cloudflared|ngrok' | grep -v grep": {
+        "stdout": "root          65  0.6  0.0      0     0 ?        Z    08:49   0:17 [python3] <defunct>\nroot          66  0.0  0.5 100904 72192 ?        S    08:49   0:02 python3 /usr/local/bin/colab-fileshim.py\nroot         134  0.3  1.1 665284 154048 ?       Sl   08:49   0:08 /usr/bin/python3 /usr/local/bin/jupyter-server --debug --transport=\"ipc\" --ip=172.28.0.12 --ServerApp.token= --port=9000 --FileContentsManager.root_dir=/ --FileContentsManager.allow_hidden=True --ServerApp.log_format=\"|%(levelname)s|%(message)s\" --ServerApp.iopub_data_rate_limit=1e10 --MappingKernelManager.root_dir=/content\nroot         792  0.5  2.9 8920668 392864 ?      Ssl  08:52   0:14 /usr/bin/python3 -m colab_kernel_launcher -f /root/.local/share/jupyter/runtime/kernel-2aea81f0-22a0-4001-b9f5-fe4903516c24.json\nroot        1413  0.0  0.0   4328  3380 ?        S    08:53   0:00 bash -c tail -n +0 -F \"/root/.config/Google/DriveFS/Logs/drive_fs.txt\" | python3 /opt/google/drive/drive-filter.py > \"/root/.config/Google/DriveFS/Logs/timeouts.txt\" \nroot        1415  0.0  0.0  22320 12412 ?        S    08:53   0:00 python3 /opt/google/drive/drive-filter.py\nroot        3208  0.2  0.2 1292624 27908 ?       Sl   08:57   0:05 /content/ngrok tcp 2222\nroot        5911  5.4 26.9 19655172 3577056 ?    Sl   09:07   1:33 python3 src/run_server.py --port 8000 --tunnel cloudflare\nroot        6384  0.0  0.2 1295080 38652 ?       Sl   09:09   0:01 /usr/local/lib/python3.13/dist-packages/pycloudflared/cloudflared-linux-amd64 tunnel --url http://127.0.0.1:8000",
+        "stderr": ""
+      },
+      "ls -la /content": {
+        "stdout": "total 44032\ndrwxr-xr-x 1 root root     4096 Nov  8 08:54 .\ndrwxr-xr-x 1 root root     4096 Nov  8 08:49 ..\ndrwxr-xr-x 4 root root     4096 Nov  6 16:54 .config\nd????????? ? ?    ?           ?            ? drive\n-rwxr-xr-x 1 root root 32809120 Oct 23 12:37 ngrok\n-rw-r--r-- 1 root root        0 Nov  8 08:57 ngrok.log\n-rw-r--r-- 1 root root 12253917 Nov  8 08:54 ngrok.zip\ndrwxr-xr-x 1 root root     4096 Nov  6 16:54 sample_data\n-rw-r--r-- 1 root root      672 Nov  8 09:36 sshd.log",
+        "stderr": "ls: cannot access '/content/drive': Permission denied"
+      }
+    }
+  }
+}

@@ -1,0 +1,293 @@
+{
+  "tc_id": "TC_PERF_10",
+  "title": "Kiểm thử tải xử lý AI Pipeline trên Google Colab Free (Tesla T4 GPU)",
+  "endpoint": "https://flashers-characterized-history-drawings.trycloudflare.com/api/v1/extract",
+  "executed_at": "2026-11-07T16:05:58.085567+00:00",
+  "total_duration_sec": 74.02,
+  "overall": {
+    "total_requests": 6,
+    "success_requests": 6,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "throughput_videos_per_min": 4.86,
+    "latency": {
+      "count": 6,
+      "min_ms": 705.0,
+      "avg_ms": 18900.06,
+      "p50_ms": 19342.5,
+      "p90_ms": 36507.2,
+      "p95_ms": 37245.21,
+      "p99_ms": 37835.63,
+      "max_ms": 37983.23
+    },
+    "p95_sec": 37.25
+  },
+  "colab_gpu_ssh_telemetry": {
+    "samples_count": 28,
+    "gpu_name": "Tesla T4",
+    "vram_total_mb": 15360.0,
+    "vram_max_used_mb": 3863.0,
+    "vram_avg_used_mb": 2837.71,
+    "vram_max_used_gb": 3.77,
+    "gpu_util_max_pct": 94.0,
+    "gpu_util_avg_pct": 9.36,
+    "gpu_temp_max_c": 61.0,
+    "sys_ram_total_mb": 12975.0,
+    "sys_ram_max_used_mb": 5470.0,
+    "sys_ram_max_used_gb": 5.34,
+    "worker_processes": 1,
+    "log_file": "D:\\year_4\\pbl\\team_repo\\travel-map\\kiem_thu\\logs\\ssh_TC_PERF_10.log"
+  },
+  "host_resources": {
+    "samples_count": 37,
+    "cpu_avg_pct": 18.86,
+    "cpu_max_pct": 53.9,
+    "ram_avg_pct": 90.09,
+    "ram_max_pct": 90.8,
+    "ram_min_avail_mb": 725.34,
+    "ram_start_used_mb": 7079.11,
+    "ram_end_used_mb": 7095.05,
+    "ram_delta_mb": 15.94
+  },
+  "video_details": [
+    {
+      "index": 1,
+      "url": "https://www.tiktok.com/@mr.tn291/video/7599459386158779669",
+      "http_status": 200,
+      "duration_ms": 16706.25,
+      "duration_sec": 16.71,
+      "success": true,
+      "restaurant_extracted": {
+        "name": "Nam Dương Quán",
+        "address": "Khu Bách Bảng - P. Đức Phố - Quận Gò Vấp",
+        "confidence_status": "Cao",
+        "evidence": {
+          "name_source": "Frame 1 (OCR)",
+          "address_source": "Frame 1 (OCR)"
+        },
+        "evidence_sources": [
+          "Frame 1 (OCR)",
+          "Frame 1 (OCR)"
+        ]
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 6.81,
+        "keyframe_total_time_sec": 4.36,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 4.38,
+        "total_time_sec": 15.69,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 4.36,
+        "parallel_stt_and_keyframe_time_sec": 4.36,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 4.36,
+        "vlm_inference_time_sec": 4.38
+      }
+    },
+    {
+      "index": 2,
+      "url": "https://www.tiktok.com/@namvivu112200/video/7667883156413943061",
+      "http_status": 200,
+      "duration_ms": 37983.23,
+      "duration_sec": 37.98,
+      "success": true,
+      "restaurant_extracted": {
+        "name": "Lộc Ký",
+        "address": "324 Trần Hưng Đạo, Đà Nẵng",
+        "confidence_status": "Cao",
+        "evidence": {
+          "name_source": "Frame 2, Frame 4, Frame 5 (OCR)",
+          "address_source": "Frame 4, Frame 5 (OCR)"
+        },
+        "evidence_sources": [
+          "Frame 2, Frame 4, Frame 5 (OCR)",
+          "Frame 4, Frame 5 (OCR)"
+        ]
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 7.26,
+        "keyframe_total_time_sec": 10.04,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 3.81,
+        "total_time_sec": 21.24,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 10.04,
+        "parallel_stt_and_keyframe_time_sec": 10.04,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 10.04,
+        "vlm_inference_time_sec": 3.81
+      }
+    },
+    {
+      "index": 3,
+      "url": "https://www.tiktok.com/@chuyencuadanang_official/video/7621186492538490133",
+      "http_status": 200,
+      "duration_ms": 21978.75,
+      "duration_sec": 21.98,
+      "success": true,
+      "restaurant_extracted": {
+        "name": "BẾP MẸ HÀN QUỐC",
+        "address": "9-11-15 Bùi Tá Hán - Đà Nẵng",
+        "confidence_status": "Cao",
+        "evidence": {
+          "name_source": "Frame 5 (OCR)",
+          "address_source": "Frame 5 (OCR)"
+        },
+        "evidence_sources": [
+          "Frame 5 (OCR)",
+          "Frame 5 (OCR)"
+        ]
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 3.66,
+        "keyframe_total_time_sec": 20.51,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 19.55,
+        "total_time_sec": 217.66,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 20.51,
+        "parallel_stt_and_keyframe_time_sec": 20.51,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 20.51,
+        "vlm_inference_time_sec": 19.55
+      }
+    },
+    {
+      "index": 4,
+      "url": "https://www.tiktok.com/@leladanang/video/7685175735635463431",
+      "http_status": 200,
+      "duration_ms": 995.96,
+      "duration_sec": 1.0,
+      "success": true,
+      "restaurant_extracted": {
+        "name": "7. Bò Lụi - Nem Lụi Bé Na",
+        "address": "317/26 Hải Phòng, Thanh Khê",
+        "confidence_status": "Cao",
+        "evidence": {
+          "name_source": "Frame 3, Frame 4, Frame 5 (OCR)",
+          "address_source": "Frame 4, Frame 5 (OCR)"
+        },
+        "evidence_sources": [
+          "Frame 3, Frame 4, Frame 5 (OCR)",
+          "Frame 4, Frame 5 (OCR)"
+        ]
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 1.55,
+        "keyframe_total_time_sec": 17.37,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 21.07,
+        "total_time_sec": 40.24,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 17.37,
+        "parallel_stt_and_keyframe_time_sec": 17.37,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 17.37,
+        "vlm_inference_time_sec": 21.07
+      }
+    },
+    {
+      "index": 5,
+      "url": "https://www.tiktok.com/@kenhcuatienn/video/7665161172185910536",
+      "http_status": 200,
+      "duration_ms": 705.0,
+      "duration_sec": 0.7,
+      "success": true,
+      "restaurant_extracted": {
+        "name": "Tiệm Thái Núp Hẻm",
+        "address": null,
+        "confidence_status": "Trung bình",
+        "evidence": {
+          "name_source": "Frame 1 (OCR)",
+          "address_source": null
+        },
+        "evidence_sources": [
+          "Frame 1 (OCR)"
+        ]
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 3.71,
+        "keyframe_total_time_sec": 17.08,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 15.17,
+        "total_time_sec": 36.1,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 17.08,
+        "parallel_stt_and_keyframe_time_sec": 17.08,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 17.08,
+        "vlm_inference_time_sec": 15.17
+      }
+    },
+    {
+      "index": 6,
+      "url": "https://www.tiktok.com/@anngaynoithat/video/7641148019907382535",
+      "http_status": 200,
+      "duration_ms": 35031.16,
+      "duration_sec": 35.03,
+      "success": true,
+      "restaurant_extracted": {
+        "name": null,
+        "address": null,
+        "confidence_status": "Thấp",
+        "evidence": {
+          "name_source": null,
+          "address_source": null
+        },
+        "evidence_sources": []
+      },
+      "ai_execution_metrics": {
+        "download_time_sec": 2.33,
+        "keyframe_total_time_sec": 27.92,
+        "video_decode_sampling_time_sec": 0.0,
+        "dbnet_gpu_inference_time_sec": 0.0,
+        "scoring_and_nms_time_sec": 0.0,
+        "vlm_sequential_inference_time_sec": 4.06,
+        "total_time_sec": 34.58,
+        "sampled_frames_count": 5,
+        "dbnet_evaluated_frames_count": 5,
+        "selected_top_k_count": 5,
+        "stt_time_sec": 0.0,
+        "keyframe_selection_time_sec": 27.92,
+        "parallel_stt_and_keyframe_time_sec": 27.92,
+        "stt_branch_time_sec": 0.0,
+        "keyframe_branch_time_sec": 27.92,
+        "vlm_inference_time_sec": 4.06
+      }
+    }
+  ],
+  "sla_evaluation": {
+    "steady_p95_ms": 37245.21,
+    "steady_p95_sec": 37.25,
+    "steady_error_rate_pct": 0.0,
+    "colab_vram_max_gb": 3.77,
+    "colab_sys_ram_max_gb": 5.34,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

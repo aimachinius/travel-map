@@ -1,0 +1,138 @@
+{
+  "tc_id": "TC_PERF_05",
+  "title": "Kiểm thử tải tìm kiếm địa điểm qua Geocoding (Có Redis Cache / Mock)",
+  "endpoint": "GET /api/v1/places/search?q={keyword} + Redis Geocode Cache (80%) + ArcGIS Geocoder (20%)",
+  "executed_at": "2026-11-08T02:38:21.582934+00:00",
+  "total_duration_sec": 66.24,
+  "config": {
+    "vus": 20,
+    "target_rps": 5.0,
+    "ramp_up_sec": 6.0,
+    "steady_sec": 36.0,
+    "ramp_down_sec": 6.0,
+    "sla_p95_ms": 1200.0,
+    "sla_error_rate_pct": 0.5
+  },
+  "overall": {
+    "total_requests": 422,
+    "success_requests": 422,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 6.37,
+    "latency": {
+      "count": 422,
+      "min_ms": 10.24,
+      "avg_ms": 700.29,
+      "p50_ms": 174.14,
+      "p90_ms": 1999.79,
+      "p95_ms": 3807.71,
+      "p99_ms": 8661.0,
+      "max_ms": 10579.24
+    },
+    "status_counts": {
+      "200": 422
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 10,
+      "target_rps": 2.5,
+      "duration_sec": 10.35,
+      "total_requests": 57,
+      "success_requests": 57,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 5.51,
+      "latency": {
+        "count": 57,
+        "min_ms": 15.05,
+        "avg_ms": 699.8,
+        "p50_ms": 374.62,
+        "p90_ms": 2114.4,
+        "p95_ms": 2563.49,
+        "p99_ms": 4306.22,
+        "max_ms": 4488.28
+      },
+      "status_counts": {
+        "200": 57
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 20,
+      "target_rps": 5.0,
+      "duration_sec": 45.88,
+      "total_requests": 295,
+      "success_requests": 295,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 6.43,
+      "latency": {
+        "count": 295,
+        "min_ms": 10.76,
+        "avg_ms": 736.91,
+        "p50_ms": 154.92,
+        "p90_ms": 1596.05,
+        "p95_ms": 4475.18,
+        "p99_ms": 8767.67,
+        "max_ms": 10579.24
+      },
+      "status_counts": {
+        "200": 295
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 10,
+      "target_rps": 2.5,
+      "duration_sec": 10.0,
+      "total_requests": 70,
+      "success_requests": 70,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 7.0,
+      "latency": {
+        "count": 70,
+        "min_ms": 10.24,
+        "avg_ms": 546.36,
+        "p50_ms": 163.04,
+        "p90_ms": 2171.39,
+        "p95_ms": 3278.11,
+        "p99_ms": 3964.27,
+        "max_ms": 4312.49
+      },
+      "status_counts": {
+        "200": 70
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 66,
+    "cpu_avg_pct": 41.34,
+    "cpu_max_pct": 100.0,
+    "ram_avg_pct": 91.47,
+    "ram_max_pct": 93.3,
+    "ram_min_avail_mb": 528.09,
+    "ram_start_used_mb": 7366.02,
+    "ram_end_used_mb": 7231.22,
+    "ram_delta_mb": -134.8
+  },
+  "extra_checks": {
+    "route_mapping_note": "Tài liệu ghi GET /api/v1/places/geocode?q={keyword}; Thực tế Backend triển khai GET /api/v1/places/search?q={keyword} và ArcGISGeocoder.",
+    "redis_used_memory_human": "1.14M",
+    "redis_used_memory_mb": 1.14,
+    "cache_hits": 338,
+    "cache_misses_external_calls": 84,
+    "cache_hit_ratio_pct": 80.09
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 4475.18,
+    "steady_error_rate_pct": 0.0,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

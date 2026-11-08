@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://127.0.0.1:6379/0"
 
     # External AI Service
-    AI_SERVER_EXTRACT_URL: str = "https://capacity-broker-banners-targeted.trycloudflare.com/api/v1/extract"
+    AI_SERVER_EXTRACT_URL: str = "https://funk-smooth-alive-hosting.trycloudflare.com/api/v1/extract"
     AI_REQUEST_TIMEOUT: int = 180
 
     # ArcGIS Geocoding Service

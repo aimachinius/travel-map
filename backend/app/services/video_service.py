@@ -1,3 +1,4 @@
+import asyncio
 import re
 from typing import Any
 from uuid import UUID
@@ -39,19 +40,14 @@ def extract_video_info(video_url: str) -> tuple[str, str]:
     raise ValueError("Không thể xác định ID video từ URL")
 
 
-async def submit_video(
+def _submit_video_db_sync(
     db: Session,
-    data: VideoSubmitRequest,
+    platform: str,
+    platform_video_id: str,
+    video_url: str,
     user_id: UUID,
-    force_reanalyze: bool = False,
+    force_reanalyze: bool,
 ) -> tuple[Video, AnalysisRun, bool]:
-    """
-    Luồng 1: Người dùng gửi link video phân tích.
-    Trả về (video, analysis_run, is_cached_completed).
-    """
-    video_url = str(data.video_url).strip()
-    platform, platform_video_id = extract_video_info(video_url)
-
     # 1. Get or Create Video
     video = db.scalar(
         select(Video).where(
@@ -98,6 +94,34 @@ async def submit_video(
     except Exception:
         db.rollback()
         raise
+
+    return video, analysis_run, False
+
+
+async def submit_video(
+    db: Session,
+    data: VideoSubmitRequest,
+    user_id: UUID,
+    force_reanalyze: bool = False,
+) -> tuple[Video, AnalysisRun, bool]:
+    """
+    Luồng 1: Người dùng gửi link video phân tích.
+    Trả về (video, analysis_run, is_cached_completed).
+    """
+    video_url = str(data.video_url).strip()
+    platform, platform_video_id = extract_video_info(video_url)
+
+    video, analysis_run, is_cached = await asyncio.to_thread(
+        _submit_video_db_sync,
+        db,
+        platform,
+        platform_video_id,
+        video_url,
+        user_id,
+        force_reanalyze,
+    )
+    if is_cached:
+        return video, analysis_run, True
 
     # 4. Đẩy task vào hàng đợi ưu tiên cao
     from app.services.analysis_service import enqueue_analysis

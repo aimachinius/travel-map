@@ -1,0 +1,132 @@
+{
+  "tc_id": "TC_PERF_17",
+  "title": "Kiểm thử cơ chế xếp hàng (Backpressure) khi đẩy 30 video liên tiếp về Colab Free",
+  "endpoint": "POST /api/v1/videos/submit (30 videos burst -> Redis Queue -> Colab Free T4)",
+  "executed_at": "2026-11-08T09:52:49.399926+00:00",
+  "total_duration_sec": 28.75,
+  "overall": {
+    "total_requests": 30,
+    "accepted_202_requests": 30,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "latency": {
+      "count": 30,
+      "min_ms": 22.3,
+      "avg_ms": 63.74,
+      "p50_ms": 67.73,
+      "p90_ms": 97.36,
+      "p95_ms": 101.16,
+      "p99_ms": 104.28,
+      "max_ms": 104.89
+    },
+    "status_counts": {
+      "202": 30
+    }
+  },
+  "backpressure_verification": {
+    "max_concurrent_processing_in_worker": 2,
+    "peak_redis_queue_depth": 6,
+    "remaining_tasks_drained_after_observation": 0,
+    "queue_timeline": [
+      {
+        "elapsed_sec": 0.16,
+        "submitted_so_far": 5,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 0
+      },
+      {
+        "elapsed_sec": 4.68,
+        "submitted_so_far": 10,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 2
+      },
+      {
+        "elapsed_sec": 9.2,
+        "submitted_so_far": 15,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 1
+      },
+      {
+        "elapsed_sec": 13.73,
+        "submitted_so_far": 20,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 0
+      },
+      {
+        "elapsed_sec": 18.21,
+        "submitted_so_far": 25,
+        "redis_high_queue_len": 6,
+        "db_processing_count": 2
+      },
+      {
+        "elapsed_sec": 22.72,
+        "submitted_so_far": 30,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 0
+      },
+      {
+        "elapsed_sec": 22.73,
+        "redis_high_queue_len": 5,
+        "db_processing_count": 0,
+        "run_statuses": {
+          "COMPLETED": 25,
+          "PENDING": 5
+        }
+      },
+      {
+        "elapsed_sec": 25.73,
+        "redis_high_queue_len": 1,
+        "db_processing_count": 2,
+        "run_statuses": {
+          "COMPLETED": 27,
+          "PENDING": 1,
+          "PROCESSING": 2
+        }
+      },
+      {
+        "elapsed_sec": 28.74,
+        "redis_high_queue_len": 0,
+        "db_processing_count": 0,
+        "run_statuses": {
+          "COMPLETED": 30
+        }
+      }
+    ]
+  },
+  "colab_gpu_ssh_telemetry": {
+    "samples_count": 11,
+    "gpu_name": "Tesla T4",
+    "vram_total_mb": 15360.0,
+    "vram_max_used_mb": 2615.0,
+    "vram_avg_used_mb": 2615.0,
+    "vram_max_used_gb": 2.55,
+    "gpu_util_max_pct": 0.0,
+    "gpu_util_avg_pct": 0.0,
+    "gpu_temp_max_c": 71.0,
+    "sys_ram_total_mb": 12975.0,
+    "sys_ram_max_used_mb": 4483.0,
+    "sys_ram_max_used_gb": 4.38,
+    "worker_processes": 1,
+    "log_file": "D:\\year_4\\pbl\\team_repo\\travel-map\\kiem_thu\\logs\\ssh_R2_TC_PERF_17.log"
+  },
+  "host_resources": {
+    "samples_count": 29,
+    "cpu_avg_pct": 21.26,
+    "cpu_max_pct": 47.9,
+    "ram_avg_pct": 90.32,
+    "ram_max_pct": 91.1,
+    "ram_min_avail_mb": 703.87,
+    "ram_start_used_mb": 7132.48,
+    "ram_end_used_mb": 7169.3,
+    "ram_delta_mb": 36.82
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 101.16,
+    "max_submit_latency_ms": 104.89,
+    "steady_error_rate_pct": 0.0,
+    "max_worker_concurrency_observed": 2,
+    "colab_vram_max_gb": 2.55,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

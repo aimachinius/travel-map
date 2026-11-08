@@ -1,3 +1,4 @@
+import time
 from app.core.security import verify_password, create_access_token
 from app.schemas.auth import LoginRequest
 from sqlalchemy import select
@@ -10,6 +11,10 @@ from app.schemas.auth import RegisterRequest
 
 
 password_hash = PasswordHash.recommended()
+
+# Cache ngắn hạn (60s) thông tin xác thực theo username/email để giảm truy vấn DB khi đăng nhập đồng loạt
+_LOGIN_USER_CACHE: dict[str, tuple[str, str, bool, float]] = {}
+_LOGIN_CACHE_TTL_SEC = 60.0
 
 
 def register_user(db: Session, data: RegisterRequest) -> User:
@@ -52,21 +57,35 @@ def register_user(db: Session, data: RegisterRequest) -> User:
     return user
 def login_user(db: Session, data: LoginRequest) -> str:
     username_or_email = data.username_or_email.strip()
+    cache_key = username_or_email.lower()
+    now = time.monotonic()
 
-    user = db.scalar(
-        select(User).where(
-            (User.username == username_or_email)
-            | (User.email == username_or_email.lower())
+    cached = _LOGIN_USER_CACHE.get(cache_key)
+    if cached is not None and now < cached[3]:
+        user_id_str, pwd_hash, is_active, _ = cached
+    else:
+        user = db.scalar(
+            select(User).where(
+                (User.username == username_or_email)
+                | (User.email == cache_key)
+            )
         )
-    )
+        if not user:
+            raise ValueError("Tên đăng nhập hoặc mật khẩu không chính xác")
+        user_id_str = str(user.id)
+        pwd_hash = user.password_hash
+        is_active = user.is_active
+        if len(_LOGIN_USER_CACHE) > 2000:
+            _LOGIN_USER_CACHE.clear()
+        _LOGIN_USER_CACHE[cache_key] = (user_id_str, pwd_hash, is_active, now + _LOGIN_CACHE_TTL_SEC)
 
-    if not user or not verify_password(
+    if not verify_password(
         data.password,
-        user.password_hash,
+        pwd_hash,
     ):
         raise ValueError("Tên đăng nhập hoặc mật khẩu không chính xác")
 
-    if not user.is_active:
+    if not is_active:
         raise ValueError("Tài khoản đã bị vô hiệu hóa")
 
-    return create_access_token(str(user.id))
+    return create_access_token(user_id_str)

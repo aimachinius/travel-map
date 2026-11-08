@@ -1,0 +1,134 @@
+{
+  "tc_id": "TC_PERF_09",
+  "title": "Kiểm thử tải truy xuất video đã có kết quả phân tích (Completed Videos)",
+  "endpoint": "GET /api/v1/videos/analysis/{run_id} & GET /api/v1/videos/{video_id}",
+  "executed_at": "2026-11-08T10:04:03.522308+00:00",
+  "total_duration_sec": 60.43,
+  "config": {
+    "vus": 100,
+    "target_rps": 45.0,
+    "ramp_up_sec": 7.5,
+    "steady_sec": 45.0,
+    "ramp_down_sec": 7.5,
+    "sla_p95_ms": 250.0,
+    "sla_error_rate_pct": 0.0
+  },
+  "overall": {
+    "total_requests": 5148,
+    "success_requests": 5148,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 85.19,
+    "latency": {
+      "count": 5148,
+      "min_ms": 2.18,
+      "avg_ms": 47.96,
+      "p50_ms": 11.2,
+      "p90_ms": 137.0,
+      "p95_ms": 212.65,
+      "p99_ms": 429.78,
+      "max_ms": 894.13
+    },
+    "status_counts": {
+      "200": 5148
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 50,
+      "target_rps": 22.5,
+      "duration_sec": 7.59,
+      "total_requests": 1125,
+      "success_requests": 1125,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 148.28,
+      "latency": {
+        "count": 1125,
+        "min_ms": 2.18,
+        "avg_ms": 53.4,
+        "p50_ms": 23.49,
+        "p90_ms": 139.25,
+        "p95_ms": 189.48,
+        "p99_ms": 281.07,
+        "max_ms": 439.69
+      },
+      "status_counts": {
+        "200": 1125
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 100,
+      "target_rps": 45.0,
+      "duration_sec": 45.24,
+      "total_requests": 2924,
+      "success_requests": 2924,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 64.63,
+      "latency": {
+        "count": 2924,
+        "min_ms": 2.72,
+        "avg_ms": 43.02,
+        "p50_ms": 6.42,
+        "p90_ms": 133.5,
+        "p95_ms": 229.47,
+        "p99_ms": 541.52,
+        "max_ms": 894.13
+      },
+      "status_counts": {
+        "200": 2924
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 50,
+      "target_rps": 22.5,
+      "duration_sec": 7.59,
+      "total_requests": 1099,
+      "success_requests": 1099,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 144.84,
+      "latency": {
+        "count": 1099,
+        "min_ms": 3.05,
+        "avg_ms": 55.51,
+        "p50_ms": 27.28,
+        "p90_ms": 136.8,
+        "p95_ms": 197.41,
+        "p99_ms": 330.66,
+        "max_ms": 548.85
+      },
+      "status_counts": {
+        "200": 1099
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 60,
+    "cpu_avg_pct": 23.16,
+    "cpu_max_pct": 55.3,
+    "ram_avg_pct": 91.14,
+    "ram_max_pct": 92.9,
+    "ram_min_avail_mb": 557.59,
+    "ram_start_used_mb": 7152.69,
+    "ram_end_used_mb": 7160.86,
+    "ram_delta_mb": 8.17
+  },
+  "extra_checks": {
+    "completed_analysis_runs_pool": 408,
+    "completed_videos_pool": 408
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 229.47,
+    "steady_error_rate_pct": 0.0,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

@@ -54,6 +54,11 @@ async def background_queue_worker():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import anyio.to_thread
+
+    # Mở rộng threadpool limiter từ 40 lên 100 tokens để các sync endpoints không bị nghẽn dưới tải cao
+    anyio.to_thread.current_default_thread_limiter().total_tokens = 100
+
     # Khởi chạy worker chạy nền
     worker_task = asyncio.create_task(background_queue_worker())
     try:

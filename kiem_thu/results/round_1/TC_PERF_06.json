@@ -1,0 +1,139 @@
+{
+  "tc_id": "TC_PERF_06",
+  "title": "Kiểm thử tải quét địa điểm bán kính 1-10 km (PostGIS Spatial Query)",
+  "endpoint": "GET /api/v1/places/nearby-videos?lat={lat}&lon={lon}&radius_m={1000..10000}",
+  "executed_at": "2026-11-08T02:39:59.462987+00:00",
+  "total_duration_sec": 84.49,
+  "config": {
+    "vus": 80,
+    "target_rps": 35.0,
+    "ramp_up_sec": 6.0,
+    "steady_sec": 60.0,
+    "ramp_down_sec": 6.0,
+    "sla_p95_ms": 600.0,
+    "sla_error_rate_pct": 0.1
+  },
+  "overall": {
+    "total_requests": 692,
+    "success_requests": 172,
+    "error_requests": 520,
+    "error_rate_pct": 75.145,
+    "actual_rps": 8.19,
+    "latency": {
+      "count": 692,
+      "min_ms": 44.16,
+      "avg_ms": 7848.69,
+      "p50_ms": 10013.0,
+      "p90_ms": 10027.12,
+      "p95_ms": 10029.47,
+      "p99_ms": 10038.45,
+      "max_ms": 10118.1
+    },
+    "status_counts": {
+      "200": 172,
+      "0": 520
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 40,
+      "target_rps": 17.5,
+      "duration_sec": 8.45,
+      "total_requests": 116,
+      "success_requests": 116,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 13.73,
+      "latency": {
+        "count": 116,
+        "min_ms": 250.39,
+        "avg_ms": 1523.98,
+        "p50_ms": 1675.47,
+        "p90_ms": 2258.98,
+        "p95_ms": 2491.24,
+        "p99_ms": 2710.8,
+        "max_ms": 2842.67
+      },
+      "status_counts": {
+        "200": 116
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 80,
+      "target_rps": 35.0,
+      "duration_sec": 64.04,
+      "total_requests": 536,
+      "success_requests": 56,
+      "error_requests": 480,
+      "error_rate_pct": 89.552,
+      "actual_rps": 8.37,
+      "latency": {
+        "count": 536,
+        "min_ms": 44.16,
+        "avg_ms": 9055.72,
+        "p50_ms": 10014.82,
+        "p90_ms": 10027.73,
+        "p95_ms": 10029.71,
+        "p99_ms": 10039.6,
+        "max_ms": 10118.1
+      },
+      "status_counts": {
+        "200": 56,
+        "0": 480
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 40,
+      "target_rps": 17.5,
+      "duration_sec": 11.98,
+      "total_requests": 40,
+      "success_requests": 0,
+      "error_requests": 40,
+      "error_rate_pct": 100.0,
+      "actual_rps": 3.34,
+      "latency": {
+        "count": 40,
+        "min_ms": 9991.66,
+        "avg_ms": 10016.26,
+        "p50_ms": 10018.38,
+        "p90_ms": 10029.32,
+        "p95_ms": 10030.74,
+        "p99_ms": 10034.83,
+        "max_ms": 10037.2
+      },
+      "status_counts": {
+        "0": 40
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 84,
+    "cpu_avg_pct": 35.7,
+    "cpu_max_pct": 87.1,
+    "ram_avg_pct": 91.56,
+    "ram_max_pct": 93.2,
+    "ram_min_avail_mb": 539.16,
+    "ram_start_used_mb": 7302.38,
+    "ram_end_used_mb": 7204.11,
+    "ram_delta_mb": -98.27
+  },
+  "extra_checks": {
+    "execution_time_ms": 71.988,
+    "planning_time_ms": 16.151,
+    "uses_index_in_plan": true,
+    "shared_buffers": "128MB",
+    "active_db_connections": 1
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 10029.71,
+    "steady_error_rate_pct": 89.552,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "tc_id": "TC_PERF_11",
+  "title": "Kiểm thử độ trễ đẩy thông báo thời gian thực qua WebSocket",
+  "endpoint": "WS /api/v1/ws?token=<JWT_ACCESS_TOKEN> [Mapped from WS /ws/notifications]",
+  "executed_at": "2026-11-08T09:45:04.730163+00:00",
+  "total_duration_sec": 45.66,
+  "overall": {
+    "concurrent_connections_target": 150,
+    "concurrent_connections_established": 150,
+    "dropped_connections": 0,
+    "total_requests": 2940,
+    "success_requests": 2940,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 65.33,
+    "latency": {
+      "count": 2940,
+      "min_ms": 2.21,
+      "avg_ms": 4.66,
+      "p50_ms": 4.56,
+      "p90_ms": 6.04,
+      "p95_ms": 6.59,
+      "p99_ms": 7.78,
+      "max_ms": 10.72
+    },
+    "handshake_latency": {
+      "count": 150,
+      "min_ms": 31.74,
+      "avg_ms": 83.25,
+      "p50_ms": 77.87,
+      "p90_ms": 130.08,
+      "p95_ms": 166.76,
+      "p99_ms": 187.15,
+      "max_ms": 193.01
+    }
+  },
+  "host_resources": {
+    "samples_count": 46,
+    "cpu_avg_pct": 17.95,
+    "cpu_max_pct": 48.6,
+    "ram_avg_pct": 89.87,
+    "ram_max_pct": 91.2,
+    "ram_min_avail_mb": 696.58,
+    "ram_start_used_mb": 6888.11,
+    "ram_end_used_mb": 7042.53,
+    "ram_delta_mb": 154.42
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 6.59,
+    "steady_error_rate_pct": 0.0,
+    "ws_ram_delta_mb": 154.42,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

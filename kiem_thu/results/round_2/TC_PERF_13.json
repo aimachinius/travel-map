@@ -1,0 +1,135 @@
+{
+  "tc_id": "TC_PERF_13",
+  "title": "Kiểm thử tải thao tác lưu và bỏ lưu địa điểm/video yêu thích",
+  "endpoint": "POST & DELETE /api/v1/saved/places/{place_id} & /api/v1/saved/videos/{video_id}",
+  "executed_at": "2026-11-08T09:39:39.622703+00:00",
+  "total_duration_sec": 60.73,
+  "config": {
+    "vus": 50,
+    "target_rps": 20.0,
+    "ramp_up_sec": 7.5,
+    "steady_sec": 45.0,
+    "ramp_down_sec": 7.5,
+    "sla_p95_ms": 350.0,
+    "sla_error_rate_pct": 0.1
+  },
+  "overall": {
+    "total_requests": 2118,
+    "success_requests": 2118,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 34.88,
+    "latency": {
+      "count": 2118,
+      "min_ms": 6.66,
+      "avg_ms": 68.79,
+      "p50_ms": 26.38,
+      "p90_ms": 164.58,
+      "p95_ms": 263.01,
+      "p99_ms": 555.1,
+      "max_ms": 976.97
+    },
+    "status_counts": {
+      "200": 2118
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 25,
+      "target_rps": 10.0,
+      "duration_sec": 7.63,
+      "total_requests": 428,
+      "success_requests": 428,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 56.12,
+      "latency": {
+        "count": 428,
+        "min_ms": 7.23,
+        "avg_ms": 82.6,
+        "p50_ms": 48.32,
+        "p90_ms": 192.46,
+        "p95_ms": 281.17,
+        "p99_ms": 473.85,
+        "max_ms": 806.24
+      },
+      "status_counts": {
+        "200": 428
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 50,
+      "target_rps": 20.0,
+      "duration_sec": 45.45,
+      "total_requests": 1227,
+      "success_requests": 1227,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 27.0,
+      "latency": {
+        "count": 1227,
+        "min_ms": 6.66,
+        "avg_ms": 57.71,
+        "p50_ms": 16.16,
+        "p90_ms": 143.35,
+        "p95_ms": 234.17,
+        "p99_ms": 620.46,
+        "max_ms": 976.97
+      },
+      "status_counts": {
+        "200": 1227
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 25,
+      "target_rps": 10.0,
+      "duration_sec": 7.63,
+      "total_requests": 463,
+      "success_requests": 463,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 60.66,
+      "latency": {
+        "count": 463,
+        "min_ms": 7.21,
+        "avg_ms": 85.38,
+        "p50_ms": 56.35,
+        "p90_ms": 196.92,
+        "p95_ms": 258.02,
+        "p99_ms": 420.04,
+        "max_ms": 772.45
+      },
+      "status_counts": {
+        "200": 463
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 61,
+    "cpu_avg_pct": 33.85,
+    "cpu_max_pct": 95.0,
+    "ram_avg_pct": 90.47,
+    "ram_max_pct": 92.3,
+    "ram_min_avail_mb": 608.29,
+    "ram_start_used_mb": 7131.16,
+    "ram_end_used_mb": 7145.33,
+    "ram_delta_mb": 14.17
+  },
+  "extra_checks": {
+    "deadlocks_before": 0,
+    "deadlocks_after": 0,
+    "new_deadlocks": 0
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 234.17,
+    "steady_error_rate_pct": 0.0,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

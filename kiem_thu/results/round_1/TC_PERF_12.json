@@ -1,0 +1,177 @@
+{
+  "tc_id": "TC_PERF_12",
+  "title": "Kiểm thử tải xem chi tiết quán và danh sách video review liên quan",
+  "endpoint": "GET /api/v1/places/{place_id}/videos & GET /api/v1/places/{place_id} [Mapped from detail-with-videos]",
+  "executed_at": "2026-11-07T15:58:18.449354+00:00",
+  "total_duration_sec": 60.78,
+  "config": {
+    "vus": 80,
+    "target_rps": 35.0,
+    "ramp_up_sec": 7.5,
+    "steady_sec": 45.0,
+    "ramp_down_sec": 7.5,
+    "sla_p95_ms": 500.0,
+    "sla_error_rate_pct": 0.1
+  },
+  "overall": {
+    "total_requests": 3389,
+    "success_requests": 1438,
+    "error_requests": 1951,
+    "error_rate_pct": 57.569,
+    "actual_rps": 55.76,
+    "latency": {
+      "count": 3389,
+      "min_ms": 1.21,
+      "avg_ms": 69.43,
+      "p50_ms": 17.59,
+      "p90_ms": 195.4,
+      "p95_ms": 264.85,
+      "p99_ms": 536.14,
+      "max_ms": 640.95
+    },
+    "status_counts": {
+      "200": 1438,
+      "500": 1449,
+      "0": 502
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 40,
+      "target_rps": 17.5,
+      "duration_sec": 7.71,
+      "total_requests": 637,
+      "success_requests": 233,
+      "error_requests": 404,
+      "error_rate_pct": 63.422,
+      "actual_rps": 82.66,
+      "latency": {
+        "count": 637,
+        "min_ms": 1.21,
+        "avg_ms": 85.5,
+        "p50_ms": 53.71,
+        "p90_ms": 207.35,
+        "p95_ms": 234.4,
+        "p99_ms": 293.67,
+        "max_ms": 327.22
+      },
+      "status_counts": {
+        "200": 233,
+        "500": 241,
+        "0": 163
+      },
+      "sample_errors": [
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error"
+      ]
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 80,
+      "target_rps": 35.0,
+      "duration_sec": 45.4,
+      "total_requests": 2071,
+      "success_requests": 949,
+      "error_requests": 1122,
+      "error_rate_pct": 54.177,
+      "actual_rps": 45.62,
+      "latency": {
+        "count": 2071,
+        "min_ms": 1.24,
+        "avg_ms": 61.73,
+        "p50_ms": 14.99,
+        "p90_ms": 190.93,
+        "p95_ms": 387.62,
+        "p99_ms": 558.36,
+        "max_ms": 640.95
+      },
+      "status_counts": {
+        "200": 949,
+        "500": 959,
+        "0": 163
+      },
+      "sample_errors": [
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error"
+      ]
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 40,
+      "target_rps": 17.5,
+      "duration_sec": 7.66,
+      "total_requests": 681,
+      "success_requests": 256,
+      "error_requests": 425,
+      "error_rate_pct": 62.408,
+      "actual_rps": 88.9,
+      "latency": {
+        "count": 681,
+        "min_ms": 1.32,
+        "avg_ms": 77.81,
+        "p50_ms": 49.1,
+        "p90_ms": 179.21,
+        "p95_ms": 218.14,
+        "p99_ms": 257.36,
+        "max_ms": 295.9
+      },
+      "status_counts": {
+        "200": 256,
+        "500": 249,
+        "0": 176
+      },
+      "sample_errors": [
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error",
+        "Internal Server Error"
+      ]
+    }
+  },
+  "host_resources": {
+    "samples_count": 61,
+    "cpu_avg_pct": 26.06,
+    "cpu_max_pct": 68.2,
+    "ram_avg_pct": 90.34,
+    "ram_max_pct": 92.6,
+    "ram_min_avail_mb": 588.0,
+    "ram_start_used_mb": 7192.02,
+    "ram_end_used_mb": 7137.32,
+    "ram_delta_mb": -54.7
+  },
+  "extra_checks": {
+    "place_videos_join_exec_ms": 2.187,
+    "saved_places_join_exec_ms": 2.995,
+    "saved_places_uses_index": true,
+    "db_deadlocks_count": 0
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 387.62,
+    "steady_error_rate_pct": 54.177,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "tc_id": "TC_PERF_01",
+  "title": "Kiểm thử tải đăng nhập và cấp phát JWT Token",
+  "endpoint": "POST /api/v1/auth/login",
+  "executed_at": "2026-11-08T10:10:11.988577+00:00",
+  "total_duration_sec": 240.26,
+  "config": {
+    "vus": 30,
+    "target_rps": 15.0,
+    "ramp_up_sec": 30.0,
+    "steady_sec": 180.0,
+    "ramp_down_sec": 30.0,
+    "sla_p95_ms": 500.0,
+    "sla_error_rate_pct": 0.5
+  },
+  "overall": {
+    "total_requests": 4427,
+    "success_requests": 4427,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "actual_rps": 18.43,
+    "latency": {
+      "count": 4427,
+      "min_ms": 4.89,
+      "avg_ms": 58.77,
+      "p50_ms": 51.02,
+      "p90_ms": 60.26,
+      "p95_ms": 66.82,
+      "p99_ms": 223.53,
+      "max_ms": 1334.15
+    },
+    "status_counts": {
+      "200": 4427
+    }
+  },
+  "stages": {
+    "ramp_up": {
+      "stage": "ramp_up",
+      "vus": 15,
+      "target_rps": 7.5,
+      "duration_sec": 30.05,
+      "total_requests": 695,
+      "success_requests": 695,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 23.13,
+      "latency": {
+        "count": 695,
+        "min_ms": 7.06,
+        "avg_ms": 73.32,
+        "p50_ms": 50.4,
+        "p90_ms": 57.53,
+        "p95_ms": 64.04,
+        "p99_ms": 1135.3,
+        "max_ms": 1334.15
+      },
+      "status_counts": {
+        "200": 695
+      },
+      "sample_errors": []
+    },
+    "steady": {
+      "stage": "steady",
+      "vus": 30,
+      "target_rps": 15.0,
+      "duration_sec": 180.15,
+      "total_requests": 3036,
+      "success_requests": 3036,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 16.85,
+      "latency": {
+        "count": 3036,
+        "min_ms": 4.89,
+        "avg_ms": 57.37,
+        "p50_ms": 51.58,
+        "p90_ms": 61.48,
+        "p95_ms": 68.46,
+        "p99_ms": 217.71,
+        "max_ms": 609.42
+      },
+      "status_counts": {
+        "200": 3036
+      },
+      "sample_errors": []
+    },
+    "ramp_down": {
+      "stage": "ramp_down",
+      "vus": 15,
+      "target_rps": 7.5,
+      "duration_sec": 30.04,
+      "total_requests": 696,
+      "success_requests": 696,
+      "error_requests": 0,
+      "error_rate_pct": 0.0,
+      "actual_rps": 23.17,
+      "latency": {
+        "count": 696,
+        "min_ms": 5.76,
+        "avg_ms": 50.34,
+        "p50_ms": 49.93,
+        "p90_ms": 55.57,
+        "p95_ms": 59.07,
+        "p99_ms": 75.28,
+        "max_ms": 88.64
+      },
+      "status_counts": {
+        "200": 696
+      },
+      "sample_errors": []
+    }
+  },
+  "host_resources": {
+    "samples_count": 239,
+    "cpu_avg_pct": 16.21,
+    "cpu_max_pct": 89.6,
+    "ram_avg_pct": 87.97,
+    "ram_max_pct": 96.0,
+    "ram_min_avail_mb": 315.55,
+    "ram_start_used_mb": 6834.91,
+    "ram_end_used_mb": 6925.26,
+    "ram_delta_mb": 90.35
+  },
+  "extra_checks": {
+    "password_hash_algorithm": "Argon2 (pwdlib.PasswordHash.recommended)",
+    "users_csv_count": 200
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 68.46,
+    "steady_error_rate_pct": 0.0,
+    "passed_client_sla": true,
+    "verdict": "Passed"
+  }
+}

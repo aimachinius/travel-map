@@ -1,0 +1,97 @@
+{
+  "tc_id": "TC_PERF_18",
+  "title": "Kiểm thử khả năng chịu lỗi khi Cloudflare Tunnel / Colab Free bị ngắt kết nối đột ngột",
+  "endpoint": "POST /api/v1/videos/submit & GET /api/v1/places/nearby-videos (Khi Tunnel ngắt kết nối)",
+  "executed_at": "2026-11-07T16:11:24.923824+00:00",
+  "total_duration_sec": 44.36,
+  "overall": {
+    "stage": "failover_tunnel_disconnected_30vus",
+    "vus": 30,
+    "target_rps": 20.0,
+    "duration_sec": 39.95,
+    "total_requests": 434,
+    "success_requests": 421,
+    "error_requests": 13,
+    "error_rate_pct": 2.995,
+    "actual_rps": 10.86,
+    "latency": {
+      "count": 434,
+      "min_ms": 20.84,
+      "avg_ms": 708.37,
+      "p50_ms": 62.88,
+      "p90_ms": 318.03,
+      "p95_ms": 836.56,
+      "p99_ms": 20012.51,
+      "max_ms": 20019.41
+    },
+    "status_counts": {
+      "200": 366,
+      "202": 55,
+      "0": 13
+    },
+    "sample_errors": []
+  },
+  "failover_breakdown": {
+    "map_requests_count": 372,
+    "map_error_rate_pct": 1.613,
+    "map_latency": {
+      "count": 372,
+      "min_ms": 30.3,
+      "avg_ms": 431.1,
+      "p50_ms": 55.92,
+      "p90_ms": 282.11,
+      "p95_ms": 744.58,
+      "p99_ms": 20001.02,
+      "max_ms": 20016.61
+    },
+    "video_submit_requests_count": 62,
+    "video_submit_error_rate_pct": 11.29,
+    "video_submit_latency": {
+      "count": 62,
+      "min_ms": 20.84,
+      "avg_ms": 2371.97,
+      "p50_ms": 96.79,
+      "p90_ms": 18134.41,
+      "p95_ms": 20004.74,
+      "p99_ms": 20018.39,
+      "max_ms": 20019.41
+    },
+    "analysis_runs_states_during_outage": [
+      {
+        "status": "PENDING",
+        "error_sample": "",
+        "count": 1
+      },
+      {
+        "status": "FAILED",
+        "error_sample": "All connection attempts failed",
+        "count": 48
+      },
+      {
+        "status": "PROCESSING",
+        "error_sample": "",
+        "count": 1
+      }
+    ],
+    "has_auto_retry_mechanism": false,
+    "architectural_finding": "Khi Tunnel ngắt kết nối, API tiếp nhận vẫn trả 202 Accepted và giữ task trong Redis/DB; Worker khi rút task gặp lỗi kết nối sẽ chuyển trạng thái sang FAILED kèm error_message và bắn WebSocket FAILED (hiện tại code analysis_service.py gọi fail_analysis() chứ chưa có cơ chế tự động RETRY). Đồng thời AI_REQUEST_TIMEOUT trong config.py đang là 180s thay vì 10s."
+  },
+  "host_resources": {
+    "samples_count": 44,
+    "cpu_avg_pct": 17.27,
+    "cpu_max_pct": 57.5,
+    "ram_avg_pct": 90.08,
+    "ram_max_pct": 91.4,
+    "ram_min_avail_mb": 681.86,
+    "ram_start_used_mb": 7084.56,
+    "ram_end_used_mb": 7059.64,
+    "ram_delta_mb": -24.92
+  },
+  "sla_evaluation": {
+    "steady_p95_ms": 744.58,
+    "steady_error_rate_pct": 1.613,
+    "map_unaffected": false,
+    "passed_client_sla": false,
+    "verdict": "Failed"
+  }
+}

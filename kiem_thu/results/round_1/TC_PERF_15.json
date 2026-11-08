@@ -1,0 +1,86 @@
+{
+  "tc_id": "TC_PERF_15",
+  "title": "Kiểm thử hiệu năng kết xuất bản đồ (Map Rendering) và phát video trên trình duyệt",
+  "endpoint": "http://localhost:5173/explore (Leaflet Map + Staggered Sliding Window Tri-Buffer TikTok Player)",
+  "executed_at": "2026-11-08T11:03:50.306859+00:00",
+  "total_duration_sec": 61.76,
+  "prerequisites": {
+    "single_browser_tab_only": true,
+    "open_tabs_count": 1,
+    "markers_rendered_count": 50,
+    "gpu_renderer": "ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x00009A49) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "client_performance": {
+    "initial_map_load_ms": 6499.29,
+    "initial_map_load_sec": 6.5,
+    "first_video_ready_ms": 2410.52,
+    "video_playback_switch_latency": {
+      "count": 11,
+      "min_ms": 149.23,
+      "avg_ms": 550.53,
+      "p50_ms": 369.3,
+      "p90_ms": 623.32,
+      "p95_ms": 1516.92,
+      "p99_ms": 2231.8,
+      "max_ms": 2410.52
+    },
+    "fps_stats": {
+      "samples_count": 93,
+      "avg_fps": 44.37,
+      "p50_fps": 52,
+      "min_fps": 8.3,
+      "max_fps": 60
+    },
+    "browser_memory": {
+      "tab_ram_avg_mb": 369.04,
+      "tab_ram_peak_mb": 419.59,
+      "js_heap_avg_mb": 7.78,
+      "js_heap_peak_mb": 11.8,
+      "dom_nodes_max": 4432,
+      "active_iframes_tri_buffer_max": 3
+    }
+  },
+  "overall": {
+    "total_requests": 11,
+    "success_requests": 11,
+    "error_requests": 0,
+    "error_rate_pct": 0.0,
+    "latency": {
+      "count": 11,
+      "min_ms": 149.23,
+      "avg_ms": 550.53,
+      "p50_ms": 369.3,
+      "p90_ms": 623.32,
+      "p95_ms": 1516.92,
+      "p99_ms": 2231.8,
+      "max_ms": 2410.52
+    }
+  },
+  "host_resources": {
+    "samples_count": 61,
+    "cpu_avg_pct": 77.48,
+    "cpu_max_pct": 100.0,
+    "ram_avg_pct": 89.58,
+    "ram_max_pct": 94.2,
+    "ram_min_avail_mb": 461.43,
+    "ram_start_used_mb": 6652.5,
+    "ram_end_used_mb": 6623.04,
+    "ram_delta_mb": -29.46
+  },
+  "sla_evaluation": {
+    "initial_map_load_ms": 6499.29,
+    "sla_map_load_ms": 2500.0,
+    "passed_map_load": false,
+    "video_p95_ms": 1516.92,
+    "sla_video_ms": 1500.0,
+    "passed_video_load": false,
+    "avg_fps": 44.37,
+    "sla_min_fps": 45.0,
+    "passed_fps": false,
+    "tab_ram_peak_mb": 419.59,
+    "sla_tab_ram_mb": 400.0,
+    "passed_tab_ram": false,
+    "error_rate_pct": 0.0,
+    "verdict": "Failed"
+  }
+}
