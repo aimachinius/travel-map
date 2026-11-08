@@ -3,8 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import Icon from '../components/Icon'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet'
-import { HOT_WEEKLY_SPOTS, type HotFoodSpot } from '../components/liquid/mockData'
+import { HOT_WEEKLY_SPOTS, extractTikTokVideoId, type HotFoodSpot } from '../components/liquid/mockData'
 import CloudTransitionOverlay from '../components/transition/CloudTransitionOverlay'
+import { placesApi } from '../services/api'
 import './FoodSpotLanding.css'
 import '../styles/swoosh-transition.css'
 
@@ -31,6 +32,7 @@ export default function FoodSpotLanding() {
   const [category, setCategory] = useState<string>('Tất cả')
   const [isCatDropdownOpen, setIsCatDropdownOpen] = useState<boolean>(false)
   const catDropdownRef = useRef<HTMLDivElement>(null)
+  const [spots, setSpots] = useState<HotFoodSpot[]>(HOT_WEEKLY_SPOTS)
   const [selectedId, setSelectedId] = useState<string>(HOT_WEEKLY_SPOTS[0].id)
   const [isCloudActive, setIsCloudActive] = useState<boolean>(false)
   const [targetDestination, setTargetDestination] = useState<string>('')
@@ -40,6 +42,55 @@ export default function FoodSpotLanding() {
 
   useEffect(() => {
     document.title = 'Food Spot — Món Hot Trong Tuần & Bản Đồ Review'
+  }, [])
+
+  // Tải danh sách địa điểm thật từ Backend API
+  useEffect(() => {
+    let isCancelled = false
+    async function fetchRealPlaces() {
+      try {
+        const data = await placesApi.getPlaces({ limit: 20 })
+        if (!isCancelled && data && data.length > 0) {
+          const validData = data.filter(
+            (p): p is typeof p & { latitude: number; longitude: number } =>
+              typeof p.latitude === 'number' && typeof p.longitude === 'number',
+          )
+          if (validData.length > 0) {
+            const mapped: HotFoodSpot[] = validData.map((p, idx) => {
+              const effectiveVideoId =
+                p.platform_video_id || extractTikTokVideoId(p.video_url || '') || p.id
+              const effectiveUrl =
+                p.video_url || `https://www.tiktok.com/@foodspot/video/${effectiveVideoId}`
+              return {
+                id: p.id,
+                videoId: effectiveVideoId,
+                name: p.name,
+                dishName: p.name,
+                lat: p.latitude,
+                lng: p.longitude,
+                type: p.category || 'Ăn Vặt & Đường Phố',
+                price: '35.000đ - 85.000đ',
+                address: p.normalized_address || p.address || 'Hà Nội / TP.HCM',
+                description: p.description || p.address || 'Địa điểm ẩm thực tuyển chọn',
+                author: '@foodspot_review',
+                image: 'photo-1504674900247-0877df9cc836',
+                icon: '🍽️',
+                tiktokUrl: effectiveUrl,
+                badge: idx === 0 ? 'Top 1 Trending' : undefined,
+              }
+            })
+            setSpots(mapped)
+            setSelectedId(mapped[0].id)
+          }
+        }
+      } catch (err) {
+        console.warn('Backend chưa sẵn sàng, dùng danh sách mặc định:', err)
+      }
+    }
+    fetchRealPlaces()
+    return () => {
+      isCancelled = true
+    }
   }, [])
 
   // Dòng nhắc nhở trên minimap chỉ hiện nhẹ vài giây (3.5s) rồi tự động tắt, không hiện vĩnh viễn
@@ -61,16 +112,16 @@ export default function FoodSpotLanding() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const visible = HOT_WEEKLY_SPOTS.filter(
+  const visible = spots.filter(
     (spot) => category === 'Tất cả' || spot.type === category,
   )
 
   const selectedSpot =
-    visible.find((s) => s.id === selectedId) || visible[0] || HOT_WEEKLY_SPOTS[0]
+    visible.find((s) => s.id === selectedId) || visible[0] || spots[0] || HOT_WEEKLY_SPOTS[0]
 
   const chooseCategory = (value: string) => {
     setCategory(value)
-    const firstMatch = HOT_WEEKLY_SPOTS.find(
+    const firstMatch = spots.find(
       (spot) => value === 'Tất cả' || spot.type === value,
     )
     if (firstMatch) {

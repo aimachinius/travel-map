@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgis/postgis:16-3.4-alpine
     container_name: foodspot-db
     restart: unless-stopped
     environment:
@@ -13,6 +13,18 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d foodspot_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: foodspot-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -31,20 +43,37 @@ services:
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: foodspot_db
+      REDIS_URL: redis://redis:6379/0
       JWT_SECRET_KEY: foodspot_dev_secret_key_change_in_production_2026
       JWT_ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       APP_NAME: Food Spot API
       APP_ENV: development
+      # AI_SERVER_EXTRACT_URL: http://mock-ai:8001/api/v1/extract
+      # Cloudflare Tunnel URL (nếu có AI server thật):
+      AI_SERVER_EXTRACT_URL: https://excess-dom-upper-ranch.trycloudflare.com/api/v1/extract
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      mock-ai:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  mock-ai:
+    build:
+      context: ./mock_ai_server
+      dockerfile: Dockerfile
+    container_name: foodspot-mock-ai
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
 
   front:
     build:

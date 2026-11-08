@@ -15,6 +15,8 @@ import type {
   PlaceResponse,
   RegisterRequest,
   RegisterResponse,
+  SavedPlaceResponse,
+  SavedVideoResponse,
   VideoResponse,
   VideoSubmitRequest,
   VideoSubmitResponse,
@@ -24,6 +26,8 @@ import type {
 export type * from '../types/api'
 
 export const TOKEN_STORAGE_KEY = 'foodspot_token'
+export const USER_STORAGE_KEY = 'foodspot_user'
+export const AUTH_CHANGE_EVENT = 'foodspot_auth_changed'
 
 export class ApiError extends Error {
   status: number
@@ -55,6 +59,32 @@ export function getAuthToken(): string | null {
   }
 }
 
+/** Lấy Thông tin Người dùng đã lưu từ LocalStorage */
+export function getStoredUser(): CurrentUserResponse | null {
+  try {
+    const raw = localStorage.getItem(USER_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+/** Cập nhật hoặc xóa Thông tin Người dùng trong LocalStorage */
+export function setStoredUser(user: CurrentUserResponse | null): void {
+  try {
+    if (user) {
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
+    } else {
+      localStorage.removeItem(USER_STORAGE_KEY)
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(AUTH_CHANGE_EVENT, { detail: user }))
+    }
+  } catch {
+    // ignore
+  }
+}
+
 /** Cập nhật hoặc xóa Auth Token trong LocalStorage */
 export function setAuthToken(token: string | null): void {
   try {
@@ -62,6 +92,10 @@ export function setAuthToken(token: string | null): void {
       localStorage.setItem(TOKEN_STORAGE_KEY, token)
     } else {
       localStorage.removeItem(TOKEN_STORAGE_KEY)
+      localStorage.removeItem(USER_STORAGE_KEY)
+    }
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(AUTH_CHANGE_EVENT, { detail: null }))
     }
   } catch {
     // Không chặn luồng nếu môi trường không cho phép truy cập LocalStorage
@@ -154,7 +188,7 @@ export const authApi = {
     })
   },
 
-  /** Đăng nhập lấy Bearer Access Token và tự lưu vào LocalStorage */
+  /** Đăng nhập lấy Bearer Access Token, tự lưu vào LocalStorage và nạp User Profile thật */
   async login(
     data: LoginRequest,
     autoStoreToken = true,
@@ -166,6 +200,12 @@ export const authApi = {
 
     if (autoStoreToken && res.access_token) {
       setAuthToken(res.access_token)
+      try {
+        const user = await this.getMe()
+        setStoredUser(user)
+      } catch {
+        // Nếu getMe tạm thời lỗi, vẫn giữ token để người dùng tiếp tục thao tác
+      }
     }
 
     return res
@@ -173,14 +213,27 @@ export const authApi = {
 
   /** Lấy thông tin tài khoản hiện tại thông qua Access Token */
   async getMe(): Promise<CurrentUserResponse> {
-    return request<CurrentUserResponse>('/api/v1/auth/me', {
+    const user = await request<CurrentUserResponse>('/api/v1/auth/me', {
       method: 'GET',
     })
+    setStoredUser(user)
+    return user
   },
 
-  /** Đăng xuất: xóa token khỏi LocalStorage */
+  /** Đăng xuất: xóa token và phiên đăng nhập khỏi LocalStorage */
   logout(): void {
     setAuthToken(null)
+    setStoredUser(null)
+  },
+
+  /** Kiểm tra trạng thái đã đăng nhập hay chưa */
+  isAuthenticated(): boolean {
+    return Boolean(getAuthToken())
+  },
+
+  /** Lấy profile người dùng hiện tại từ bộ nhớ local */
+  getCurrentUser(): CurrentUserResponse | null {
+    return getStoredUser()
   },
 }
 
@@ -198,8 +251,8 @@ export const placesApi = {
   },
 
   /** Lấy danh sách địa điểm người dùng đã lưu */
-  async getSavedPlaces(): Promise<PlaceResponse[]> {
-    return request<PlaceResponse[]>('/api/v1/places/saved', {
+  async getSavedPlaces(): Promise<SavedPlaceResponse[]> {
+    return request<SavedPlaceResponse[]>('/api/v1/saved/places', {
       method: 'GET',
     })
   },
@@ -212,15 +265,15 @@ export const placesApi = {
   },
 
   /** Lưu một địa điểm vào danh sách yêu thích */
-  async savePlace(placeId: string): Promise<PlaceResponse> {
-    return request<PlaceResponse>(`/api/v1/places/${placeId}/save`, {
+  async savePlace(placeId: string): Promise<{ status: string; saved_id: string }> {
+    return request<{ status: string; saved_id: string }>(`/api/v1/saved/places/${placeId}`, {
       method: 'POST',
     })
   },
 
   /** Bỏ lưu địa điểm khỏi danh sách yêu thích */
   async unsavePlace(placeId: string): Promise<void> {
-    return request<void>(`/api/v1/places/${placeId}/save`, {
+    return request<void>(`/api/v1/saved/places/${placeId}`, {
       method: 'DELETE',
     })
   },
@@ -246,8 +299,8 @@ export const videosApi = {
   },
 
   /** Lấy danh sách video mà tài khoản hiện tại đã lưu */
-  async getSavedVideos(): Promise<VideoResponse[]> {
-    return request<VideoResponse[]>('/api/v1/videos/saved', {
+  async getSavedVideos(): Promise<SavedVideoResponse[]> {
+    return request<SavedVideoResponse[]>('/api/v1/saved/videos', {
       method: 'GET',
     })
   },
@@ -260,15 +313,15 @@ export const videosApi = {
   },
 
   /** Lưu một video */
-  async saveVideo(videoId: string): Promise<VideoResponse> {
-    return request<VideoResponse>(`/api/v1/videos/${videoId}/save`, {
+  async saveVideo(videoId: string): Promise<{ status: string; saved_id: string }> {
+    return request<{ status: string; saved_id: string }>(`/api/v1/saved/videos/${videoId}`, {
       method: 'POST',
     })
   },
 
   /** Bỏ lưu một video */
   async unsaveVideo(videoId: string): Promise<void> {
-    return request<void>(`/api/v1/videos/${videoId}/save`, {
+    return request<void>(`/api/v1/saved/videos/${videoId}`, {
       method: 'DELETE',
     })
   },
@@ -292,7 +345,87 @@ export const videosApi = {
 }
 
 // ============================================================================
-// 4. HEALTH API (/api/v1/health & /health)
+// 4. SAVED ITEMS API (/api/v1/saved) - BỘ SƯU TẬP QUÁN & VIDEO HỢP NHẤT
+// ============================================================================
+export const savedApi = {
+  /** Lấy danh sách video đã lưu (Backend tự động JOIN kèm thông tin quán ăn nếu có) */
+  async getSavedVideos(limit = 50, offset = 0): Promise<SavedVideoResponse[]> {
+    return request<SavedVideoResponse[]>(
+      '/api/v1/saved/videos',
+      { method: 'GET' },
+      { limit, offset },
+    )
+  },
+
+  /** Lấy danh sách địa điểm đã lưu */
+  async getSavedPlaces(limit = 50, offset = 0): Promise<SavedPlaceResponse[]> {
+    return request<SavedPlaceResponse[]>(
+      '/api/v1/saved/places',
+      { method: 'GET' },
+      { limit, offset },
+    )
+  },
+
+  /** Lưu video vào bộ sưu tập */
+  async saveVideo(videoId: string): Promise<{ status: string; saved_id: string }> {
+    return request<{ status: string; saved_id: string }>(
+      `/api/v1/saved/videos/${videoId}`,
+      { method: 'POST' },
+    )
+  },
+
+  /** Bỏ lưu video */
+  async unsaveVideo(videoId: string): Promise<void> {
+    return request<void>(
+      `/api/v1/saved/videos/${videoId}`,
+      { method: 'DELETE' },
+    )
+  },
+
+  /** Lưu địa điểm quán ăn vào bộ sưu tập */
+  async savePlace(placeId: string): Promise<{ status: string; saved_id: string }> {
+    return request<{ status: string; saved_id: string }>(
+      `/api/v1/saved/places/${placeId}`,
+      { method: 'POST' },
+    )
+  },
+
+  /** Bỏ lưu địa điểm quán ăn */
+  async unsavePlace(placeId: string): Promise<void> {
+    return request<void>(
+      `/api/v1/saved/places/${placeId}`,
+      { method: 'DELETE' },
+    )
+  },
+
+  /**
+   * Lưu / Bỏ lưu Video (Video vốn dĩ luôn đi kèm Địa điểm quán ăn từ kết quả phân tích)
+   */
+  async toggleSaveVideo(videoId: string, isSaved: boolean): Promise<boolean> {
+    if (isSaved) {
+      await this.unsaveVideo(videoId)
+      return false
+    } else {
+      await this.saveVideo(videoId)
+      return true
+    }
+  },
+
+  /**
+   * Hợp nhất 1 chạm: Lưu / Bỏ lưu Video (kèm địa điểm)
+   */
+  async toggleSaveSpot(params: {
+    videoId?: string
+    isSaved: boolean
+  }): Promise<boolean> {
+    const { videoId, isSaved } = params
+    if (!videoId) return isSaved
+    return this.toggleSaveVideo(videoId, isSaved)
+  },
+}
+
+// ============================================================================
+// 5. HEALTH API (/api/v1/health & /health)
 // ============================================================================
 export const healthApi = {
   /** Kiểm tra trạng thái hoạt động của Backend */
@@ -308,10 +441,14 @@ export const api = {
   auth: authApi,
   places: placesApi,
   videos: videosApi,
+  saved: savedApi,
   health: healthApi,
   getAuthToken,
   setAuthToken,
+  getStoredUser,
+  setStoredUser,
   getApiBaseUrl,
+  AUTH_CHANGE_EVENT,
 }
 
 export default api

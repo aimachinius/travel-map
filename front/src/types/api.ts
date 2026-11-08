@@ -50,6 +50,7 @@ export interface PlaceResponse {
   id: string
   name: string
   address: string | null
+  normalized_address?: string | null
   latitude: number | null
   longitude: number | null
   description: string | null
@@ -57,6 +58,8 @@ export interface PlaceResponse {
   source: string | null
   phone_number: string | null
   website_url: string | null
+  platform_video_id?: string | null
+  video_url?: string | null
   created_at: string
   updated_at: string
 }
@@ -113,7 +116,25 @@ export interface AnalysisStatusResponse {
 }
 
 // ==========================================
-// 4. HEALTH SCHEMAS (backend/app/api/v1/endpoints/health.py)
+// 4. SAVED SCHEMAS (backend/app/api/v1/endpoints/saved.py)
+// ==========================================
+
+export interface SavedVideoResponse {
+  saved_id: string
+  saved_at: string
+  video: VideoResponse
+  place?: PlaceResponse | null
+}
+
+export interface SavedPlaceResponse {
+  saved_id: string
+  saved_at: string
+  place: PlaceResponse
+  video_count: number
+}
+
+// ==========================================
+// 5. HEALTH SCHEMAS (backend/app/api/v1/endpoints/health.py)
 // ==========================================
 
 export interface HealthResponse {

@@ -9,6 +9,7 @@ interface LiquidMapProps {
   tileStyle: 'dark' | 'standard'
   targetLocation?: { lat: number; lng: number } | null
   locationName?: string
+  selectedItem?: VideoPlaylistItem | null
   playlist?: VideoPlaylistItem[]
   onSelectPlaylistItem?: (index: number) => void
   radiusCircle?: {
@@ -30,6 +31,7 @@ export default function LiquidMap({
   tileStyle,
   targetLocation,
   locationName,
+  selectedItem,
   playlist = [],
   onSelectPlaylistItem,
   radiusCircle = null,
@@ -258,12 +260,34 @@ export default function LiquidMap({
         })
 
         const marker = L.marker([item.lat, item.lng], { icon: spotIcon })
+        
+        let itemName = item.locationName || item.title || 'Quán ăn ngon'
+        let itemAddr = item.address || item.desc || ''
+        if (itemName.includes(' — ')) {
+          const parts = itemName.split(' — ')
+          itemName = parts[0].trim()
+          if (!itemAddr) itemAddr = parts[1].trim()
+        }
+        const gmapSearch = encodeURIComponent(`${itemName} ${itemAddr}`)
+
         marker.bindPopup(`
-          <div style="font-family: system-ui; padding: 4px;">
-            <strong style="color: #235c42; font-size: 13px;">${item.locationName}</strong>
-            <p style="margin: 4px 0 0; font-size: 12px; color: #555;">${item.desc || item.title}</p>
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-width: 220px; max-width: 280px; padding: 4px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+              <span style="font-size: 10px; font-weight: 800; color: #166534; background: rgba(34, 197, 94, 0.15); padding: 2px 7px; border-radius: 999px; text-transform: uppercase;">QUÁN ĂN</span>
+              <span style="font-size: 11px; color: #059669; font-weight: 700;">${item.category || 'Món ngon'}</span>
+            </div>
+            <strong style="color: #0f172a; font-size: 14px; font-weight: 800; display: block; margin-bottom: 4px; line-height: 1.3;">${itemName}</strong>
+            <div style="font-size: 12px; color: #334155; line-height: 1.4; margin-bottom: 6px; background: #f8fafc; padding: 5px 8px; border-radius: 6px; border: 1px solid #e2e8f0; display: flex; align-items: flex-start; gap: 4px;">
+              <span style="flex-shrink: 0;">🏠</span>
+              <span>${itemAddr || 'Đã định vị trên bản đồ'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; border-top: 1px dashed #cbd5e1; padding-top: 5px;">
+              <span style="color: #64748b;">🎬 Bấm để xem review</span>
+              <a href="https://www.google.com/maps/search/?api=1&query=${gmapSearch}" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: none; font-weight: 700;">Google Maps ↗</a>
+            </div>
           </div>
-        `)
+        `, { maxWidth: 300 })
+
         if (onSelectPlaylistItem) {
           marker.on('click', () => onSelectPlaylistItem(index))
         }
@@ -297,19 +321,56 @@ export default function LiquidMap({
         zIndexOffset: 1000,
       })
 
-      if (locationName) {
+      if (locationName || selectedItem) {
+        let displayName = selectedItem?.locationName || locationName || 'Địa điểm đang chọn'
+        let displayAddress = selectedItem?.address || selectedItem?.desc || ''
+
+        // Tự động phân tách nếu chuỗi có định dạng "Tên quán — Địa chỉ"
+        if (displayName.includes(' — ')) {
+          const parts = displayName.split(' — ')
+          displayName = parts[0].trim()
+          if (!displayAddress) {
+            displayAddress = parts[1].trim()
+          }
+        }
+
+        const displayCategory = selectedItem?.category || 'Món ngon'
+        const gmapSearchQuery = encodeURIComponent(`${displayName} ${displayAddress}`)
+        const gmapUrl = `https://www.google.com/maps/search/?api=1&query=${gmapSearchQuery}`
+
         targetMarker.bindPopup(`
-          <div style="font-family: system-ui; padding: 6px;">
-            <span style="display:inline-block; font-size: 10px; font-weight:700; color:#0891b2; text-transform:uppercase; letter-spacing:1px;">ĐIỂM ĐANG CHỌN</span>
-            <h4 style="margin: 2px 0 4px; color: #0e7490; font-size: 14px;">${locationName}</h4>
-            <span style="font-size: 11px; color: #666;">Bấm video bên phải để xem review</span>
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; min-width: 220px; max-width: 300px; padding: 4px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; gap: 6px;">
+              <span style="display: inline-block; font-size: 10px; font-weight: 800; color: #0891b2; background: rgba(8, 145, 178, 0.12); padding: 3px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.5px;">
+                📍 ĐIỂM ĐANG CHỌN
+              </span>
+              <span style="font-size: 11px; color: #059669; font-weight: 700;">
+                ${displayCategory}
+              </span>
+            </div>
+
+            <h4 style="margin: 0 0 6px 0; color: #0f172a; font-size: 15px; font-weight: 800; line-height: 1.35;">
+              ${displayName}
+            </h4>
+
+            <div style="font-size: 12px; color: #334155; line-height: 1.45; margin-bottom: 8px; background: #f8fafc; padding: 6px 8px; border-radius: 6px; border-left: 3px solid #0284c7; border: 1px solid #e2e8f0; border-left-width: 3px; display: flex; align-items: flex-start; gap: 4px;">
+              <span style="flex-shrink: 0;">🏠</span>
+              <span style="font-weight: 500;">${displayAddress || 'Đã định vị tọa độ trên bản đồ'}</span>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #64748b; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
+              <span>🎬 Xem video bên phải</span>
+              <a href="${gmapUrl}" target="_blank" rel="noopener noreferrer" style="color: #0284c7; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 2px;">
+                Google Maps ↗
+              </a>
+            </div>
           </div>
-        `)
+        `, { maxWidth: 320 })
       }
 
       markersGroup.addLayer(targetMarker)
     }
-  }, [playlist, targetLocation, locationName, onSelectPlaylistItem, markersVisible])
+  }, [playlist, targetLocation, locationName, selectedItem, onSelectPlaylistItem, markersVisible])
 
   // Vẽ vòng tròn bán kính quét radar khi ở chế độ khám phá quanh vị trí
   useEffect(() => {

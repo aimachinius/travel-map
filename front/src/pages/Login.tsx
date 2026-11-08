@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Login.css'
-import { loginUser } from '../mocks/mockAuth'
+import { authApi, ApiError } from '../services/api'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -14,43 +14,42 @@ export default function Login() {
   const navigate = useNavigate()
 
   const fillDemoAccount = () => {
-    setEmail('demo@foodspot.vn')
+    setEmail('admin')
     setPassword('password123')
     setError('')
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
 
     if (!email.trim() || !password) {
-      setError('Vui lòng nhập đầy đủ email và mật khẩu.')
-      return
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError('Email không đúng định dạng.')
+      setError('Vui lòng nhập đầy đủ tên đăng nhập hoặc email và mật khẩu.')
       return
     }
 
     setLoading(true)
 
     try {
-      const result = loginUser(email, password)
+      await authApi.login({
+        username_or_email: email.trim(),
+        password,
+      })
 
-      if (!result.success) {
-        setError(result.message)
-        return
+      navigate('/explore')
+    } catch (err: unknown) {
+      if (err instanceof ApiError) {
+        const errorDetail = err.detail
+        let msg = err.message
+        if (typeof errorDetail === 'string') {
+          msg = errorDetail
+        } else if (errorDetail && typeof errorDetail === 'object' && 'detail' in errorDetail) {
+          msg = String((errorDetail as { detail: unknown }).detail)
+        }
+        setError(msg || 'Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin.')
+      } else {
+        setError('Không thể kết nối đến máy chủ Backend. Vui lòng thử lại sau.')
       }
-
-      if (!rememberMe) {
-        sessionStorage.setItem('foodspot_mock_session', JSON.stringify(result.user))
-        localStorage.removeItem('foodspot_mock_session')
-      }
-
-      navigate('/home')
-    } catch {
-      setError('Đã xảy ra lỗi. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }

@@ -1,14 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getSessionUser, logoutUser, type MockUser } from '../../mocks/mockAuth'
+import {
+  authApi,
+  getStoredUser,
+  AUTH_CHANGE_EVENT,
+  type CurrentUserResponse,
+} from '../../services/api'
 
 interface LiquidHeaderProps {
   onNavigateHome?: () => void
 }
 
 export default function LiquidHeader({ onNavigateHome }: LiquidHeaderProps) {
-  const [user, setUser] = useState<Omit<MockUser, 'password'> | null>(() => getSessionUser())
+  const [user, setUser] = useState<CurrentUserResponse | null>(() => getStoredUser())
   const [mobileMenu, setMobileMenu] = useState(false)
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getStoredUser())
+    }
+    window.addEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+    window.addEventListener('storage', handleAuthChange)
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+      window.removeEventListener('storage', handleAuthChange)
+    }
+  }, [])
 
   const handleHomeClick = (e: React.MouseEvent) => {
     if (onNavigateHome) {
@@ -18,7 +35,7 @@ export default function LiquidHeader({ onNavigateHome }: LiquidHeaderProps) {
   }
 
   const handleLogout = () => {
-    logoutUser()
+    authApi.logout()
     setUser(null)
   }
 
@@ -76,14 +93,18 @@ export default function LiquidHeader({ onNavigateHome }: LiquidHeaderProps) {
             Liên hệ
           </Link>
 
-          {/* 3. Tài khoản người dùng: Nếu đã đăng nhập thì hiện, nếu chưa thì KHÔNG HIỆN */}
-          {user && (
+          {/* 3. Tài khoản người dùng */}
+          {user ? (
             <div className="explore-auth-slot">
               <div className="explore-user-badge">
                 <span className="explore-user-avatar">
-                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                  {user.full_name
+                    ? user.full_name.charAt(0).toUpperCase()
+                    : user.username
+                      ? user.username.charAt(0).toUpperCase()
+                      : 'U'}
                 </span>
-                <span className="explore-user-name">{user.fullName}</span>
+                <span className="explore-user-name">{user.full_name || user.username}</span>
                 <button
                   type="button"
                   className="explore-logout-link"
@@ -93,6 +114,15 @@ export default function LiquidHeader({ onNavigateHome }: LiquidHeaderProps) {
                   Đăng xuất
                 </button>
               </div>
+            </div>
+          ) : (
+            <div className="explore-auth-slot not-logged-in">
+              <Link to="/login" className="explore-login-btn">
+                Đăng nhập
+              </Link>
+              <Link to="/register" className="explore-register-btn">
+                Đăng ký
+              </Link>
             </div>
           )}
         </nav>

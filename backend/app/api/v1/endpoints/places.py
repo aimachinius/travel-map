@@ -1,17 +1,16 @@
-
+import logging
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, or_, select
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_current_user
+from app.api.deps import get_optional_current_user
 from app.db.session import get_db
-from app.models.place import Place
-from app.models.saved_place import SavedPlace
 from app.models.user import User
-from app.schemas.place import PlaceResponse
+from app.schemas.place import NearbyVideoItem, PlaceResponse, PlaceVideoMatchItem
+from app.services.place_service import PlaceService
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/places",
@@ -19,168 +18,125 @@ router = APIRouter(
 )
 
 
-# 1. Get and search places
+async def _trigger_discovery_task(lat: float, lon: float, radius_m: float) -> None:
+    """Kích hoạt ngầm tiến trình Discovery cào video theo vị trí thông qua BackgroundTasks."""
+    logger.info(f">>> [TRIGGER DISCOVERY] Nhận yêu cầu chạy Discovery nền cho ({lat}, {lon}), bán kính {radius_m}m...")
+    from app.db.session import SessionLocal
+    from app.services.analysis_service import enqueue_analysis
+    from app.services.discovery_service import DiscoveryService
+
+    with SessionLocal() as bg_db:
+        try:
+            await DiscoveryService.discover_location(
+                db=bg_db,
+                lat=lat,
+                lon=lon,
+                radius_m=radius_m,
+                enqueue_callback=enqueue_analysis,
+            )
+        except Exception as e:
+            logger.warning(f"Background discovery task encountered error: {e}", exc_info=True)
+
+
+@router.get(
+    "/nearby-videos",
+    response_model=list[NearbyVideoItem],
+    summary="Tìm kiếm video trong bán kính xung quanh tọa độ",
+)
+async def get_nearby_videos(
+    background_tasks: BackgroundTasks,
+    lat: float = Query(..., ge=-90.0, le=90.0, description="Vĩ độ"),
+    lon: float = Query(..., ge=-180.0, le=180.0, description="Kinh độ"),
+    radius_m: float = Query(default=2000.0, ge=10.0, le=50000.0, description="Bán kính tính bằng mét"),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+):
+    current_user_id = current_user.id if current_user else None
+    results = PlaceService.get_nearby_videos(
+        db=db,
+        lat=lat,
+        lon=lon,
+        radius_m=radius_m,
+        limit=limit,
+        offset=offset,
+        current_user_id=current_user_id,
+    )
+
+    # Kích hoạt ngầm DiscoveryService qua FastAPI BackgroundTasks (tự động kiểm tra chống quét lặp 1km/24h)
+    background_tasks.add_task(_trigger_discovery_task, lat, lon, radius_m)
+
+    return results
+
+
 @router.get(
     "",
     response_model=list[PlaceResponse],
+    summary="Lấy danh sách địa điểm ăn uống",
 )
-def get_places(
-    q: str | None = Query(default=None, max_length=100),
+@router.get(
+    "/search",
+    response_model=list[PlaceResponse],
+    summary="Tìm kiếm địa điểm theo từ khóa hoặc thể loại",
+)
+def search_places(
+    q: str | None = Query(default=None, max_length=100, description="Từ khóa tên quán hoặc địa chỉ"),
     category: str | None = Query(default=None, max_length=50),
     limit: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
 ):
-    query = select(Place).where(Place.is_active.is_(True))
-
-    if q and q.strip():
-        keyword = func.lower(func.unaccent(q.strip()))
-
-        normalized_name = func.lower(func.unaccent(Place.name))
-        normalized_address = func.lower(func.unaccent(Place.address))
-        normalized_description = func.lower(func.unaccent(Place.description))
-        normalized_category = func.lower(func.unaccent(Place.category))
-
-        query = query.where(
-            or_(
-                normalized_name.ilike(func.concat("%", keyword, "%")),
-                normalized_address.ilike(func.concat("%", keyword, "%")),
-                normalized_description.ilike(func.concat("%", keyword, "%")),
-                normalized_category.ilike(func.concat("%", keyword, "%")),
-                func.similarity(normalized_name, keyword) >= 0.3,
-                func.similarity(normalized_address, keyword) >= 0.3,
-            )
-        )
-
-    if category and category.strip():
-        query = query.where(
-            func.lower(func.unaccent(Place.category))
-            == func.lower(func.unaccent(category.strip()))
-        )
-
-    places = db.scalars(
-        query
-        .order_by(Place.name.asc())
-        .offset(offset)
-        .limit(limit)
-    ).all()
-
+    places = PlaceService.search_places(
+        db=db,
+        query_str=q,
+        category=category,
+        limit=limit,
+        offset=offset,
+    )
     return places
 
 
-# 2. Get saved places
-# Keep this route before /{place_id}
-@router.get(
-    "/saved",
-    response_model=list[PlaceResponse],
-)
-def get_saved_places(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    places = db.scalars(
-        select(Place)
-        .join(
-            SavedPlace,
-            SavedPlace.place_id == Place.id,
-        )
-        .where(
-            SavedPlace.user_id == current_user.id,
-            Place.is_active.is_(True),
-        )
-        .order_by(SavedPlace.created_at.desc())
-    ).all()
-
-    return places
-
-
-# 3. Get place detail
 @router.get(
     "/{place_id}",
     response_model=PlaceResponse,
+    summary="Xem chi tiết một địa điểm ăn uống",
 )
 def get_place_detail(
     place_id: UUID,
     db: Session = Depends(get_db),
 ):
-    place = db.get(Place, place_id)
-
-    if place is None or not place.is_active:
+    place = PlaceService.get_place_detail(db, place_id)
+    if place is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Place not found",
+            detail="Không tìm thấy địa điểm",
         )
-
     return place
 
 
-# 4. Save a place
-@router.post(
-    "/{place_id}/save",
-    response_model=PlaceResponse,
-    status_code=status.HTTP_201_CREATED,
+@router.get(
+    "/{place_id}/videos",
+    response_model=list[PlaceVideoMatchItem],
+    summary="Lấy toàn bộ video review của một quán ăn (ưu tiên confidence HIGH)",
 )
-def save_place(
+def get_place_videos(
     place_id: UUID,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
 ):
-    place = db.get(Place, place_id)
-
-    if place is None or not place.is_active:
+    place = PlaceService.get_place_detail(db, place_id)
+    if place is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Place not found",
+            detail="Không tìm thấy địa điểm",
         )
 
-    existing = db.scalar(
-        select(SavedPlace).where(
-            SavedPlace.user_id == current_user.id,
-            SavedPlace.place_id == place_id,
-        )
-    )
-
-    if existing is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Place has already been saved",
-        )
-
-    saved_place = SavedPlace(
-        user_id=current_user.id,
+    results = PlaceService.get_place_videos(
+        db=db,
         place_id=place_id,
+        limit=limit,
+        offset=offset,
     )
-
-    db.add(saved_place)
-    db.commit()
-
-    return place
-
-
-# 5. Unsave a place
-@router.delete(
-    "/{place_id}/save",
-    status_code=status.HTTP_204_NO_CONTENT,
-)
-def unsave_place(
-    place_id: UUID,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-):
-    saved_place = db.scalar(
-        select(SavedPlace).where(
-            SavedPlace.user_id == current_user.id,
-            SavedPlace.place_id == place_id,
-        )
-    )
-
-    if saved_place is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Place has not been saved",
-        )
-
-    db.delete(saved_place)
-    db.commit()
-
-    return None
+    return results

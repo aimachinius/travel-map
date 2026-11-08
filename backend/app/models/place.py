@@ -1,7 +1,8 @@
-
 import uuid
 from datetime import datetime
+from typing import Any
 
+from geoalchemy2 import Geometry
 from sqlalchemy import DateTime, Float, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,6 +23,14 @@ class Place(Base):
     )
     address: Mapped[str | None] = mapped_column(
         Text,
+        nullable=True,
+    )
+    normalized_address: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
+    )
+    location: Mapped[Any | None] = mapped_column(
+        Geometry(geometry_type="POINT", srid=4326, spatial_index=True),
         nullable=True,
     )
     latitude: Mapped[float | None] = mapped_column(

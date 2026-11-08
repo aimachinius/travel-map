@@ -4,6 +4,7 @@ export interface VideoPlaylistItem {
   title: string
   author: string
   locationName: string
+  address?: string
   lat: number
   lng: number
   gmapQuery?: string
@@ -12,6 +13,7 @@ export interface VideoPlaylistItem {
   desc: string
   mp4Url?: string
   distanceKm?: number
+  placeId?: string
 }
 
 export interface MapCity {
@@ -23,7 +25,24 @@ export interface MapCity {
 
 export type EngineType = 'mp4' | 'v1' | 'v2'
 
-export type DrawerMode = 'liked-videos' | 'liked-places' | 'history'
+export type DrawerMode = 'saved-spots' | 'liked-videos' | 'liked-places' | 'history'
+
+export interface SavedFoodSpotItem {
+  id: string
+  savedAt: string
+  title: string
+  locationName: string
+  lat: number
+  lng: number
+  category: string
+  icon: string
+  desc: string
+  url?: string
+  mp4Url?: string
+  videoId?: string
+  placeId?: string
+  author?: string
+}
 
 export interface ToastState {
   type: 'success' | 'error' | 'info'

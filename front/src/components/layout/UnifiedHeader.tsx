@@ -1,23 +1,38 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { getSessionUser, logoutUser } from '../../mocks/mockAuth'
+import {
+  authApi,
+  getStoredUser,
+  AUTH_CHANGE_EVENT,
+  type CurrentUserResponse,
+} from '../../services/api'
 import './UnifiedHeader.css'
 
 export default function UnifiedHeader() {
-  const [, setAuthVersion] = useState(0)
+  const [user, setUser] = useState<CurrentUserResponse | null>(() => getStoredUser())
   const [mobileMenu, setMobileMenu] = useState(false)
   const [prevPath, setPrevPath] = useState(() => (typeof window !== 'undefined' ? window.location.pathname : '/'))
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Đồng bộ trạng thái đăng nhập khi có sự thay đổi từ Login, Logout hoặc Tab khác
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getStoredUser())
+    }
+    window.addEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+    window.addEventListener('storage', handleAuthChange)
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+      window.removeEventListener('storage', handleAuthChange)
+    }
+  }, [])
 
   // Reset menu if route changed
   if (prevPath !== location.pathname) {
     setPrevPath(location.pathname)
     setMobileMenu(false)
   }
-
-  // Derive user synchronously during render based on authVersion and location
-  const user = getSessionUser()
 
   const isExplore = location.pathname === '/explore'
   const isHome = location.pathname === '/'
@@ -57,8 +72,8 @@ export default function UnifiedHeader() {
   }
 
   const handleLogout = () => {
-    logoutUser()
-    setAuthVersion((v) => v + 1)
+    authApi.logout()
+    setUser(null)
   }
 
   return (
@@ -135,14 +150,18 @@ export default function UnifiedHeader() {
             Liên hệ
           </a>
 
-          {/* Tài khoản người dùng: Nếu đã đăng nhập thì hiện, nếu chưa thì ẨN HOÀN TOÀN ("nếu chưa đăng nhập thì sẽ không hiện") */}
-          {user && (
+          {/* Tài khoản người dùng */}
+          {user ? (
             <div className="unified-auth-slot">
               <div className="unified-user-badge">
                 <span className="unified-user-avatar">
-                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                  {user.full_name
+                    ? user.full_name.charAt(0).toUpperCase()
+                    : user.username
+                      ? user.username.charAt(0).toUpperCase()
+                      : 'U'}
                 </span>
-                <span className="unified-user-name">{user.fullName}</span>
+                <span className="unified-user-name">{user.full_name || user.username}</span>
                 <button
                   type="button"
                   className="unified-logout-btn"
@@ -152,6 +171,25 @@ export default function UnifiedHeader() {
                   Đăng xuất
                 </button>
               </div>
+            </div>
+          ) : (
+            <div className="unified-auth-slot not-logged-in">
+              <button
+                type="button"
+                className="unified-login-btn"
+                onClick={() => navigate('/login')}
+                title="Đăng nhập tài khoản"
+              >
+                Đăng nhập
+              </button>
+              <button
+                type="button"
+                className="unified-register-btn"
+                onClick={() => navigate('/register')}
+                title="Tạo tài khoản mới"
+              >
+                Đăng ký
+              </button>
             </div>
           )}
         </nav>

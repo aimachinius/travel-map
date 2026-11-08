@@ -1,33 +1,57 @@
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { DrawerMode } from './types'
+import {
+  authApi,
+  getStoredUser,
+  AUTH_CHANGE_EVENT,
+  type CurrentUserResponse,
+} from '../../services/api'
 
 interface LeftFloatingDockProps {
   onOpenDrawer: (mode: DrawerMode) => void
+  savedCount?: number
 }
 
-export default function LeftFloatingDock({ onOpenDrawer }: LeftFloatingDockProps) {
+export default function LeftFloatingDock({
+  onOpenDrawer,
+  savedCount = 0,
+}: LeftFloatingDockProps) {
+  const [user, setUser] = useState<CurrentUserResponse | null>(() => getStoredUser())
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setUser(getStoredUser())
+    }
+    window.addEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+    window.addEventListener('storage', handleAuthChange)
+    return () => {
+      window.removeEventListener(AUTH_CHANGE_EVENT, handleAuthChange)
+      window.removeEventListener('storage', handleAuthChange)
+    }
+  }, [])
+
+  const handleAccountClick = () => {
+    if (user) {
+      if (window.confirm(`Bạn có muốn đăng xuất khỏi tài khoản "${user.full_name || user.username}"?`)) {
+        authApi.logout()
+        setUser(null)
+      }
+    } else {
+      navigate('/login')
+    }
+  }
+
   return (
     <aside className="left-floating-dock" aria-label="Cụm phím tác vụ nhanh">
-      {/* 1. Liked Videos */}
+      {/* 1. Bộ Sưu Tập Món & Quán Đã Lưu (Gộp Video Review + Quán Ăn) */}
       <button
         type="button"
         className="glass-circle-btn liquid-glass"
-        onClick={() => onOpenDrawer('liked-videos')}
-        title="Các video đã thích"
-        aria-label="Video yêu thích"
-      >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-        <span className="dock-tooltip">Video đã thích</span>
-      </button>
-
-      {/* 2. Liked Places */}
-      <button
-        type="button"
-        className="glass-circle-btn liquid-glass"
-        onClick={() => onOpenDrawer('liked-places')}
-        title="Các địa điểm đã thích"
-        aria-label="Địa điểm yêu thích"
+        onClick={() => onOpenDrawer('saved-spots')}
+        title="Bộ sưu tập Quán & Video đã lưu"
+        aria-label="Bộ sưu tập đã lưu"
       >
         <svg
           viewBox="0 0 24 24"
@@ -39,13 +63,15 @@ export default function LeftFloatingDock({ onOpenDrawer }: LeftFloatingDockProps
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-          <circle cx="12" cy="10" r="3" />
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
         </svg>
-        <span className="dock-tooltip">Địa điểm đã lưu</span>
+        {savedCount > 0 && (
+          <span className="dock-badge-count">{savedCount}</span>
+        )}
+        <span className="dock-tooltip">Bộ sưu tập đã lưu</span>
       </button>
 
-      {/* 3. Analysis History */}
+      {/* 2. Lịch sử phân tích TikTok */}
       <button
         type="button"
         className="glass-circle-btn liquid-glass"
@@ -68,6 +94,51 @@ export default function LeftFloatingDock({ onOpenDrawer }: LeftFloatingDockProps
           <polyline points="12 6 12 12 16 14" />
         </svg>
         <span className="dock-tooltip">Lịch sử phân tích</span>
+      </button>
+
+      {/* 3. Nút Đăng nhập / Tài khoản trực tiếp trên Dock */}
+      <button
+        type="button"
+        className={`glass-circle-btn liquid-glass ${user ? 'is-user-badge' : ''}`}
+        onClick={handleAccountClick}
+        title={user ? `Tài khoản: ${user.full_name || user.username}` : 'Đăng nhập / Đăng ký'}
+        aria-label="Tài khoản người dùng"
+      >
+        {user ? (
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: '13px',
+              color: '#166534',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              background: 'rgba(34, 197, 94, 0.15)',
+            }}
+          >
+            {(user.full_name || user.username || 'U')[0].toUpperCase()}
+          </span>
+        ) : (
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        )}
+        <span className="dock-tooltip">
+          {user ? `👤 ${user.full_name || user.username} (Bấm để đăng xuất)` : '🔑 Đăng nhập / Đăng ký'}
+        </span>
       </button>
     </aside>
   )

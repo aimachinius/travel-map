@@ -15,6 +15,8 @@ interface LiquidVideoPlayerProps {
   currentIndex?: number
   isRoutingActive?: boolean
   onToggleRouting?: () => void
+  isSaved?: boolean
+  onToggleSave?: () => void
 }
 
 // Bộ nhớ đệm thumbnail oEmbed để tránh lặp lại request mạng
@@ -32,6 +34,8 @@ export default function LiquidVideoPlayer({
   currentIndex = 0,
   isRoutingActive = false,
   onToggleRouting,
+  isSaved = false,
+  onToggleSave,
 }: LiquidVideoPlayerProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isPlaying, setIsPlaying] = useState<boolean>(true)
@@ -799,6 +803,31 @@ export default function LiquidVideoPlayer({
               </svg>
               <span className="dock-tooltip right-side">
                 {isRoutingActive ? 'Đang chỉ đường (Bấm để tắt)' : '🧭 Chỉ đường đến quán'}
+              </span>
+            </button>
+
+            {/* Nút 1 Chạm: Lưu / Bỏ lưu Bộ Sưu Tập Quán & Video */}
+            <button
+              type="button"
+              className={`frame-action-btn liquid-glass ${isSaved ? 'is-saved-active' : ''}`}
+              onClick={onToggleSave}
+              title={isSaved ? 'Bỏ lưu quán & video' : 'Lưu quán & video vào Bộ sưu tập'}
+              aria-label="Lưu vào bộ sưu tập"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill={isSaved ? '#ff3b70' : 'none'}
+                stroke={isSaved ? '#ff3b70' : 'currentColor'}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+              </svg>
+              <span className="dock-tooltip right-side">
+                {isSaved ? 'Đã lưu quán này (Bấm để bỏ lưu)' : '🔖 Lưu quán & video'}
               </span>
             </button>
 

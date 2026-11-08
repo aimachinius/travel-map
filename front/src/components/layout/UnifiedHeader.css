@@ -144,6 +144,49 @@
   background: rgba(220, 38, 38, 0.08);
 }
 
+.unified-auth-slot.not-logged-in {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.unified-login-btn {
+  background: transparent;
+  color: #2c3e2e;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1px solid #c9d7c6;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.unified-login-btn:hover {
+  background: #f0f4ee;
+  border-color: #2f4b36;
+  color: #1f3325;
+}
+
+.unified-register-btn {
+  background: #2f4b36;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border: none;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 8px rgba(47, 75, 54, 0.2);
+}
+
+.unified-register-btn:hover {
+  background: #233a2a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(47, 75, 54, 0.3);
+}
+
 @media (max-width: 900px) {
   .unified-mobile-btn {
     display: block;
